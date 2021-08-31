@@ -2,6 +2,7 @@ package rules
 
 import (
 	"fmt"
+	"log"
 
 	"github.com/terraform-linters/tflint-plugin-sdk/tflint"
 )
@@ -48,6 +49,7 @@ func (r *TerraformValidatedVariablesRule) Check(runner tflint.Runner) error {
 	}
 
 	for _, variable := range config.Module.Variables {
+		log.Printf("[TRACE] Checking `%s`", variable.Name)
 		if len(variable.Validations) == 0 {
 			runner.EmitIssue(
 				r,
