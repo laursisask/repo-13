@@ -15,7 +15,7 @@ plugin "ruleset" {
   enabled = true
 
   version = "0.1.0"
-  source  = "gitlab.internal.knowbe4.com/sre/tflint/ruleset-plugin"
+  source  = "github.com/kb4sre/tflint-ruleset-plugin"
 }
 ```
 

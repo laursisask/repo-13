@@ -1,4 +1,4 @@
-module github.com/terraform-linters/tflint-ruleset-template
+module github.com/kb4sre/tflint-ruleset-plugin
 
 go 1.16
 

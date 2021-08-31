@@ -1,9 +1,9 @@
 package main
 
 import (
+	"github.com/kb4sre/tflint-ruleset-plugin/rules"
 	"github.com/terraform-linters/tflint-plugin-sdk/plugin"
 	"github.com/terraform-linters/tflint-plugin-sdk/tflint"
-	"github.com/terraform-linters/tflint-ruleset-template/rules"
 )
 
 func main() {
