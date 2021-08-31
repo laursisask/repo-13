@@ -36,14 +36,10 @@ func (r *TerraformValidatedVariablesRule) Link() string {
 
 // Check checks whether variables have descriptions
 func (r *TerraformValidatedVariablesRule) Check(runner tflint.Runner) error {
-	backend, err := runner.Backend()
 	config, err := runner.Config()
 
 	if err != nil {
 		return err
-	}
-	if backend == nil {
-		return nil
 	}
 
 	for _, variable := range config.Module.Variables {
