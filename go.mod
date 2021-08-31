@@ -1,4 +1,4 @@
-module github.com/kb4sre/tflint-ruleset-plugin
+module github.com/kb4sre/tflint-ruleset-kb4
 
 go 1.16
 
