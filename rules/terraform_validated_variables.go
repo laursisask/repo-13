@@ -2,7 +2,6 @@ package rules
 
 import (
 	"fmt"
-	"log"
 
 	"github.com/terraform-linters/tflint-plugin-sdk/tflint"
 )
@@ -22,12 +21,12 @@ func (r *TerraformValidatedVariablesRule) Name() string {
 
 // Enabled returns whether the rule is enabled by default
 func (r *TerraformValidatedVariablesRule) Enabled() bool {
-	return false
+	return true
 }
 
 // Severity returns the rule severity
 func (r *TerraformValidatedVariablesRule) Severity() string {
-	return tflint.NOTICE
+	return tflint.ERROR
 }
 
 // Link returns the rule reference link
@@ -42,14 +41,12 @@ func (r *TerraformValidatedVariablesRule) Check(runner tflint.Runner) error {
 
 	if err != nil {
 		return err
-
 	}
 	if backend == nil {
 		return nil
 	}
 
 	for _, variable := range config.Module.Variables {
-		log.Printf("[TRACE] Checking `%s`", variable.Name)
 		if len(variable.Validations) == 0 {
 			runner.EmitIssue(
 				r,
@@ -57,7 +54,6 @@ func (r *TerraformValidatedVariablesRule) Check(runner tflint.Runner) error {
 				variable.DeclRange,
 			)
 		}
-		// log.Printf("[TRACE] Check `%s` rule for `%s` runner", r.Name())
 	}
 	return nil
 }
