@@ -7,4 +7,5 @@ require (
 	github.com/hashicorp/hcl/v2 v2.10.1
 	github.com/terraform-linters/tflint v0.31.0
 	github.com/terraform-linters/tflint-plugin-sdk v0.9.1
+	github.com/zclconf/go-cty v1.9.0
 )

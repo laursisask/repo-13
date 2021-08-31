@@ -43,7 +43,8 @@ func (r *TerraformValidatedVariablesRule) Check(runner tflint.Runner) error {
 	}
 
 	for _, variable := range config.Module.Variables {
-		if len(variable.Validations) == 0 {
+
+		if len(variable.Validations) == 0 && variable.Type.GoString() != "cty.Bool" {
 			runner.EmitIssue(
 				r,
 				fmt.Sprintf("`%s` variable has no validations. Please include at least 1 validation for types that are not primitive.", variable.Name),
