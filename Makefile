@@ -9,8 +9,8 @@ build:
 	go build
 
 install: build
-	mkdir -p ~/.tflint.d/plugins/github.com/kb4sre/tflint-ruleset-kb4/$(VERSION)/
-	mv ./tflint-ruleset-kb4 ~/.tflint.d/plugins/github.com/kb4sre/tflint-ruleset-kb4/$(VERSION)/
+	mkdir -p ~/.tflint.d/plugins/github.com/knowbe4/tflint-ruleset-kb4/$(VERSION)/
+	mv ./tflint-ruleset-kb4 ~/.tflint.d/plugins/github.com/knowbe4/tflint-ruleset-kb4/$(VERSION)/
 
 release:
 	git tag v$(VERSION)

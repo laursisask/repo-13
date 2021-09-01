@@ -3,7 +3,7 @@ package main
 import (
 	_ "embed"
 
-	"github.com/kb4sre/tflint-ruleset-kb4/rules"
+	"github.com/knowbe4/tflint-ruleset-kb4/rules"
 	"github.com/terraform-linters/tflint-plugin-sdk/plugin"
 	"github.com/terraform-linters/tflint-plugin-sdk/tflint"
 )
