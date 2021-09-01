@@ -1,25 +1,22 @@
 package main
 
 import (
-	"fmt"
-	"io/ioutil"
+	_ "embed"
 
 	"github.com/kb4sre/tflint-ruleset-kb4/rules"
 	"github.com/terraform-linters/tflint-plugin-sdk/plugin"
 	"github.com/terraform-linters/tflint-plugin-sdk/tflint"
 )
 
-func main() {
+//go:embed VERSION
+var VERSION string
 
-	version, err := ioutil.ReadFile("VERSION") // just pass the file name
-	if err != nil {
-		fmt.Print(err)
-	}
+func main() {
 
 	plugin.Serve(&plugin.ServeOpts{
 		RuleSet: &tflint.BuiltinRuleSet{
 			Name:    "template",
-			Version: string(version),
+			Version: VERSION,
 			Rules: []tflint.Rule{
 				rules.NewTerraformValidatedVariablesRule(),
 			},
