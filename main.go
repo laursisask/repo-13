@@ -19,6 +19,7 @@ func main() {
 			Version: VERSION,
 			Rules: []tflint.Rule{
 				rules.NewTerraformValidatedVariablesRule(),
+				rules.NewTerraformKb4ModuleStructureRule(),
 			},
 		},
 	})
