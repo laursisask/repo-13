@@ -10,7 +10,7 @@ import (
 )
 
 const (
-	filenameMain      = "main.tf"
+	filenameMain      = "_init.tf"
 	filenameVariables = "_variables.tf"
 	filenameOutputs   = "_outputs.tf"
 )

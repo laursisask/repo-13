@@ -20,9 +20,9 @@ func Test_TerraformKb4ModuleStructureRule(t *testing.T) {
 			Expected: helper.Issues{
 				{
 					Rule:    NewTerraformKb4ModuleStructureRule(),
-					Message: "Module should include a main.tf file as the primary entrypoint",
+					Message: "Module should include a _init.tf file as the primary entrypoint",
 					Range: hcl.Range{
-						Filename: "main.tf",
+						Filename: "_init.tf",
 						Start:    hcl.InitialPos,
 					},
 				},
@@ -47,7 +47,7 @@ func Test_TerraformKb4ModuleStructureRule(t *testing.T) {
 		{
 			Name: "directory in path",
 			Content: map[string]string{
-				"foo/main.tf":       "",
+				"foo/_init.tf":      "",
 				"foo/_variables.tf": `variable "v" {}`,
 			},
 			Expected: helper.Issues{
@@ -64,7 +64,7 @@ func Test_TerraformKb4ModuleStructureRule(t *testing.T) {
 		{
 			Name: "move variable",
 			Content: map[string]string{
-				"main.tf":       `variable "v" {}`,
+				"_init.tf":      `variable "v" {}`,
 				"_variables.tf": "",
 				"_outputs.tf":   "",
 			},
