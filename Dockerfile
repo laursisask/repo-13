@@ -1,3 +1,4 @@
+# May complain about ssl certs during build!! Off T2 VPN might help
 # syntax=docker/dockerfile:1.3
 ARG BUILD_OS=debian
 FROM --platform=$BUILDPLATFORM tonistiigi/xx:1.0.0 AS xx
@@ -110,25 +111,25 @@ RUN xx-info env && git clone --depth 1 -b $OPENTRACING_CPP_VERSION https://githu
     && xx-verify /usr/local/lib/libopentracing.so
 
 
-### Build zipkin-cpp-opentracing
-FROM opentracing-cpp as zipkin-cpp-opentracing
-ARG ZIPKIN_CPP_VERSION=master
-ARG TARGETPLATFORM
+# ### Build zipkin-cpp-opentracing
+# FROM opentracing-cpp as zipkin-cpp-opentracing
+# ARG ZIPKIN_CPP_VERSION=master
+# ARG TARGETPLATFORM
 
-RUN [ "$(xx-info vendor)" = "alpine" ] && export QEMU_LD_PREFIX=/$(xx-info); \
-    xx-info env && git clone --depth 1 -b $ZIPKIN_CPP_VERSION https://github.com/rnburn/zipkin-cpp-opentracing.git \
-    && cd zipkin-cpp-opentracing \
-    && mkdir .build && cd .build \
-    && cmake $(xx-clang --print-cmake-defines) \
-    -DCMAKE_PREFIX_PATH=$(xx-info sysroot)/usr/local \
-    -DBUILD_SHARED_LIBS=OFF \
-    -DBUILD_STATIC_LIBS=OFF \
-    -DCMAKE_BUILD_TYPE=Release \
-    -DBUILD_PLUGIN=ON \
-    -DCMAKE_POSITION_INDEPENDENT_CODE=ON \
-    -DBUILD_TESTING=OFF .. \
-    && make -j$(nproc) install \
-    && xx-verify /usr/local/lib/libzipkin_opentracing_plugin.so
+# RUN [ "$(xx-info vendor)" = "alpine" ] && export QEMU_LD_PREFIX=/$(xx-info); \
+#     xx-info env && git clone --depth 1 -b $ZIPKIN_CPP_VERSION https://github.com/rnburn/zipkin-cpp-opentracing.git \
+#     && cd zipkin-cpp-opentracing \
+#     && mkdir .build && cd .build \
+#     && cmake $(xx-clang --print-cmake-defines) \
+#     -DCMAKE_PREFIX_PATH=$(xx-info sysroot)/usr/local \
+#     -DBUILD_SHARED_LIBS=OFF \
+#     -DBUILD_STATIC_LIBS=OFF \
+#     -DCMAKE_BUILD_TYPE=Release \
+#     -DBUILD_PLUGIN=ON \
+#     -DCMAKE_POSITION_INDEPENDENT_CODE=ON \
+#     -DBUILD_TESTING=OFF .. \
+#     && make -j$(nproc) install \
+#     && xx-verify /usr/local/lib/libzipkin_opentracing_plugin.so
 
 
 ### Build Jaeger cpp-client
@@ -251,8 +252,8 @@ FROM nginx-${BUILD_OS} as final
 
 COPY --from=build-nginx /usr/lib/nginx/modules/ /usr/lib/nginx/modules/
 COPY --from=dd-opentracing-cpp /usr/local/lib/ /usr/local/lib/
-COPY --from=jaeger-cpp-client /usr/local/lib/ /usr/local/lib/
-COPY --from=zipkin-cpp-opentracing /usr/local/lib/ /usr/local/lib/
+# COPY --from=jaeger-cpp-client /usr/local/lib/ /usr/local/lib/
+# COPY --from=zipkin-cpp-opentracing /usr/local/lib/ /usr/local/lib/
 COPY --from=opentracing-cpp /usr/local/lib/ /usr/local/lib/
 # gRPC doesn't seem to be used
 # COPY --from=grpc /usr/local/lib/ /usr/local/lib/
