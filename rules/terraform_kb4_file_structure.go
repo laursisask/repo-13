@@ -11,38 +11,38 @@ import (
 
 var EXPECTED_FILES []string = []string{"_init.tf", "_variables.tf", "_outputs.tf"}
 
-// TerraformKb4ModuleStructureRule checks whether modules adhere to Terraform's standard module structure
-type TerraformKb4ModuleStructureRule struct {
+// TerraformKb4FileStructureRule checks whether modules adhere to Terraform's standard module structure
+type TerraformKb4FileStructureRule struct {
 	tflint.DefaultRule
 }
 
 // NewTerraformKb4ModuleStructureRule returns a new rule
-func NewTerraformKb4ModuleStructureRule() *TerraformKb4ModuleStructureRule {
-	return &TerraformKb4ModuleStructureRule{}
+func NewTerraformKb4FileStructureRule() *TerraformKb4FileStructureRule {
+	return &TerraformKb4FileStructureRule{}
 }
 
 // Name returns the rule name
-func (r *TerraformKb4ModuleStructureRule) Name() string {
+func (r *TerraformKb4FileStructureRule) Name() string {
 	return "terraform_kb4_module_structure"
 }
 
 // Enabled returns whether the rule is enabled by default
-func (r *TerraformKb4ModuleStructureRule) Enabled() bool {
+func (r *TerraformKb4FileStructureRule) Enabled() bool {
 	return true
 }
 
 // Severity returns the rule severity
-func (r *TerraformKb4ModuleStructureRule) Severity() tflint.Severity {
+func (r *TerraformKb4FileStructureRule) Severity() tflint.Severity {
 	return tflint.ERROR
 }
 
 // Link returns the rule reference link
-func (r *TerraformKb4ModuleStructureRule) Link() string {
+func (r *TerraformKb4FileStructureRule) Link() string {
 	return ""
 }
 
 // Check emits errors for any missing files and any block types that are included in the wrong file
-func (r *TerraformKb4ModuleStructureRule) Check(runner tflint.Runner) error {
+func (r *TerraformKb4FileStructureRule) Check(runner tflint.Runner) error {
 	// if !runner {
 	// 	// This rule does not evaluate child modules.
 	// 	return nil
@@ -62,7 +62,7 @@ func (r *TerraformKb4ModuleStructureRule) Check(runner tflint.Runner) error {
 	return nil
 }
 
-func (r *TerraformKb4ModuleStructureRule) checkFiles(runner tflint.Runner) error {
+func (r *TerraformKb4FileStructureRule) checkFiles(runner tflint.Runner) error {
 	files, err := runner.GetFiles()
 
 	if err != nil {
@@ -85,7 +85,7 @@ func (r *TerraformKb4ModuleStructureRule) checkFiles(runner tflint.Runner) error
 	return nil
 }
 
-func (r *TerraformKb4ModuleStructureRule) checkVariables(runner tflint.Runner) error {
+func (r *TerraformKb4FileStructureRule) checkVariables(runner tflint.Runner) error {
 
 	content, err := runner.GetModuleContent(&hclext.BodySchema{
 		Blocks: []hclext.BlockSchema{
@@ -113,7 +113,7 @@ func (r *TerraformKb4ModuleStructureRule) checkVariables(runner tflint.Runner) e
 	return nil
 }
 
-func (r *TerraformKb4ModuleStructureRule) checkOutputs(runner tflint.Runner) error {
+func (r *TerraformKb4FileStructureRule) checkOutputs(runner tflint.Runner) error {
 
 	content, err := runner.GetModuleContent(&hclext.BodySchema{
 		Blocks: []hclext.BlockSchema{

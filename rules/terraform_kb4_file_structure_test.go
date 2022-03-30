@@ -14,36 +14,36 @@ func Test_TerraformKb4ModuleStructureRule(t *testing.T) {
 		Content  map[string]string
 		Expected helper.Issues
 	}{
-		// {
-		// 	Name:    "empty module",
-		// 	Content: map[string]string{},
-		// 	Expected: helper.Issues{
-		// 		{
-		// 			Rule:    NewTerraformKb4ModuleStructureRule(),
-		// 			Message: "Module should include a _init.tf file as the primary entrypoint",
-		// 			Range: hcl.Range{
-		// 				Filename: "_init.tf",
-		// 				Start:    hcl.InitialPos,
-		// 			},
-		// 		},
-		// 		{
-		// 			Rule:    NewTerraformKb4ModuleStructureRule(),
-		// 			Message: "Module should include an empty _variables.tf file",
-		// 			Range: hcl.Range{
-		// 				Filename: "_variables.tf",
-		// 				Start:    hcl.InitialPos,
-		// 			},
-		// 		},
-		// 		{
-		// 			Rule:    NewTerraformKb4ModuleStructureRule(),
-		// 			Message: "Module should include an empty _outputs.tf file",
-		// 			Range: hcl.Range{
-		// 				Filename: "_outputs.tf",
-		// 				Start:    hcl.InitialPos,
-		// 			},
-		// 		},
-		// 	},
-		// },
+		{
+			Name:    "empty module",
+			Content: map[string]string{},
+			Expected: helper.Issues{
+				{
+					Rule:    NewTerraformKb4FileStructureRule(),
+					Message: "Module should include a _init.tf file.",
+					Range: hcl.Range{
+						Filename: "_init.tf",
+						Start:    hcl.InitialPos,
+					},
+				},
+				{
+					Rule:    NewTerraformKb4FileStructureRule(),
+					Message: "Module should include a _variables.tf file.",
+					Range: hcl.Range{
+						Filename: "_variables.tf",
+						Start:    hcl.InitialPos,
+					},
+				},
+				{
+					Rule:    NewTerraformKb4FileStructureRule(),
+					Message: "Module should include a _outputs.tf file.",
+					Range: hcl.Range{
+						Filename: "_outputs.tf",
+						Start:    hcl.InitialPos,
+					},
+				},
+			},
+		},
 		{
 			Name: "missing outputs file",
 			Content: map[string]string{
@@ -53,7 +53,7 @@ func Test_TerraformKb4ModuleStructureRule(t *testing.T) {
 			},
 			Expected: helper.Issues{
 				{
-					Rule:    NewTerraformKb4ModuleStructureRule(),
+					Rule:    NewTerraformKb4FileStructureRule(),
 					Message: "Module should include a _outputs.tf file.",
 					Range: hcl.Range{
 						Filename: filepath.Join("_outputs.tf"),
@@ -71,7 +71,7 @@ func Test_TerraformKb4ModuleStructureRule(t *testing.T) {
 			},
 			Expected: helper.Issues{
 				{
-					Rule:    NewTerraformKb4ModuleStructureRule(),
+					Rule:    NewTerraformKb4FileStructureRule(),
 					Message: "Module should include a _variables.tf file.",
 					Range: hcl.Range{
 						Filename: filepath.Join("_variables.tf"),
@@ -89,7 +89,7 @@ func Test_TerraformKb4ModuleStructureRule(t *testing.T) {
 			},
 			Expected: helper.Issues{
 				{
-					Rule:    NewTerraformKb4ModuleStructureRule(),
+					Rule:    NewTerraformKb4FileStructureRule(),
 					Message: "Module should include a _init.tf file.",
 					Range: hcl.Range{
 						Filename: filepath.Join("_init.tf"),
@@ -116,7 +116,7 @@ func Test_TerraformKb4ModuleStructureRule(t *testing.T) {
 			},
 			Expected: helper.Issues{
 				{
-					Rule:    NewTerraformKb4ModuleStructureRule(),
+					Rule:    NewTerraformKb4FileStructureRule(),
 					Message: `variable "misplace_variable" should be moved from _init.tf to _variables.tf`,
 					Range: hcl.Range{
 						Filename: "_init.tf",
@@ -132,58 +132,9 @@ func Test_TerraformKb4ModuleStructureRule(t *testing.T) {
 				},
 			},
 		},
-		///////////////
-		// {
-		// 	Name: "move output",
-		// 	Content: map[string]string{
-		// 		"main.tf":       `output "o" { value = null }`,
-		// 		"_variables.tf": "",
-		// 		"_outputs.tf":   "",
-		// 	},
-		// 	Expected: helper.Issues{
-		// 		{
-		// 			Rule:    NewTerraformKb4ModuleStructureRule(),
-		// 			Message: `output "o" should be moved from main.tf to _outputs.tf`,
-		// 			Range: hcl.Range{
-		// 				Filename: "main.tf",
-		// 				Start: hcl.Pos{
-		// 					Line:   2,
-		// 					Column: 1,
-		// 				},
-		// 				End: hcl.Pos{
-		// 					Line:   2,
-		// 					Column: 11,
-		// 				},
-		// 			},
-		// 		},
-		// 	},
-		// },
-		// {
-		// 	Name: "json only",
-		// 	Content: map[string]string{
-		// 		"main.tf.json": "{}",
-		// 	},
-		// 	Expected: helper.Issues{},
-		// },
-		// {
-		// 	Name: "json variable",
-		// 	Content: map[string]string{
-		// 		"main.tf.json": `{"variable": {"v": {}}}`,
-		// 	},
-		// 	Expected: helper.Issues{},
-		// },
-		// {
-		// 	Name: "json output",
-		// 	Content: map[string]string{
-		// 		"main.tf.json": `{"output": {"o": {"value": null}}}`,
-		// 	},
-		// 	Expected: helper.Issues{},
-		// },
-		/////////////////////
-
 	}
 
-	rule := NewTerraformKb4ModuleStructureRule()
+	rule := NewTerraformKb4FileStructureRule()
 
 	for _, tc := range cases {
 		tc := tc
