@@ -3,20 +3,18 @@ package rules
 import (
 	"fmt"
 	"log"
-	"path/filepath"
 
 	"github.com/hashicorp/hcl/v2"
+	"github.com/terraform-linters/tflint-plugin-sdk/hclext"
 	"github.com/terraform-linters/tflint-plugin-sdk/tflint"
 )
 
-const (
-	filenameMain      = "_init.tf"
-	filenameVariables = "_variables.tf"
-	filenameOutputs   = "_outputs.tf"
-)
+var EXPECTED_FILES []string = []string{"_init.tf", "_variables.tf", "_outputs.tf"}
 
 // TerraformKb4ModuleStructureRule checks whether modules adhere to Terraform's standard module structure
-type TerraformKb4ModuleStructureRule struct{}
+type TerraformKb4ModuleStructureRule struct {
+	tflint.DefaultRule
+}
 
 // NewTerraformKb4ModuleStructureRule returns a new rule
 func NewTerraformKb4ModuleStructureRule() *TerraformKb4ModuleStructureRule {
@@ -34,7 +32,7 @@ func (r *TerraformKb4ModuleStructureRule) Enabled() bool {
 }
 
 // Severity returns the rule severity
-func (r *TerraformKb4ModuleStructureRule) Severity() string {
+func (r *TerraformKb4ModuleStructureRule) Severity() tflint.Severity {
 	return tflint.ERROR
 }
 
@@ -45,13 +43,17 @@ func (r *TerraformKb4ModuleStructureRule) Link() string {
 
 // Check emits errors for any missing files and any block types that are included in the wrong file
 func (r *TerraformKb4ModuleStructureRule) Check(runner tflint.Runner) error {
-	config, _ := runner.Config()
-	if len(config.Path) > 1 {
-		// This rule does not evaluate child modules.
-		return nil
-	}
+	// if !runner {
+	// 	// This rule does not evaluate child modules.
+	// 	return nil
+	// }
+	// config, _ := runner.Config()
+	// if len(config.Path) > 1 {
+	// 	// This rule does not evaluate child modules.
+	// 	return nil
+	// }
 
-	log.Printf("[TRACE] Check `%s` rule for `%s` runner", r.Name(), config.Path)
+	log.Printf("[TRACE] Check `%s` rule", r.Name())
 
 	r.checkFiles(runner)
 	r.checkVariables(runner)
@@ -60,101 +62,81 @@ func (r *TerraformKb4ModuleStructureRule) Check(runner tflint.Runner) error {
 	return nil
 }
 
-func (r *TerraformKb4ModuleStructureRule) checkFiles(runner tflint.Runner) {
-	config, _ := runner.Config()
-	if r.onlyJSON(runner) {
-		return
+func (r *TerraformKb4ModuleStructureRule) checkFiles(runner tflint.Runner) error {
+	files, err := runner.GetFiles()
+
+	if err != nil {
+		return err
 	}
 
-	f, _ := runner.Files()
-	files := make(map[string]*hcl.File, len(f))
-	for name, file := range f {
-		files[filepath.Base(name)] = file
-	}
-
-	log.Printf("[DEBUG] %d files found: %v", len(files), files)
-
-	if files[filenameMain] == nil {
-		runner.EmitIssue(
-			r,
-			fmt.Sprintf("Module should include a %s file as the primary entrypoint", filenameMain),
-			hcl.Range{
-				Filename: filepath.Join(config.Module.SourceDir, filenameMain),
-				Start:    hcl.InitialPos,
-			},
-		)
-	}
-
-	if files[filenameVariables] == nil && len(config.Module.Variables) == 0 {
-		runner.EmitIssue(
-			r,
-			fmt.Sprintf("Module should include an empty %s file", filenameVariables),
-			hcl.Range{
-				Filename: filepath.Join(config.Module.SourceDir, filenameVariables),
-				Start:    hcl.InitialPos,
-			},
-		)
-	}
-
-	if files[filenameOutputs] == nil && len(config.Module.Outputs) == 0 {
-		runner.EmitIssue(
-			r,
-			fmt.Sprintf("Module should include an empty %s file", filenameOutputs),
-			hcl.Range{
-				Filename: filepath.Join(config.Module.SourceDir, filenameOutputs),
-				Start:    hcl.InitialPos,
-			},
-		)
-	}
-}
-
-func (r *TerraformKb4ModuleStructureRule) checkVariables(runner tflint.Runner) {
-	config, _ := runner.Config()
-	for _, variable := range config.Module.Variables {
-		if filename := variable.DeclRange.Filename; r.shouldMove(filename, filenameVariables) {
+	for _, name := range EXPECTED_FILES {
+		if files[name] == nil {
 			runner.EmitIssue(
 				r,
-				fmt.Sprintf("variable %q should be moved from %s to %s", variable.Name, filename, filenameVariables),
-				variable.DeclRange,
+				fmt.Sprintf("Module should include a %s file.", name),
+				hcl.Range{
+					Filename: name,
+					Start:    hcl.InitialPos,
+				},
 			)
 		}
 	}
+
+	return nil
 }
 
-func (r *TerraformKb4ModuleStructureRule) checkOutputs(runner tflint.Runner) {
-	config, _ := runner.Config()
-	for _, variable := range config.Module.Outputs {
-		if filename := variable.DeclRange.Filename; r.shouldMove(filename, filenameOutputs) {
+func (r *TerraformKb4ModuleStructureRule) checkVariables(runner tflint.Runner) error {
+
+	content, err := runner.GetModuleContent(&hclext.BodySchema{
+		Blocks: []hclext.BlockSchema{
+			{
+				Type:       "variable",
+				LabelNames: []string{"name"},
+			},
+		},
+	}, nil)
+
+	if err != nil {
+		return err
+	}
+
+	for _, variable := range content.Blocks {
+		if variable.DefRange.Filename != "_variables.tf" {
 			runner.EmitIssue(
 				r,
-				fmt.Sprintf("output %q should be moved from %s to %s", variable.Name, filename, filenameOutputs),
-				variable.DeclRange,
+				fmt.Sprintf("variable %q should be moved from %s to %s", variable.Labels[0], variable.DefRange.Filename, "_variables.tf"),
+				variable.DefRange,
 			)
 		}
 	}
+
+	return nil
 }
 
-func (r *TerraformKb4ModuleStructureRule) onlyJSON(runner tflint.Runner) bool {
-	files, _ := runner.Files()
+func (r *TerraformKb4ModuleStructureRule) checkOutputs(runner tflint.Runner) error {
 
-	if len(files) == 0 {
-		return false
+	content, err := runner.GetModuleContent(&hclext.BodySchema{
+		Blocks: []hclext.BlockSchema{
+			{
+				Type:       "output",
+				LabelNames: []string{"name"},
+			},
+		},
+	}, nil)
+
+	if err != nil {
+		return err
 	}
 
-	for filename := range files {
-		if filepath.Ext(filename) != ".json" {
-			return false
+	for _, variable := range content.Blocks {
+		if variable.DefRange.Filename != "_outputs.tf" {
+			runner.EmitIssue(
+				r,
+				fmt.Sprintf("variable %q should be moved from %s to %s", variable.Labels[0], variable.DefRange.Filename, "_outputs.tf"),
+				variable.DefRange,
+			)
 		}
 	}
 
-	return true
-}
-
-func (r *TerraformKb4ModuleStructureRule) shouldMove(path string, expected string) bool {
-	// json files are likely generated and conventional filenames do not apply
-	if filepath.Ext(path) == ".json" {
-		return false
-	}
-
-	return filepath.Base(path) != expected
+	return nil
 }

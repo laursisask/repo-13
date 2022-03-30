@@ -29,12 +29,26 @@ func Test_TerraformDocumentedVariablesRule(t *testing.T) {
 			},
 		},
 		// 		{
-		// 			Name: "bool doesnt need validations",
-		// 			Content: `variable "as_bool" {
-		//   type = bool
+		// 			Name: "complex type",
+		// 			Content: `
+		// variable "no_type2" {
+		//   type = any
 		// }`,
 		// 			Expected: helper.Issues{},
 		// 		},
+		// 		{
+		// 			Name: "no validation",
+		// 			Content: `
+		// variable "no_validation" {
+		// 	validation {
+		// 		condition     = true
+		// 		error_message = "Variable missing some test thing."
+		// 	}
+		// }
+		// `,
+		// 			Expected: helper.Issues{},
+		// 		},
+
 	}
 
 	rule := NewTerraformValidatedVariablesRule()
