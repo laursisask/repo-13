@@ -34,7 +34,7 @@ func (r *TerraformValidatedVariablesRule) Severity() tflint.Severity {
 
 // Link returns the rule reference link
 func (r *TerraformValidatedVariablesRule) Link() string {
-	return ""
+	return "https://engineering.internal.knowbe4.com/style/terraform/#validation"
 }
 
 // Check checks whether variables have descriptions

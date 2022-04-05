@@ -38,7 +38,7 @@ func (r *TerraformKb4FileStructureRule) Severity() tflint.Severity {
 
 // Link returns the rule reference link
 func (r *TerraformKb4FileStructureRule) Link() string {
-	return ""
+	return "https://engineering.internal.knowbe4.com/style/terraform/#standard-files-names-and-usage"
 }
 
 // Check emits errors for any missing files and any block types that are included in the wrong file
