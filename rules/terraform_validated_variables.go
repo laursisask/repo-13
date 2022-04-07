@@ -3,7 +3,7 @@ package rules
 import (
 	"fmt"
 
-	"github.com/terraform-linters/tflint-plugin-sdk/hclext"
+	"github.com/hashicorp/hcl/v2"
 	"github.com/terraform-linters/tflint-plugin-sdk/tflint"
 )
 
@@ -40,38 +40,105 @@ func (r *TerraformValidatedVariablesRule) Link() string {
 // Check checks whether variables have descriptions
 func (r *TerraformValidatedVariablesRule) Check(runner tflint.Runner) error {
 
-	content, err := runner.GetModuleContent(&hclext.BodySchema{
-		Blocks: []hclext.BlockSchema{
-			{
-				Type:       "variable",
-				LabelNames: []string{"validation"},
-			},
-		},
-	}, nil)
+	files, _ := runner.GetFiles()
 
-	if err != nil {
-		return err
+	for filename := range files {
+		r.checkFileSchema(runner, files[filename])
 	}
 
-	for _, variable := range content.Blocks {
+	// content, err := runner.GetModuleContent(&hclext.BodySchema{
+	// 	Blocks: []hclext.BlockSchema{
+	// 		{
+	// 			Type:       "variable",
+	// 			LabelNames: []string{"name"},
+	// 		},
+	// 	},
+	// }, nil)
 
-		// _, type_exists := variable.Body.Attributes["type"]
+	// if err != nil {
+	// 	return err
+	// }
 
-		// if !type_exists {
-		// 	runner.EmitIssue(
-		// 		r,
-		// 		fmt.Sprintf("`%s` variable has no type specified. Please include the type when specifying variables.", variable.Labels[0]),
-		// 		variable.DefRange,
-		// 	)
-		// }
+	// for _, block := range content.Blocks.OfType("variable") {
+	// 	_, _, diags := block.Body.PartialContent(&hcl.BodySchema{
+	// 		Attributes: []hcl.AttributeSchema{
+	// 			{
+	// 				Name:     "type",
+	// 				Required: true,
+	// 			},
+	// 		},
+	// 	})
 
-		_, validation_exists := variable.Body.Attributes["validation"]
+	// 	if diags.HasErrors() {
+	// 		runner.EmitIssue(
+	// 			r,
+	// 			fmt.Sprintf("`%v` variable has no type", block.Labels[0]),
+	// 			block.DefRange,
+	// 		)
+	// 	}
+	// }
 
-		if !validation_exists {
+	// for _, variable := range content.Blocks {
+
+	// 	runner.EmitIssue(
+	// 		r,
+	// 		fmt.Sprintf("%+v.", variable.Labels),
+	// 		variable.DefRange,
+	// 	)
+
+	// 	// _, type_exists := variable.Body.Attributes["type"]
+
+	// 	// if !type_exists {
+	// 	// 	runner.EmitIssue(
+	// 	// 		r,
+	// 	// 		fmt.Sprintf("`%s` variable has no type specified. Please include the type when specifying variables.", variable.Labels[0]),
+	// 	// 		variable.DefRange,
+	// 	// 	)
+	// 	// }
+
+	// 	// _, validation_exists := variable.Body.Attributes["validation"]
+
+	// 	// if !validation_exists {
+	// 	// 	runner.EmitIssue(
+	// 	// 		r,
+	// 	// 		fmt.Sprintf("`%s` variable has no validations. Please include at least 1 validation for types that are not a bool.", variable.Labels[0]),
+	// 	// 		variable.DefRange,
+	// 	// 	)
+	// 	// }
+	// }
+
+	return nil
+}
+
+func (r *TerraformValidatedVariablesRule) checkFileSchema(runner tflint.Runner, file *hcl.File) error {
+
+	content, _, diags := file.Body.PartialContent(&hcl.BodySchema{
+		Blocks: []hcl.BlockHeaderSchema{
+			{
+				Type:       "variable",
+				LabelNames: []string{"name"},
+			},
+		},
+	})
+
+	if diags.HasErrors() {
+		return diags
+	}
+
+	for _, block := range content.Blocks.OfType("variable") {
+		c, _, _ := block.Body.PartialContent(&hcl.BodySchema{
+			Blocks: []hcl.BlockHeaderSchema{
+				{
+					Type: "validation",
+				},
+			},
+		})
+
+		if len(c.Blocks) == 0 {
 			runner.EmitIssue(
 				r,
-				fmt.Sprintf("`%s` variable has no validations. Please include at least 1 validation for types that are not a bool.", variable.Labels[0]),
-				variable.DefRange,
+				fmt.Sprintf("`%v` variable has no validations. Please include at least 1 validation for types that are not a bool.", block.Labels[0]),
+				block.DefRange,
 			)
 		}
 	}

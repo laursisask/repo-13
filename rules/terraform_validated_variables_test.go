@@ -3,7 +3,7 @@ package rules
 import (
 	"testing"
 
-	hcl "github.com/hashicorp/hcl/v2"
+	"github.com/hashicorp/hcl/v2"
 	"github.com/terraform-linters/tflint-plugin-sdk/helper"
 )
 
@@ -28,27 +28,17 @@ func Test_TerraformDocumentedVariablesRule(t *testing.T) {
 				},
 			},
 		},
-		// 		{
-		// 			Name: "complex type",
-		// 			Content: `
-		// variable "no_type2" {
-		//   type = any
-		// }`,
-		// 			Expected: helper.Issues{},
-		// 		},
-		// 		{
-		// 			Name: "no validation",
-		// 			Content: `
-		// variable "no_validation" {
-		// 	validation {
-		// 		condition     = true
-		// 		error_message = "Variable missing some test thing."
-		// 	}
-		// }
-		// `,
-		// 			Expected: helper.Issues{},
-		// 		},
-
+		{
+			Name: "has validation",
+			Content: `
+variable "has_validation" {
+	validation {
+		condition = var.has_validation == "true"
+		error_message = "This variable must be the string true."
+	}
+}`,
+			Expected: helper.Issues{},
+		},
 	}
 
 	rule := NewTerraformValidatedVariablesRule()
