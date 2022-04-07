@@ -110,6 +110,32 @@ func (r *TerraformValidatedVariablesRule) Check(runner tflint.Runner) error {
 	return nil
 }
 
+func (r *TerraformValidatedVariablesRule) isIgnoredType(block *hcl.Block) bool {
+
+	body, _, _ := block.Body.PartialContent(&hcl.BodySchema{
+		Attributes: []hcl.AttributeSchema{
+			{
+				Name:     "type",
+				Required: true,
+			},
+		},
+	})
+
+	// Traversal
+	_, has_type := body.Attributes["type"]
+
+	if has_type {
+		for _, trav := range body.Attributes["type"].Expr.Variables() {
+			if trav.RootName() == "bool" {
+				return true
+			}
+		}
+
+	}
+
+	return false
+}
+
 func (r *TerraformValidatedVariablesRule) checkFileSchema(runner tflint.Runner, file *hcl.File) error {
 
 	content, _, diags := file.Body.PartialContent(&hcl.BodySchema{
@@ -126,6 +152,10 @@ func (r *TerraformValidatedVariablesRule) checkFileSchema(runner tflint.Runner, 
 	}
 
 	for _, block := range content.Blocks.OfType("variable") {
+		if r.isIgnoredType(block) {
+			continue
+		}
+
 		c, _, _ := block.Body.PartialContent(&hcl.BodySchema{
 			Blocks: []hcl.BlockHeaderSchema{
 				{

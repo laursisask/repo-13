@@ -31,11 +31,19 @@ func Test_TerraformDocumentedVariablesRule(t *testing.T) {
 		{
 			Name: "has validation",
 			Content: `
-variable "has_validation" {
-	validation {
-		condition = var.has_validation == "true"
-		error_message = "This variable must be the string true."
-	}
+		variable "has_validation" {
+			validation {
+				condition = var.has_validation == "true"
+				error_message = "This variable must be the string true."
+			}
+		}`,
+			Expected: helper.Issues{},
+		},
+		{
+			Name: "no validation but ignored type",
+			Content: `
+variable "no_validation_ignore" {
+	type = bool
 }`,
 			Expected: helper.Issues{},
 		},
