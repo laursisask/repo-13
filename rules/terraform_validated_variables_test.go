@@ -14,6 +14,11 @@ func Test_TerraformDocumentedVariablesRule(t *testing.T) {
 		Expected helper.Issues
 	}{
 		{
+			Name:     "krn ignored",
+			Content:  `variable "krn" {}`,
+			Expected: helper.Issues{},
+		},
+		{
 			Name:    "no validation",
 			Content: `variable "no_validation" {}`,
 			Expected: helper.Issues{

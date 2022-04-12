@@ -112,6 +112,10 @@ func (r *TerraformValidatedVariablesRule) Check(runner tflint.Runner) error {
 
 func (r *TerraformValidatedVariablesRule) isIgnoredType(block *hcl.Block) bool {
 
+	if block.Labels[0] == "krn" {
+		return true
+	}
+
 	body, _, _ := block.Body.PartialContent(&hcl.BodySchema{
 		Attributes: []hcl.AttributeSchema{
 			{
