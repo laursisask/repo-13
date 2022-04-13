@@ -38,21 +38,11 @@ func (r *TerraformKb4FileStructureRule) Severity() tflint.Severity {
 
 // Link returns the rule reference link
 func (r *TerraformKb4FileStructureRule) Link() string {
-	return "https://engineering.internal.knowbe4.com/style/terraform/#standard-files-names-and-usage"
+	return "https://engineering.internal.knowbe4.com/tech-stack/terraform/style-guide/#standard-files-names-and-usage"
 }
 
 // Check emits errors for any missing files and any block types that are included in the wrong file
 func (r *TerraformKb4FileStructureRule) Check(runner tflint.Runner) error {
-	// if !runner {
-	// 	// This rule does not evaluate child modules.
-	// 	return nil
-	// }
-	// config, _ := runner.Config()
-	// if len(config.Path) > 1 {
-	// 	// This rule does not evaluate child modules.
-	// 	return nil
-	// }
-
 	log.Printf("[TRACE] Check `%s` rule", r.Name())
 
 	r.checkFiles(runner)

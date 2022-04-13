@@ -34,7 +34,7 @@ func (r *TerraformValidatedVariablesRule) Severity() tflint.Severity {
 
 // Link returns the rule reference link
 func (r *TerraformValidatedVariablesRule) Link() string {
-	return "https://engineering.internal.knowbe4.com/style/terraform/#validation"
+	return "https://engineering.internal.knowbe4.com/tech-stack/terraform/style-guide/#validation"
 }
 
 // Check checks whether variables have descriptions
@@ -46,72 +46,12 @@ func (r *TerraformValidatedVariablesRule) Check(runner tflint.Runner) error {
 		r.checkFileSchema(runner, files[filename])
 	}
 
-	// content, err := runner.GetModuleContent(&hclext.BodySchema{
-	// 	Blocks: []hclext.BlockSchema{
-	// 		{
-	// 			Type:       "variable",
-	// 			LabelNames: []string{"name"},
-	// 		},
-	// 	},
-	// }, nil)
-
-	// if err != nil {
-	// 	return err
-	// }
-
-	// for _, block := range content.Blocks.OfType("variable") {
-	// 	_, _, diags := block.Body.PartialContent(&hcl.BodySchema{
-	// 		Attributes: []hcl.AttributeSchema{
-	// 			{
-	// 				Name:     "type",
-	// 				Required: true,
-	// 			},
-	// 		},
-	// 	})
-
-	// 	if diags.HasErrors() {
-	// 		runner.EmitIssue(
-	// 			r,
-	// 			fmt.Sprintf("`%v` variable has no type", block.Labels[0]),
-	// 			block.DefRange,
-	// 		)
-	// 	}
-	// }
-
-	// for _, variable := range content.Blocks {
-
-	// 	runner.EmitIssue(
-	// 		r,
-	// 		fmt.Sprintf("%+v.", variable.Labels),
-	// 		variable.DefRange,
-	// 	)
-
-	// 	// _, type_exists := variable.Body.Attributes["type"]
-
-	// 	// if !type_exists {
-	// 	// 	runner.EmitIssue(
-	// 	// 		r,
-	// 	// 		fmt.Sprintf("`%s` variable has no type specified. Please include the type when specifying variables.", variable.Labels[0]),
-	// 	// 		variable.DefRange,
-	// 	// 	)
-	// 	// }
-
-	// 	// _, validation_exists := variable.Body.Attributes["validation"]
-
-	// 	// if !validation_exists {
-	// 	// 	runner.EmitIssue(
-	// 	// 		r,
-	// 	// 		fmt.Sprintf("`%s` variable has no validations. Please include at least 1 validation for types that are not a bool.", variable.Labels[0]),
-	// 	// 		variable.DefRange,
-	// 	// 	)
-	// 	// }
-	// }
-
 	return nil
 }
 
 func (r *TerraformValidatedVariablesRule) isIgnoredType(block *hcl.Block) bool {
 
+	// We ignore krn
 	if block.Labels[0] == "krn" {
 		return true
 	}
@@ -130,6 +70,7 @@ func (r *TerraformValidatedVariablesRule) isIgnoredType(block *hcl.Block) bool {
 
 	if has_type {
 		for _, trav := range body.Attributes["type"].Expr.Variables() {
+			// Ignore bool types because it doesnt make sense to validate them
 			if trav.RootName() == "bool" {
 				return true
 			}
