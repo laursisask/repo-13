@@ -1,22 +1,36 @@
-# This is an example goreleaser.yaml file with some sane defaults.
-# Make sure to check the documentation at http://goreleaser.com
+project_name: tflint-ruleset-kb4
+
 env:
   - CGO_ENABLED=0
+
 builds:
-  - goos:
-      - linux
+  -
+    goos:
       - darwin
+      - linux
+      - windows
     goarch:
       - amd64
       - arm64
+
+checksum:
+  name_template: "checksums.txt"
+
+signs:
+  - artifacts: checksum
+    # cmd: gpg2
+    stdin: '{{ .Env.PASSPHRASE }}'
+    args: ["--batch", "-u", "{{ .Env.GPG_FINGERPRINT }}", "--output", "${signature}", "--detach-sign", "${artifact}"]
+
 archives:
   - id: zip
     name_template: "{{ .ProjectName }}_{{ .Os }}_{{ .Arch }}"
     format: zip
     files:
       - none*
-# checksum:
-#   name_template: 'checksums.txt'
-# signs:
-#   - artifacts: checksum
-#     args: ["--batch", "-u", "{{ .Env.GPG_FINGERPRINT }}", "--output", "${signature}", "--detach-sign", "${artifact}"]
+
+release:
+  draft: false
+  # You can change the name of the release.
+  # Default is `{{.Tag}}` on OSS and `{{.PrefixedTag}}` on Pro.
+  name_template: "{{.ProjectName}}-v{{.Version}} {{.Env.USER}}"
