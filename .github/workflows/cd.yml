@@ -1,0 +1,110 @@
+name: Continuous Deployment
+
+on:
+  push:
+    branches:
+      - main
+
+env:
+  LOCAL_TAG: dwolla/jenkins-agent-docker:local
+
+jobs:
+  build-and-push:
+    name: Build, test, and publish images
+    runs-on: windows-2019
+    outputs:
+      git-tag: ${{ steps.get-versions.outputs.git-tag }}
+    strategy:
+      max-parallel: 2
+      matrix:
+        jdk: [8, 11]
+        include:
+        - jdk: 8
+          dockerfile: 8/windows/nanoserver-1809/Dockerfile
+          tag_suffix: nanoserver-1809-amd64
+          context: '.'
+        - jdk: 11
+          dockerfile: 11/windows/nanoserver-1809/Dockerfile
+          tag_suffix: nanoserver-1809-amd64
+          context: '.'
+    steps:
+      - name: Checkout current branch
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build Docker image
+        run: |
+          docker build -t ${{ env.LOCAL_TAG }} --file ${{ matrix.dockerfile }} ${{ matrix.context }}
+
+      - name: Get versions
+        uses: actions/github-script@v6
+        id: get-versions
+        with:
+          script: |
+            const fs = require('fs')
+
+            const dockerfile = fs.readFileSync(`${process.env.GITHUB_WORKSPACE}/${{ matrix.dockerfile }}`, 'utf8').trim()
+            const docker_from_instruction_regex = /^(?:FROM\s+)(?<repository>[\w.\-_]+((?:\:\d+|)(?=\/[a-z0-9._-]+\/[a-z0-9._-]+))|)(?:\/|)(?<image>[a-z0-9.\-_]+(?:\/[a-z0-9.\-_]+|))(:(?<tag>[\w.\-_]{1,127})|)$/gmi
+            const base_image_tag = [...dockerfile.matchAll(docker_from_instruction_regex)].at(-1).groups.tag;
+
+            const docker_tag_regex = /^(?<version>\d+\.\d+-\d+)-(?<jdk>jdk\d+)-(?<base>.*$)/i
+            const tag_versions = base_image_tag.match(docker_tag_regex)
+
+            const revision = fs.readFileSync(`${process.env.GITHUB_WORKSPACE}/revision.txt`)
+
+            core.setOutput('git-tag', `v${tag_versions.groups.version}-${revision}`)
+            core.setOutput('docker-tag', `dwolla/jenkins-agent-docker:${tag_versions.groups.version}-${revision}-${tag_versions.groups.jdk}-${{ matrix.tag_suffix }}`)
+
+      - name: Push Docker image
+        run: |
+          if (! (docker manifest inspect ${{ steps.get-versions.outputs.docker-tag }}))
+          {
+            Write-Output "Docker tag ${{ steps.get-versions.outputs.docker-tag }} does not exist, publishing."
+            docker tag ${{ env.LOCAL_TAG }} ${{ steps.get-versions.outputs.docker-tag }}
+            docker push ${{ steps.get-versions.outputs.docker-tag }}
+          } 
+          else
+          {
+            Write-Output "Docker tag already exists: ${{ steps.get-versions.outputs.docker-tag }}. Please increment revision.txt."
+            exit 1
+          }
+
+  create-tag:
+    name: Create tag
+    runs-on: ubuntu-latest
+    needs: build-and-push
+    steps:
+      - name: Create tag
+        uses: actions/github-script@v6
+        with:
+          script: |
+            try {
+              const resp = await github.rest.git.getRef({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                ref: 'tags/${{ needs.build-and-push.outputs.git-tag }}',
+              });
+              return core.setFailed("Tag already exists: ${{ needs.build-and-push.outputs.git-tag }}. Please increment revision.txt.");
+            } catch (error) {
+                if (error.status === 404) {
+                  github.rest.git.createRef({
+                    owner: context.repo.owner,
+                    repo: context.repo.repo,
+                    ref: 'refs/tags/${{ needs.build-and-push.outputs.git-tag }}',
+                    sha: context.sha
+                  })
+
+                  core.info("Git tag ${{ needs.build-and-push.outputs.git-tag }} does not exist, publishing.")
+                } else {
+                  throw error;
+                }
+            }
+
+            
