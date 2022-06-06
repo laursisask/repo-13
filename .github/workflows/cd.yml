@@ -21,11 +21,11 @@ jobs:
         include:
         - jdk: 8
           dockerfile: 8/windows/nanoserver-1809/Dockerfile
-          tag_suffix: nanoserver-1809-amd64
+          tag_suffixes: '["-jdk8-nanoserver-1809-amd64"]'
           context: '.'
         - jdk: 11
           dockerfile: 11/windows/nanoserver-1809/Dockerfile
-          tag_suffix: nanoserver-1809-amd64
+          tag_suffixes: '["", "-jdk11-nanoserver-1809-amd64"]'
           context: '.'
     steps:
       - name: Checkout current branch
@@ -59,21 +59,25 @@ jobs:
 
             const revision = fs.readFileSync(`${process.env.GITHUB_WORKSPACE}/revision.txt`)
 
+            core.info('${{ matrix.tag_suffixes }}')
+
             core.setOutput('git-tag', `v${tag_versions.groups.version}-${revision}`)
-            core.setOutput('docker-tag', `dwolla/jenkins-agent-docker:${tag_versions.groups.version}-${revision}-${tag_versions.groups.jdk}-${{ matrix.tag_suffix }}`)
+            core.setOutput('docker-tags', ${{ matrix.tag_suffixes }}.map(s => `dwolla/jenkins-agent-docker:${tag_versions.groups.version}-${revision}${s}`))
 
       - name: Push Docker image
         run: |
-          if (! (docker manifest inspect ${{ steps.get-versions.outputs.docker-tag }}))
-          {
-            Write-Output "Docker tag ${{ steps.get-versions.outputs.docker-tag }} does not exist, publishing."
-            docker tag ${{ env.LOCAL_TAG }} ${{ steps.get-versions.outputs.docker-tag }}
-            docker push ${{ steps.get-versions.outputs.docker-tag }}
-          } 
-          else
-          {
-            Write-Output "Docker tag already exists: ${{ steps.get-versions.outputs.docker-tag }}. Please increment revision.txt."
-            exit 1
+          '${{ steps.get-versions.outputs.docker-tags }}' | ConvertFrom-Json | foreach {
+            if (! (docker manifest inspect $_))
+            {
+              Write-Output "Docker tag $_ does not exist, publishing."
+              docker tag ${{ env.LOCAL_TAG }} $_
+              docker push $_
+            } 
+            else
+            {
+              Write-Output "Docker tag already exists: $_. Please increment revision.txt."
+              exit 1
+            }
           }
 
   create-tag:
