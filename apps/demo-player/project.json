@@ -1,0 +1,80 @@
+{
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "projectType": "application",
+  "sourceRoot": "apps/demo-player/src",
+  "tags": [],
+  "targets": {
+    "build": {
+      "executor": "@nrwl/web:webpack",
+      "outputs": [
+        "{options.outputPath}"
+      ],
+      "defaultConfiguration": "production",
+      "options": {
+        "outputPath": "dist/apps/demo-player",
+        "compiler": "babel",
+        "index": "apps/demo-player/src/index.html",
+        "baseHref": "/",
+        "main": "apps/demo-player/src/main.ts",
+        "polyfills": "apps/demo-player/src/polyfills.ts",
+        "tsConfig": "apps/demo-player/tsconfig.app.json",
+        "assets": [
+          "apps/demo-player/src/favicon.ico",
+          "apps/demo-player/src/assets"
+        ],
+        "styles": [
+          "apps/demo-player/src/styles.scss"
+        ],
+        "scripts": []
+      },
+      "configurations": {
+        "production": {
+          "fileReplacements": [
+            {
+              "replace": "apps/demo-player/src/environments/environment.ts",
+              "with": "apps/demo-player/src/environments/environment.prod.ts"
+            }
+          ],
+          "optimization": true,
+          "outputHashing": "all",
+          "sourceMap": false,
+          "namedChunks": false,
+          "extractLicenses": true,
+          "vendorChunk": false
+        }
+      }
+    },
+    "serve": {
+      "executor": "@nrwl/web:dev-server",
+      "options": {
+        "buildTarget": "demo-player:build"
+      },
+      "configurations": {
+        "production": {
+          "buildTarget": "demo-player:build:production"
+        }
+      }
+    },
+    "lint": {
+      "executor": "@nrwl/linter:eslint",
+      "outputs": [
+        "{options.outputFile}"
+      ],
+      "options": {
+        "lintFilePatterns": [
+          "apps/demo-player/**/*.ts"
+        ]
+      }
+    },
+    "test": {
+      "executor": "@nrwl/jest:jest",
+      "outputs": [
+        "coverage/apps/demo-player"
+      ],
+      "options": {
+        "jestConfig": "apps/demo-player/jest.config.ts",
+        "passWithNoTests": true
+      }
+    }
+  }
+}

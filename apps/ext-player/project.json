@@ -1,0 +1,94 @@
+{
+  "projectType": "application",
+  "sourceRoot": "apps/ext-player/src",
+  "prefix": "immutable",
+  "targets": {
+    "build": {
+      "executor": "@angular-devkit/build-angular:browser",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/apps/ext-player",
+        "index": "apps/ext-player/src/index.html",
+        "main": "apps/ext-player/src/main.ts",
+        "polyfills": "apps/ext-player/src/polyfills.ts",
+        "tsConfig": "apps/ext-player/tsconfig.app.json",
+        "inlineStyleLanguage": "scss",
+        "assets": [
+          "apps/ext-player/src/favicon.ico",
+          "apps/ext-player/src/assets",
+          "apps/ext-player/src/manifest.json"
+        ],
+        "styles": ["apps/ext-player/src/styles.scss"],
+        "scripts": []
+      },
+      "configurations": {
+        "production": {
+          "budgets": [
+            {
+              "type": "initial",
+              "maximumWarning": "500kb",
+              "maximumError": "1mb"
+            },
+            {
+              "type": "anyComponentStyle",
+              "maximumWarning": "2kb",
+              "maximumError": "4kb"
+            }
+          ],
+          "fileReplacements": [
+            {
+              "replace": "apps/ext-player/src/environments/environment.ts",
+              "with": "apps/ext-player/src/environments/environment.prod.ts"
+            }
+          ],
+          "outputHashing": "all"
+        },
+        "development": {
+          "buildOptimizer": false,
+          "optimization": false,
+          "vendorChunk": true,
+          "extractLicenses": false,
+          "sourceMap": true,
+          "namedChunks": true
+        }
+      },
+      "defaultConfiguration": "production"
+    },
+    "serve": {
+      "executor": "@angular-devkit/build-angular:dev-server",
+      "configurations": {
+        "production": {
+          "browserTarget": "ext-player:build:production"
+        },
+        "development": {
+          "browserTarget": "ext-player:build:development"
+        }
+      },
+      "defaultConfiguration": "development"
+    },
+    "extract-i18n": {
+      "executor": "@angular-devkit/build-angular:extract-i18n",
+      "options": {
+        "browserTarget": "ext-player:build"
+      }
+    },
+    "lint": {
+      "executor": "@nrwl/linter:eslint",
+      "options": {
+        "lintFilePatterns": [
+          "apps/ext-player/**/*.ts",
+          "apps/ext-player/**/*.html"
+        ]
+      }
+    },
+    "test": {
+      "executor": "@nrwl/jest:jest",
+      "outputs": ["coverage/apps/ext-player"],
+      "options": {
+        "jestConfig": "apps/ext-player/jest.config.ts",
+        "passWithNoTests": true
+      }
+    }
+  },
+  "tags": []
+}

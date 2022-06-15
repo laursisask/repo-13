@@ -1,0 +1,10 @@
+{
+  "name": "Great Extension",
+  "version": "1.0",
+  "description": "Build an Extension with Angular",
+  "manifest_version": 3,
+  "action": {
+    // this is the popup where click on the extension icon
+    "default_popup": "index.html"
+  }
+}

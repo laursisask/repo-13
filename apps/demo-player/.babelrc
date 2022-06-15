@@ -1,0 +1,6 @@
+{
+  "presets": [
+    "@nrwl/web/babel"
+  ],
+  // "plugins": ["@babel/plugin-proposal-decorators", { "legacy": true }]
+}

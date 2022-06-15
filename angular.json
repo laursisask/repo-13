@@ -1,0 +1,11 @@
+{
+  "$schema": "./node_modules/nx/schemas/workspace-schema.json",
+  "version": 2,
+  "projects": {
+    "demo-player": "apps/demo-player",
+    "demo-player-e2e": "apps/demo-player-e2e",
+    "ext-player": "apps/ext-player",
+    "ext-player-e2e": "apps/ext-player-e2e",
+    "gu-player": "libs/gu-player"
+  }
+}
