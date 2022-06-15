@@ -1,6 +1,6 @@
 {
   "name": "@imtbl/gu-animator",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Gods Unchained animation system",
   "license": "UNLICENSED",
   "author": "immutable",
@@ -13,9 +13,5 @@
     "type": "git",
     "url": "https://github.com/immutable/gu-player.git",
     "directory": "packages/gu-player"
-  },
-  "publishConfig": {
-    "access": "restricted",
-    "registry": "https://npm.pkg.github.com/"
   }
 }
