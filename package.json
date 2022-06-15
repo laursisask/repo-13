@@ -54,7 +54,7 @@
     "eslint-plugin-cypress": "^2.10.3",
     "jest": "27.5.1",
     "jest-preset-angular": "11.1.2",
-    "nx": "14.3.1",
+    "nx": "14.3.2",
     "prettier": "2.7.0",
     "ts-jest": "27.1.4",
     "ts-node": "10.8.1",
