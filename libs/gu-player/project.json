@@ -9,7 +9,7 @@
         "{options.outputPath}"
       ],
       "options": {
-        "outputPath": "dist/libs/gu-player",
+        "outputPath": "packages/gu-player",
         "main": "libs/gu-player/src/index.ts",
         "tsConfig": "libs/gu-player/tsconfig.lib.json",
         "assets": [
