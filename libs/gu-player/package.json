@@ -1,4 +1,22 @@
 {
-  "name": "@immutable/gu-player",
-  "version": "0.0.1"
+  "name": "@imtbl/gu-animator",
+  "version": "0.0.1",
+  "description": "Gods Unchained animation system",
+  "private": true,
+  "license": "UNLICENSED",
+  "author": "immutable",
+  "url" : "https://www.immutable.com/",
+  "homepage": "https://github.com/immutable/gu-player",
+  "bugs": {
+    "url": "https://github.com/immutable/gu-player/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/immutable/gu-player.git",
+    "directory": "dist/libs/gu-player"
+  },
+  "publishConfig": {
+    "access": "restricted",
+    "registry": "https://npm.pkg.github.com/"
+  }
 }
