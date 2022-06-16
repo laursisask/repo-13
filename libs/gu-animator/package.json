@@ -5,13 +5,13 @@
   "license":"UNLICENSED",
   "author":"immutable",
   "url":"https://www.immutable.com/",
-  "homepage":"https://github.com/immutable/gu-player",
+  "homepage":"https://github.com/immutable/gu-animator",
   "bugs":{
-    "url":"https://github.com/immutable/gu-player/issues"
+    "url":"https://github.com/immutable/gu-animator/issues"
   },
   "repository":{
     "type":"git",
-    "url":"https://github.com/immutable/gu-player.git",
+    "url":"https://github.com/immutable/gu-animator.git",
     "directory":"packages/gu-animator"
   }
 }

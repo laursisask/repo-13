@@ -19,7 +19,7 @@ export class AppElement extends HTMLElement {
           </h1>
         </div>
 
-        <gu-player src="assets/data.json"></gu-player>
+        <gu-animator src="assets/data.json"></gu-animator>
       </div>
     </div>
       `;

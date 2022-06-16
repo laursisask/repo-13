@@ -1,1 +1,1 @@
-export { GuPlayer } from './lib/gu-player';
+export { GuAnimator } from './lib/gu-animator';

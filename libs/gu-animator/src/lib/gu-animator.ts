@@ -2,8 +2,8 @@ import { css, html, LitElement } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
 
 // Registers the element
-@customElement('gu-player')
-export class GuPlayer extends LitElement {
+@customElement('gu-animator')
+export class GuAnimator extends LitElement {
 
     // Creates a reactive property that triggers rendering
     @property()
@@ -37,7 +37,7 @@ export class GuPlayer extends LitElement {
 
 declare global {
     interface HTMLElementTagNameMap {
-        'gu-player': GuPlayer;
+        'gu-animator': GuAnimator;
     }
 }
 
