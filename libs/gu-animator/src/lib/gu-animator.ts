@@ -1,16 +1,22 @@
 import { css, html, LitElement } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
 
+
+export interface LoadedEvent {
+    label: string;
+    date: string;
+    target: GuAnimator
+}
+
+
 // Registers the element
 @customElement('gu-animator')
 export class GuAnimator extends LitElement {
 
-    // Creates a reactive property that triggers rendering
-    @property()
-    public mood = 'great';
-
     @property()
     public src = '';
+
+    private loadedSrc = '';
 
     static override get styles() {
         return css`
@@ -29,8 +35,32 @@ export class GuAnimator extends LitElement {
     // 2 - Load the JSON and parse into Animation instances
     // 3 - Create a Controller class
     // 4 - Orchestrate the Animation instances via the Controller class
+    loadAnimation(url: string) {
+        // TODO: Pass url to an instance of Parser class return a Promise?
+
+        // Mark as loaded
+        this.loadedSrc = url;
+        const event = new CustomEvent<LoadedEvent>('loaded', {
+            detail: {
+                label: 'loaded',
+                date: new Date().toISOString(),
+                target: this,
+            }
+        });
+        this.dispatchEvent(event);
+    }
+
+    getController() {
+        // TODO: Return instance of Controller for playback
+        return 'hello world';
+    }
 
     override render() {
+        // Auto load the gu-animator src attribute
+        if (this.src && this.loadedSrc != this.src) {
+            this.loadAnimation(this.src);
+        }
+
         return html`GU Animator: <span>${this.src}</span>`;
     }
 }

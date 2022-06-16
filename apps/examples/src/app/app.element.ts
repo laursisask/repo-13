@@ -1,14 +1,17 @@
 import './app.element.scss';
 import '@immutable/gu-animator';
+import { html, LitElement } from 'lit';
+import { customElement, property } from 'lit/decorators.js';
 
-export class AppElement extends HTMLElement {
-  public static observedAttributes = [
+@customElement('animator-examples')
+export class AppElement extends LitElement {
+  onLoaded(event) {
+    console.log('nada', event);
+  }
 
-  ];
-
-  connectedCallback() {
+  override render() {
     const title = 'GU Animator examples';
-    this.innerHTML = `
+    return html`
     <div class="wrapper">
       <div class="container">
         <!--  WELCOME  -->
@@ -19,10 +22,9 @@ export class AppElement extends HTMLElement {
           </h1>
         </div>
 
-        <gu-animator src="assets/data.json"></gu-animator>
+        <gu-animator src="assets/data.json" @loaded=${this.onLoaded}></gu-animator>
       </div>
     </div>
       `;
   }
 }
-customElements.define('immutable-root', AppElement);

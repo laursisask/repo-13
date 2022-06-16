@@ -1,6 +1,6 @@
 {
   "name": "@immutable/gu-animator",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "Gods Unchained animation system",
   "license": "UNLICENSED",
   "author": "immutable",
@@ -21,7 +21,7 @@
   "typings": "./src/index.d.ts",
   "dependencies": {},
   "peerDependencies": {
-    "lit": "^2.2.5",
+    "lit": "^2.2.6",
     "tslib": "^2.0.0"
   }
 }
