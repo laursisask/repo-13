@@ -62,5 +62,5 @@
       "unitTestRunner": "jest"
     }
   },
-  "defaultProject": "ext-player"
+  "defaultProject": "ext-animator"
 }

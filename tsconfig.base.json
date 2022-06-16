@@ -18,8 +18,8 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
-      "@immutable/gu-player": [
-        "libs/gu-player/src/index.ts"
+      "@immutable/gu-animator": [
+        "libs/gu-animator/src/index.ts"
       ]
     }
   },

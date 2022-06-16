@@ -2,10 +2,10 @@
   "$schema": "./node_modules/nx/schemas/workspace-schema.json",
   "version": 2,
   "projects": {
-    "demo-player": "apps/demo-player",
-    "demo-player-e2e": "apps/demo-player-e2e",
-    "ext-player": "apps/ext-player",
-    "ext-player-e2e": "apps/ext-player-e2e",
-    "gu-player": "libs/gu-player"
+    "examples": "apps/examples",
+    "examples-e2e": "apps/examples-e2e",
+    "ext-animator": "apps/ext-animator",
+    "ext-animator-e2e": "apps/ext-animator-e2e",
+    "gu-animator": "libs/gu-animator"
   }
 }
