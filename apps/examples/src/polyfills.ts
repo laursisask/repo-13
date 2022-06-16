@@ -4,4 +4,5 @@
  * See: https://github.com/zloirock/core-js#babel
  */
 import 'core-js/stable';
+import 'core-js/features/reflect';
 import 'regenerator-runtime/runtime';

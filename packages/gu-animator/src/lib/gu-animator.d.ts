@@ -1,15 +1,24 @@
 import { LitElement } from 'lit';
+import { GuController } from './controller/gu-controller';
 export interface LoadedEvent {
-    label: string;
     date: string;
+    target: GuAnimator;
+}
+export interface ErrorEvent {
+    error: any;
+    message: string;
     target: GuAnimator;
 }
 export declare class GuAnimator extends LitElement {
     src: string;
-    private loadedSrc;
+    private container;
+    private currentSrc;
+    private controller;
     static get styles(): import("lit").CSSResult;
-    loadAnimation(url: string): void;
-    getController(): string;
+    loadAnimation(url: string): Promise<{
+        animations: any[];
+    }>;
+    getController(): GuController | undefined;
     render(): import("lit-html").TemplateResult<1>;
 }
 declare global {
