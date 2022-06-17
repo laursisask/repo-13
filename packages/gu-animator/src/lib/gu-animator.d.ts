@@ -18,6 +18,7 @@ export declare class GuAnimator extends LitElement {
     loadAnimation(url: string): Promise<{
         animations: any[];
     }>;
+    connectedCallback(): void;
     getController(): GuController | undefined;
     render(): import("lit-html").TemplateResult<1>;
 }

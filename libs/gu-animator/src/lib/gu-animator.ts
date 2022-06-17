@@ -46,23 +46,48 @@ export class GuAnimator extends LitElement {
     // 3 - Create a Controller class
     // 4 - Orchestrate the Animation instances via the Controller class
     async loadAnimation(url: string) {
+        console.log('GuAnimator::loadAnimation()', url);
         this.currentSrc = url;
-
-        // TODO: Pass url to an instance of Parser class return a Promise?
-        // const parser = new GuParser(config);
-        // const animations = await parser.loadAnimation(url);
         const animations: any[] = [];
 
-        // Mark as loaded
-        const event = new CustomEvent<LoadedEvent>('loaded', {
-            bubbles: true,
-            composed: true,
-            detail: {
-                date: new Date().toISOString(),
-                target: this,
-            }
-        });
-        this.dispatchEvent(event);
+        try {
+            // TODO: Pass url to an instance of Parser class return a Promise?
+            // const parser = new GuParser(config);
+            // const animations = await parser.loadAnimation(url);
+
+            // Mark as loaded
+            const event = new CustomEvent<LoadedEvent>('loaded', {
+                bubbles : true,
+                composed : true,
+                detail : {
+                    date : new Date().toISOString(),
+                    target : this,
+                }
+            });
+            this.dispatchEvent(event);
+
+            // Wait for the next paint
+            requestAnimationFrame(() => {
+                // Wire up the animations with playback
+                this.controller = new GuController({
+                    container: this.container.value
+                });
+                this.controller.setAnimations(animations);
+            });
+
+        } catch(error) {
+            // Error loading animation
+            const event = new CustomEvent<ErrorEvent>('error', {
+                bubbles: true,
+                composed: true,
+                detail: {
+                    error,
+                    message: 'Error loading',
+                    target: this,
+                }
+            });
+            this.dispatchEvent(event);
+        }
 
         return {
             animations
@@ -76,30 +101,7 @@ export class GuAnimator extends LitElement {
         // TODO: Possibly do this within a different lifecycle event
         console.log('GuAnimator::connectedCallback()', this.container, this.container.value);
         if (this.src && this.currentSrc != this.src) {
-            this.loadAnimation(this.src)
-              .then((response) => {
-
-                  // Wire up the animations with playback
-                  this.controller = new GuController({
-                      container: this.container.value
-                  });
-                  this.controller.setAnimations(response.animations);
-
-              })
-              .catch((error) => {
-
-                  // Error loading animation
-                  const event = new CustomEvent<ErrorEvent>('error', {
-                      bubbles: true,
-                      composed: true,
-                      detail: {
-                          error,
-                          message: 'Error loading',
-                          target: this,
-                      }
-                  });
-                  this.dispatchEvent(event);
-              });
+            this.loadAnimation(this.src);
         }
     }
 
