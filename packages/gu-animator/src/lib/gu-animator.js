@@ -17,8 +17,6 @@ let GuAnimator = class GuAnimator extends LitElement {
             :host {
                 display: block;
                 background-color: #F2F2F2;
-                border-radius: 8px;
-                padding: 20px;
                 color: #5c5c5c;
             }
         `;
@@ -30,14 +28,38 @@ let GuAnimator = class GuAnimator extends LitElement {
     // 3 - Create a Controller class
     // 4 - Orchestrate the Animation instances via the Controller class
     loadAnimation(url) {
+        var _a;
         return __awaiter(this, void 0, void 0, function* () {
             console.log('GuAnimator::loadAnimation()', url);
             this.currentSrc = url;
             const animations = [];
+            yield new Promise(resolve => requestAnimationFrame(resolve));
             try {
+                this.controller = new GuController({
+                    container: this.container.value
+                });
                 // TODO: Pass url to an instance of Parser class return a Promise?
-                // const parser = new GuParser(config);
+                // const parser = new GuParser({
+                //  loaders: [
+                //    { type: 'lottie', loader: this.controller.getLottie() },
+                //    { type: 'pixi', loader: this.controller.getPixi() }
+                //    ]
+                // });
                 // const animations = await parser.loadAnimation(url);
+                // TODO: Replace this temp load with Parser
+                animations.push(this.controller.getLottie().loadAnimation({
+                    wrapper: document.body,
+                    animType: 'pixi',
+                    loop: false,
+                    autoplay: false,
+                    path: url,
+                    rendererSettings: {
+                        className: 'animation',
+                        preserveAspectRatio: 'xMidYMid meet',
+                        clearCanvas: true,
+                        pixiApplication: this.controller.getPixi()
+                    },
+                }));
                 // Mark as loaded
                 const event = new CustomEvent('loaded', {
                     bubbles: true,
@@ -48,11 +70,6 @@ let GuAnimator = class GuAnimator extends LitElement {
                     }
                 });
                 this.dispatchEvent(event);
-                // Wire up the animations with playback
-                this.controller = new GuController({
-                    container: this.container.value
-                });
-                this.controller.setAnimations(animations);
             }
             catch (error) {
                 // Error loading animation
@@ -67,6 +84,8 @@ let GuAnimator = class GuAnimator extends LitElement {
                 });
                 this.dispatchEvent(event);
             }
+            // Wire up the animations with playback
+            (_a = this.controller) === null || _a === void 0 ? void 0 : _a.setAnimations(animations);
             return {
                 animations
             };
@@ -86,7 +105,7 @@ let GuAnimator = class GuAnimator extends LitElement {
         return this.controller;
     }
     render() {
-        return html `<div ${ref(this.container)}>${this.src}</div>`;
+        return html `<div ${ref(this.container)}></div>`;
     }
 };
 __decorate([
