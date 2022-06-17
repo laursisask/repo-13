@@ -29,7 +29,7 @@ export class AppElement extends LitElement {
           </h1>
         </div>
 
-        <gu-animator src="assets/pack-opening/data.json"
+        <gu-animator src="/assets/pack-opening/data.json"
                      @loaded=${this.onLoaded}
                      @error=${this.onError}></gu-animator>
       </div>

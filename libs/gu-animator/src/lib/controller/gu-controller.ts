@@ -64,6 +64,7 @@ export class GuController {
     } else {
       throw new Error('Invalid gu-animator container.');
     }
+    return app;
   }
 
   private initLottie() {
@@ -91,11 +92,14 @@ export class GuController {
    *       },
    *     }
    */
-  public getLotti() {
+  public getLottie() {
     return this.applications.lottie;
   }
 
   public setAnimations(animations: any) {
     this.animations = animations;
+
+    const animation = animations[0];
+    console.log('Set animation', animation);
   }
 }

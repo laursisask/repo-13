@@ -63,6 +63,21 @@ export class GuAnimator extends LitElement {
             // });
             // const animations = await parser.loadAnimation(url);
 
+            // TODO: Replace this temp load with Parser
+            animations.push(this.controller.getLottie().loadAnimation({
+                wrapper: document.body,
+                animType: 'pixi', // svg
+                loop: false,
+                autoplay: false,
+                path: url,
+                rendererSettings: {
+                    className: 'animation',
+                    preserveAspectRatio: 'xMidYMid meet',
+                    clearCanvas: true,
+                    pixiApplication: this.controller.getPixi()
+                },
+            } as any));
+
             // Mark as loaded
             const event = new CustomEvent<LoadedEvent>('loaded', {
                 bubbles : true,
@@ -73,9 +88,6 @@ export class GuAnimator extends LitElement {
                 }
             });
             this.dispatchEvent(event);
-
-            // Wire up the animations with playback
-            this.controller.setAnimations(animations);
 
         } catch(error) {
             // Error loading animation
@@ -90,6 +102,9 @@ export class GuAnimator extends LitElement {
             });
             this.dispatchEvent(event);
         }
+
+        // Wire up the animations with playback
+        this.controller?.setAnimations(animations);
 
         return {
             animations

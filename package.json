@@ -28,7 +28,7 @@
     "core-js": "^3.23.1",
     "gsap": "file:gsap-bonus.tgz",
     "lit": "^2.2.6",
-    "lottie-web": "^5.9.2",
+    "lottie-web": "git+https://github.com/immutable/lottie-web.git",
     "pixi.js": "^6.3.2",
     "regenerator-runtime": "0.13.9",
     "rxjs": "~7.4.0",
