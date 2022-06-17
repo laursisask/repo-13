@@ -32,8 +32,6 @@ export class GuAnimator extends LitElement {
             :host {
                 display: block;
                 background-color: #F2F2F2;
-                border-radius: 8px;
-                padding: 20px;
                 color: #5c5c5c;
             }
         `;
@@ -115,7 +113,7 @@ export class GuAnimator extends LitElement {
     }
 
     override render() {
-        return html`<div ${ref(this.container)}>${this.src}</div>`;
+        return html`<div ${ref(this.container)}></div>`;
     }
 }
 
