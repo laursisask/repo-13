@@ -49,10 +49,20 @@ export class GuAnimator extends LitElement {
         console.log('GuAnimator::loadAnimation()', url);
         this.currentSrc = url;
         const animations: any[] = [];
+        await new Promise(resolve => requestAnimationFrame(resolve));
 
         try {
+            this.controller = new GuController({
+                container: this.container.value
+            });
+
             // TODO: Pass url to an instance of Parser class return a Promise?
-            // const parser = new GuParser(config);
+            // const parser = new GuParser({
+            //  loaders: [
+            //    { type: 'lottie', loader: this.controller.getLottie() },
+            //    { type: 'pixi', loader: this.controller.getPixi() }
+            //    ]
+            // });
             // const animations = await parser.loadAnimation(url);
 
             // Mark as loaded
@@ -66,14 +76,8 @@ export class GuAnimator extends LitElement {
             });
             this.dispatchEvent(event);
 
-            // Wait for the next paint
-            requestAnimationFrame(() => {
-                // Wire up the animations with playback
-                this.controller = new GuController({
-                    container: this.container.value
-                });
-                this.controller.setAnimations(animations);
-            });
+            // Wire up the animations with playback
+            this.controller.setAnimations(animations);
 
         } catch(error) {
             // Error loading animation

@@ -2,6 +2,11 @@ import { GuConfig } from '../core/gu-config';
 import {
   Application, Loader, Text, Ticker, Sprite, Container, BLEND_MODES
 } from 'pixi.js';
+import * as gsap from "gsap";
+
+// gsap.registerPlugin(PixiPlugin, GSDevTools);
+// PixiPlugin.registerPIXI(PIXI);
+// PIXI.Loader.registerPlugin(AnimatedGIFLoader);
 
 /**
  * GU Animator Controller.
@@ -21,10 +26,10 @@ export class GuController {
     }
 
     this.container = config.container;
+    this.init();
   }
 
-  public setAnimations(animations: any) {
-    this.animations = animations;
+  private init() {
 
     // PIXI Background layer
     const SIZEW = 1920;
@@ -47,5 +52,17 @@ export class GuController {
     } else {
       throw new Error('Invalid gu-animator container.');
     }
+  }
+
+  public getPixi() {
+    // TODO: return pixi application / loader
+  }
+
+  public getLotti() {
+    // TODO: return pixi application / loader
+  }
+
+  public setAnimations(animations: any) {
+    this.animations = animations;
   }
 }
