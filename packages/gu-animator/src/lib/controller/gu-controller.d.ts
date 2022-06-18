@@ -7,6 +7,7 @@ export declare class GuController {
     private applications;
     private animations;
     private container;
+    private rootTimeline;
     constructor(config: GuConfig);
     private init;
     private initPixi;
@@ -31,4 +32,5 @@ export declare class GuController {
      */
     getLottie(): any;
     setAnimations(animations: any): void;
+    play(): void;
 }

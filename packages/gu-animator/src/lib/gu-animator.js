@@ -48,7 +48,7 @@ let GuAnimator = class GuAnimator extends LitElement {
                 // const animations = await parser.loadAnimation(url);
                 // TODO: Replace this temp load with Parser
                 animations.push(this.controller.getLottie().loadAnimation({
-                    wrapper: document.body,
+                    wrapper: this.container.value,
                     animType: 'pixi',
                     loop: false,
                     autoplay: false,

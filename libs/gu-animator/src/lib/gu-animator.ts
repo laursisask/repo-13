@@ -65,7 +65,7 @@ export class GuAnimator extends LitElement {
 
             // TODO: Replace this temp load with Parser
             animations.push(this.controller.getLottie().loadAnimation({
-                wrapper: document.body,
+                wrapper: this.container.value,
                 animType: 'pixi', // svg
                 loop: false,
                 autoplay: false,
