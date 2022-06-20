@@ -1,4 +1,4 @@
-import { Application } from 'pixi.js';
+import { Application, } from 'pixi.js';
 import { gsap, Sine } from 'gsap';
 import { AnimatedGIFLoader } from '@pixi/gif';
 import Lottie from 'lottie-web';
@@ -32,15 +32,15 @@ export class GuController {
             pixi: this.initPixi({
                 width: SIZEW,
                 height: SIZEH,
-                backgroundColor: 0xFF00FF,
+                backgroundColor: 0xff00ff,
                 // backgroundAlpha: 0.5,
                 sharedTicker: true,
                 sharedLoader: true,
                 antialias: false,
                 clearBeforeRender: true,
-                resolution: 1
+                resolution: 1,
             }),
-            lottie: this.initLottie()
+            lottie: this.initLottie(),
         };
     }
     initPixi(options) {
@@ -100,11 +100,11 @@ export class GuController {
             ease: Sine.easeOut,
             onUpdateParams: [animation],
             onUpdate: function (targetAnimation) {
-                const totalDuration = animation.totalFrames / animation.frameRate * 1000;
+                const totalDuration = (animation.totalFrames / animation.frameRate) * 1000;
                 const nextMoment = Math.floor(totalDuration * this.progress());
                 targetAnimation.goToAndStop(nextMoment); // in milliseconds
                 // checkFrame(this, anim, nextMoment);
-            }
+            },
         });
         // TODO: Move this debug stuff below into browser extension
         // GSAP timeline tool
