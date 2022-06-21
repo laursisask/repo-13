@@ -3,9 +3,9 @@ import { gsap, Sine } from 'gsap';
 import { AnimatedGIFLoader } from '@pixi/gif';
 import Lottie from 'lottie-web';
 import * as PIXI from 'pixi.js';
-import { GSDevTools } from 'gsap/GSDevTools';
+// import { GSDevTools } from 'gsap/GSDevTools';
 import { PixiPlugin } from 'gsap/PixiPlugin';
-gsap.registerPlugin(PixiPlugin, GSDevTools);
+gsap.registerPlugin(PixiPlugin); // GSDevTools
 PixiPlugin.registerPIXI(PIXI);
 PIXI.Loader.registerPlugin(AnimatedGIFLoader);
 /**
@@ -108,19 +108,18 @@ export class GuController {
         });
         // TODO: Move this debug stuff below into browser extension
         // GSAP timeline tool
-        GSDevTools.create({ animation: this.rootTimeline });
-        const css = '.gs-dev-tools {z-index: 999;}';
-        const head = document.head || document.getElementsByTagName('head')[0];
-        const style = document.createElement('style');
-        head.appendChild(style);
-        style.type = 'text/css';
-        if (style.styleSheet) {
-            // This is required for IE8 and below.
-            style.styleSheet.cssText = css;
-        }
-        else {
-            style.appendChild(document.createTextNode(css));
-        }
+        // GSDevTools.create({ animation: this.rootTimeline });
+        // const css = '.gs-dev-tools {z-index: 999;}';
+        // const head = document.head || document.getElementsByTagName('head')[0];
+        // const style: any = document.createElement('style');
+        // head.appendChild(style);
+        // style.type = 'text/css';
+        // if (style.styleSheet) {
+        //   // This is required for IE8 and below.
+        //   style.styleSheet.cssText = css;
+        // } else {
+        //   style.appendChild(document.createTextNode(css));
+        // }
     }
     play() {
         console.log('GuAnimator::play()', this.rootTimeline);
