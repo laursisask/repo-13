@@ -1,14 +1,5 @@
 import { GuConfig } from '../core/gu-config';
-import {
-  Application,
-  Loader,
-  Text,
-  Ticker,
-  Sprite,
-  Container,
-  BLEND_MODES,
-  IApplicationOptions,
-} from 'pixi.js';
+import { Application, Loader, Text, Ticker, Sprite, Container, BLEND_MODES, IApplicationOptions } from 'pixi.js';
 import { gsap, Sine } from 'gsap';
 import { AnimatedGIFLoader } from '@pixi/gif';
 import Lottie from 'lottie-web';
@@ -125,8 +116,7 @@ export class GuController {
       ease: Sine.easeOut,
       onUpdateParams: [animation],
       onUpdate: function (targetAnimation) {
-        const totalDuration =
-          (animation.totalFrames / animation.frameRate) * 1000;
+        const totalDuration = (animation.totalFrames / animation.frameRate) * 1000;
         const nextMoment = Math.floor(totalDuration * this.progress());
         targetAnimation.goToAndStop(nextMoment); // in milliseconds
         // checkFrame(this, anim, nextMoment);

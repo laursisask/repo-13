@@ -100,11 +100,7 @@ export class GuAnimator extends LitElement {
 
     // Auto load the gu-animator src attribute
     // TODO: Possibly do this within a different lifecycle event
-    console.log(
-      'GuAnimator::connectedCallback()',
-      this.container,
-      this.container.value
-    );
+    console.log('GuAnimator::connectedCallback()', this.container, this.container.value);
     if (this.src && this.currentSrc != this.src) {
       this.loadAnimation(this.src);
     }
