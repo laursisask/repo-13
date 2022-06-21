@@ -17,6 +17,10 @@
     "url": "https://github.com/immutable/gu-animator.git",
     "directory": "packages/gu-animator"
   },
+  "bundleDependencies": [
+    "pixi.js",
+    "lottie-web"
+  ],
   "main": "./src/index.js",
   "typings": "./src/index.d.ts",
   "dependencies": {},
