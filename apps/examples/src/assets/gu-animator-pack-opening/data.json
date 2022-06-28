@@ -1,0 +1,42 @@
+{
+  "version": "1.0.0",
+  "timeline": [
+    {
+      "id": "pack-opening",
+      "assetId": "pack",
+      "time": "0"
+    },
+    {
+      "id": "card1",
+      "assetId": "card",
+      "time": "0"
+    },
+    {
+      "id": "card2",
+      "assetId": "card",
+      "time": "0"
+    },
+    {
+      "id": "background",
+      "assetId": "bg",
+      "time": "0"
+    }
+  ],
+  "assets": [
+    {
+      "id": "pack",
+      "format": "bodymovin",
+      "contentPath": "/assets/pack-opening/data.json"
+    },
+    {
+      "id": "card",
+      "format": "bodymovin",
+      "contentPath": "/assets/card/data.json"
+    },
+    {
+      "id": "bg",
+      "format": "bodymovin",
+      "contentPath": "/assets/bg/data.json"
+    }
+  ]
+}
