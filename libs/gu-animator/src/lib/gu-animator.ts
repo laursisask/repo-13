@@ -128,6 +128,25 @@ export class GuAnimator extends LitElement {
     return this.controller;
   }
 
+  getAnimationAsset(name: string) {
+    this.controller = new GuController({
+      container: this.container.value,
+    });
+
+    const animations = this.controller.animations;
+    animations.find((a) => {
+      a.name === name;
+    });
+  }
+
+  getTimeline() {
+    this.controller = new GuController({
+      container: this.container.value,
+    });
+
+    return this.controller.rootTimeline;
+  }
+
   override render() {
     return html`<div ${ref(this.container)}></div>`;
   }

@@ -17,9 +17,10 @@ PIXI.Loader.registerPlugin(AnimatedGIFLoader);
  */
 export class GuController {
   private applications: any = {};
-  private animations: any[] = [];
   private container!: HTMLElement;
-  private rootTimeline: gsap.core.Timeline | undefined;
+
+  public animations: any[] = [];
+  public rootTimeline: gsap.core.Timeline | undefined;
 
   constructor(config: GuConfig) {
     if (!config) {
