@@ -6,6 +6,7 @@ export class GuParser {
   private json: any = {};
   private config: any = {};
   private url: any = {};
+  private animationAsset: any = {};
 
   constructor(config: any) {
     this.config = config;
@@ -39,6 +40,7 @@ export class GuParser {
 
       const checkLoading = async () => {
         const loadingAnimation = pendingAnimations.shift();
+        this.animationAsset = loadingAnimation;
 
         if (loadingAnimation.contentPath == this.url) {
           console.error('Asset contentPath is the same as the parent path. Please check contentPath given.');
@@ -63,19 +65,34 @@ export class GuParser {
   private loadBodymovinJson() {
     return new Promise<any[]>((resolve, reject) => {
       // Create lottie animation and hook into loading state
-      const animation = this.config.loaders.lottie.loadAnimation({
-        wrapper: this.config.wrapper,
-        animType: 'pixi',
-        loop: false,
-        autoplay: false,
-        path: this.url,
-        rendererSettings: {
-          className: 'animation',
-          preserveAspectRatio: 'xMidYMid meet',
-          clearCanvas: true,
-          pixiApplication: this.config.loaders.pixi,
-        },
-      } as any);
+      const animation = {
+        ...this.animationAsset,
+        play: () => this.config.loaders.lottie.play(),
+        stop: () => this.config.loaders.lottie.stop(),
+        pause: () => this.config.loaders.lottie.pause(),
+        setSpeed: (speed: number) => this.config.loaders.lottie.setSpeed(speed),
+        goToAndStop: (value: number, isFrame: boolean) => this.config.loaders.lottie.goToAndStop(value, isFrame),
+        goToAndPlay: (value: number, isFrame: boolean) => this.config.loaders.lottie.goToAndPlay(value, isFrame),
+        setDirection: (direction: number) => this.config.loaders.lottie.setDirection(direction),
+        playSegments: (segments: [], forceFlag: boolean) =>
+          this.config.loaders.lottie.registerAnimation(segments, forceFlag),
+        setSubframe: (useSubFrames: boolean) => this.config.loaders.lottie.getRegisteredAnimations(useSubFrames),
+        destroy: () => this.config.loaders.lottie.destroy(),
+        getDuration: (inFrames: boolean) => this.config.loaders.lottie.getDuration(inFrames),
+        instance: this.config.loaders.lottie.loadAnimation({
+          wrapper: this.config.wrapper,
+          animType: 'pixi',
+          loop: false,
+          autoplay: false,
+          path: this.url,
+          rendererSettings: {
+            className: 'animation',
+            preserveAspectRatio: 'xMidYMid meet',
+            clearCanvas: true,
+            pixiApplication: this.config.loaders.pixi,
+          },
+        } as any),
+      };
 
       animation.addEventListener('DOMLoaded', () => {
         resolve([animation]);
