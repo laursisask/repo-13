@@ -24,6 +24,11 @@
   ],
   "assets": [
     {
+      "id": "bg",
+      "format": "bodymovin",
+      "contentPath": "/assets/bg/data.json"
+    },
+    {
       "id": "pack",
       "format": "bodymovin",
       "contentPath": "/assets/pack-opening/data.json"
@@ -32,11 +37,6 @@
       "id": "card",
       "format": "bodymovin",
       "contentPath": "/assets/card/data.json"
-    },
-    {
-      "id": "bg",
-      "format": "bodymovin",
-      "contentPath": "/assets/bg/data.json"
     }
   ]
 }
