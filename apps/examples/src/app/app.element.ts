@@ -1,13 +1,18 @@
 import './app.element.scss';
 import '@immutable/gu-animator';
 import { html, LitElement } from 'lit';
-import { customElement, eventOptions, property } from 'lit/decorators.js';
+import { customElement, eventOptions } from 'lit/decorators.js';
 
 @customElement('animator-examples')
 export class AppElement extends LitElement {
   @eventOptions({ passive: true })
   onLoaded(event) {
     console.log('Examples loaded:', event);
+  }
+
+  @eventOptions({ passive: true })
+  onLoading(event) {
+    console.log('Examples loading:', event);
   }
 
   @eventOptions({ passive: true })
@@ -29,8 +34,9 @@ export class AppElement extends LitElement {
           </div>
 
           <gu-animator
-            src="/assets/pack-opening/data.json"
+            src="/assets/gu-animator-pack-opening/data.json"
             @loaded=${this.onLoaded}
+            @loading=${this.onLoading}
             @error=${this.onError}
           ></gu-animator>
         </div>

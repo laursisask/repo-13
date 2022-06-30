@@ -3,6 +3,12 @@ import { Ref, createRef, ref } from 'lit/directives/ref.js';
 import { customElement, property, query } from 'lit/decorators.js';
 import { GuController } from './controller/gu-controller';
 import { GuParser } from './parser/gu-parser';
+
+export interface LoadingEvent {
+  date: string;
+  target: GuAnimator;
+}
+
 export interface LoadedEvent {
   date: string;
   target: GuAnimator;
@@ -61,10 +67,8 @@ export class GuAnimator extends LitElement {
         wrapper: this.container.value,
       });
 
-      animations = await parser.createAnimationInstance(url);
-
-      // Mark as loaded
-      const event = new CustomEvent<LoadedEvent>('loaded', {
+      // Mark as loading
+      const loadingEvent = new CustomEvent<LoadingEvent>('loading', {
         bubbles: true,
         composed: true,
         detail: {
@@ -72,7 +76,20 @@ export class GuAnimator extends LitElement {
           target: this,
         },
       });
-      this.dispatchEvent(event);
+      this.dispatchEvent(loadingEvent);
+
+      animations = await parser.loadAnimation(url);
+
+      // Mark as loaded
+      const loadedEvent = new CustomEvent<LoadedEvent>('loaded', {
+        bubbles: true,
+        composed: true,
+        detail: {
+          date: new Date().toISOString(),
+          target: this,
+        },
+      });
+      this.dispatchEvent(loadedEvent);
     } catch (error) {
       // Error loading animation
       const event = new CustomEvent<ErrorEvent>('error', {
