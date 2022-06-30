@@ -129,22 +129,22 @@ export class GuAnimator extends LitElement {
   }
 
   getAnimationAsset(name: string) {
-    this.controller = new GuController({
-      container: this.container.value,
-    });
+    if (this.controller?.isLoaded) {
+      const animations = this.controller.animations;
+      animations.find((a) => {
+        a.name === name;
+      });
+    }
 
-    const animations = this.controller.animations;
-    animations.find((a) => {
-      a.name === name;
-    });
+    return;
   }
 
   getTimeline() {
-    this.controller = new GuController({
-      container: this.container.value,
-    });
+    if (this.controller?.isLoaded) {
+      this.controller.rootTimeline;
+    }
 
-    return this.controller.rootTimeline;
+    return;
   }
 
   override render() {
