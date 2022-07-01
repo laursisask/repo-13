@@ -31,6 +31,7 @@ export class GuAnimator extends LitElement {
 
   private currentSrc = '';
   private controller: GuController | undefined;
+  private isLoaded = false;
 
   static override get styles() {
     return css`
@@ -79,6 +80,7 @@ export class GuAnimator extends LitElement {
       this.dispatchEvent(loadingEvent);
 
       animations = await parser.loadAnimation(url);
+      this.isLoaded = true;
 
       // Mark as loaded
       const loadedEvent = new CustomEvent<LoadedEvent>('loaded', {
@@ -129,22 +131,22 @@ export class GuAnimator extends LitElement {
   }
 
   getAnimationAsset(name: string) {
-    if (this.controller?.isLoaded) {
-      const animations = this.controller.animations;
-      animations.find((a) => {
-        a.name === name;
+    if (this.isLoaded) {
+      const animations = this.controller?.animations;
+      animations?.find((a) => {
+        return a.name === name;
       });
     }
 
-    return;
+    return null;
   }
 
   getTimeline() {
-    if (this.controller?.isLoaded) {
-      this.controller.rootTimeline;
+    if (this.isLoaded) {
+      return this.controller?.rootTimeline;
     }
 
-    return;
+    return null;
   }
 
   override render() {

@@ -19,7 +19,6 @@ export class GuController {
   private applications: any = {};
   private container!: HTMLElement;
 
-  public isLoaded = false;
   public animations: any[] = [];
   public rootTimeline: gsap.core.Timeline | undefined;
 
@@ -32,7 +31,6 @@ export class GuController {
 
     this.container = config.container;
     this.init();
-    this.isLoaded = true;
   }
 
   private init() {
