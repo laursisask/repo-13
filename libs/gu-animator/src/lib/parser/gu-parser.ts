@@ -68,19 +68,19 @@ export class GuParser {
       const animation = {
         meta: {
           ...this.animationAsset,
-          play: () => this.config.loaders.lottie.play(),
-          stop: () => this.config.loaders.lottie.stop(),
-          pause: () => this.config.loaders.lottie.pause(),
-          setSpeed: (speed: number) => this.config.loaders.lottie.setSpeed(speed),
-          goToAndStop: (value: number, isFrame: boolean) => this.config.loaders.lottie.goToAndStop(value, isFrame),
-          goToAndPlay: (value: number, isFrame: boolean) => this.config.loaders.lottie.goToAndPlay(value, isFrame),
-          setDirection: (direction: number) => this.config.loaders.lottie.setDirection(direction),
-          playSegments: (segments: [], forceFlag: boolean) =>
-            this.config.loaders.lottie.registerAnimation(segments, forceFlag),
-          setSubframe: (useSubFrames: boolean) => this.config.loaders.lottie.getRegisteredAnimations(useSubFrames),
-          destroy: () => this.config.loaders.lottie.destroy(),
-          getDuration: (inFrames: boolean) => this.config.loaders.lottie.getDuration(inFrames),
         },
+        play: () => this.config.loaders.lottie.play(),
+        stop: () => this.config.loaders.lottie.stop(),
+        pause: () => this.config.loaders.lottie.pause(),
+        setSpeed: (speed: number) => this.config.loaders.lottie.setSpeed(speed),
+        goToAndStop: (value: number, isFrame: boolean) => this.config.loaders.lottie.goToAndStop(value, isFrame),
+        goToAndPlay: (value: number, isFrame: boolean) => this.config.loaders.lottie.goToAndPlay(value, isFrame),
+        setDirection: (direction: number) => this.config.loaders.lottie.setDirection(direction),
+        playSegments: (segments: [], forceFlag: boolean) =>
+          this.config.loaders.lottie.registerAnimation(segments, forceFlag),
+        setSubframe: (useSubFrames: boolean) => this.config.loaders.lottie.getRegisteredAnimations(useSubFrames),
+        destroy: () => this.config.loaders.lottie.destroy(),
+        getDuration: (inFrames: boolean) => this.config.loaders.lottie.getDuration(inFrames),
         instance: this.config.loaders.lottie.loadAnimation({
           wrapper: this.config.wrapper,
           animType: 'pixi',
