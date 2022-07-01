@@ -3,7 +3,7 @@
  * Takes json and redirects to the respective renderers depending on animation format.
  */
 export class GuParser {
-  private json: any = {};
+  private rootJson: any = {};
   private config: any = {};
   private url: any = {};
   private animationAsset: any = {};
@@ -16,18 +16,18 @@ export class GuParser {
     // Load json to check json format
     this.url = url;
     const response = await fetch(this.url);
-    this.json = await response.json();
+    this.rootJson = await response.json();
 
-    if (Object.keys(this.json).includes('timeline')) {
+    if (Object.keys(this.rootJson).includes('timeline')) {
       return this.loadGuAnimatorJson();
-    } else if (Object.keys(this.json).includes('ddd')) {
+    } else if (Object.keys(this.rootJson).includes('ddd')) {
       return this.loadBodymovinJson();
     }
 
     // TODO: Spine Animation support
-    // if (Object.keys(this.json).includes('skeleton')) {
+    // if (Object.keys(this.rootJson).includes('skeleton')) {
     // // returns pixi animation instance
-    //   return this.loaders.pixi.loadAnimation(this.json);
+    //   return this.loaders.pixi.loadAnimation(this.rootJson);
     // }
 
     return Promise.resolve([]);
@@ -35,7 +35,7 @@ export class GuParser {
 
   private loadGuAnimatorJson() {
     return new Promise<any[]>((resolve, reject) => {
-      const pendingAnimations: any[] = this.json.assets;
+      const pendingAnimations: any[] = this.rootJson.assets;
       let loadedAnimations: any[] = [];
 
       const checkLoading = async () => {
