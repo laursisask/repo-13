@@ -3,9 +3,10 @@
  * Takes json and redirects to the respective renderers depending on animation format.
  */
 export class GuParser {
-  private json: any = {};
+  private rootJson: any = {};
   private config: any = {};
   private url: any = {};
+  private animationAsset: any = {};
 
   constructor(config: any) {
     this.config = config;
@@ -15,18 +16,18 @@ export class GuParser {
     // Load json to check json format
     this.url = url;
     const response = await fetch(this.url);
-    this.json = await response.json();
+    this.rootJson = await response.json();
 
-    if (Object.keys(this.json).includes('timeline')) {
+    if (Object.keys(this.rootJson).includes('timeline')) {
       return this.loadGuAnimatorJson();
-    } else if (Object.keys(this.json).includes('ddd')) {
+    } else if (Object.keys(this.rootJson).includes('ddd')) {
       return this.loadBodymovinJson();
     }
 
     // TODO: Spine Animation support
-    // if (Object.keys(this.json).includes('skeleton')) {
+    // if (Object.keys(this.rootJson).includes('skeleton')) {
     // // returns pixi animation instance
-    //   return this.loaders.pixi.loadAnimation(this.json);
+    //   return this.loaders.pixi.loadAnimation(this.rootJson);
     // }
 
     return Promise.resolve([]);
@@ -34,11 +35,12 @@ export class GuParser {
 
   private loadGuAnimatorJson() {
     return new Promise<any[]>((resolve, reject) => {
-      const pendingAnimations: any[] = this.json.assets;
+      const pendingAnimations: any[] = this.rootJson.assets;
       let loadedAnimations: any[] = [];
 
       const checkLoading = async () => {
         const loadingAnimation = pendingAnimations.shift();
+        this.animationAsset = loadingAnimation;
 
         if (loadingAnimation.contentPath == this.url) {
           console.error('Asset contentPath is the same as the parent path. Please check contentPath given.');
@@ -63,29 +65,46 @@ export class GuParser {
   private loadBodymovinJson() {
     return new Promise<any[]>((resolve, reject) => {
       // Create lottie animation and hook into loading state
-      const animation = this.config.loaders.lottie.loadAnimation({
-        wrapper: this.config.wrapper,
-        animType: 'pixi',
-        loop: false,
-        autoplay: false,
-        path: this.url,
-        rendererSettings: {
-          className: 'animation',
-          preserveAspectRatio: 'xMidYMid meet',
-          clearCanvas: true,
-          pixiApplication: this.config.loaders.pixi,
+      const animation = {
+        meta: {
+          ...this.animationAsset,
         },
-      } as any);
+        play: () => this.config.loaders.lottie.play(),
+        stop: () => this.config.loaders.lottie.stop(),
+        pause: () => this.config.loaders.lottie.pause(),
+        setSpeed: (speed: number) => this.config.loaders.lottie.setSpeed(speed),
+        goToAndStop: (value: number, isFrame: boolean) => this.config.loaders.lottie.goToAndStop(value, isFrame),
+        goToAndPlay: (value: number, isFrame: boolean) => this.config.loaders.lottie.goToAndPlay(value, isFrame),
+        setDirection: (direction: number) => this.config.loaders.lottie.setDirection(direction),
+        playSegments: (segments: [], forceFlag: boolean) =>
+          this.config.loaders.lottie.registerAnimation(segments, forceFlag),
+        setSubframe: (useSubFrames: boolean) => this.config.loaders.lottie.getRegisteredAnimations(useSubFrames),
+        destroy: () => this.config.loaders.lottie.destroy(),
+        getDuration: (inFrames: boolean) => this.config.loaders.lottie.getDuration(inFrames),
+        instance: this.config.loaders.lottie.loadAnimation({
+          wrapper: this.config.wrapper,
+          animType: 'pixi',
+          loop: false,
+          autoplay: false,
+          path: this.url,
+          rendererSettings: {
+            className: 'animation',
+            preserveAspectRatio: 'xMidYMid meet',
+            clearCanvas: true,
+            pixiApplication: this.config.loaders.pixi,
+          },
+        } as any),
+      };
 
-      animation.addEventListener('DOMLoaded', () => {
+      animation.instance.addEventListener('DOMLoaded', () => {
         resolve([animation]);
       });
 
-      animation.addEventListener('data_failed', () => {
+      animation.instance.addEventListener('data_failed', () => {
         reject('error failed load');
       });
 
-      animation.addEventListener('error', (error: any) => {
+      animation.instance.addEventListener('error', (error: any) => {
         console.log(error, 'error');
         reject('error loading');
       });
