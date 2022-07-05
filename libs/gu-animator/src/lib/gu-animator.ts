@@ -111,6 +111,10 @@ export class GuAnimator extends LitElement {
     return this.controller;
   }
 
+  getAnimation(name) {
+    return animations[name]
+  }
+
   override render() {
     return html`<div ${ref(this.container)}></div>`;
   }

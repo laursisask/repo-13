@@ -7,7 +7,7 @@
       "executor": "@nrwl/js:tsc",
       "outputs": ["{options.outputPath}"],
       "options": {
-        "outputPath": "packages/gu-animator",
+        "outputPath": "dist/packages/gu-animator",
         "main": "libs/gu-animator/src/index.ts",
         "tsConfig": "libs/gu-animator/tsconfig.lib.json",
         "assets": ["libs/gu-animator/*.md"]
@@ -26,6 +26,25 @@
       "options": {
         "jestConfig": "libs/gu-animator/jest.config.ts",
         "passWithNoTests": true
+      }
+    },
+    "package": {
+      "build": {
+        "executor": "@nrwl/web:rollup",
+        "outputs": [
+          "{options.outputPath}"
+        ],
+        "options": {
+          "outputPath": "dist/packages/gu-animator",
+          "tsConfig": "libs/gu-animator/tsconfig.lib.json",
+          "project": "libs/gu-animator/package.json",
+          "entryFile": "libs/gu-animator/src/index.ts",
+          "rollupConfig": "libs/gu-animator/rollup.config.js",
+          "format": [
+            "esm",
+            "cjs"
+          ]
+        }
       }
     }
   },
