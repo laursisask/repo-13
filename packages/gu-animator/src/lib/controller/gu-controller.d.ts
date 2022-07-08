@@ -5,11 +5,22 @@ import { GuConfig } from '../core/gu-config';
  */
 export declare class GuController {
     private applications;
-    private animations;
     private container;
-    private rootTimeline;
+    private config;
+    animations: any[];
+    rootTimeline: gsap.core.Timeline | undefined;
     constructor(config: GuConfig);
+    /**
+     * Init the GU Animator.
+     * Setup the PixiJS and Lottie players.
+     * @private
+     */
     private init;
+    /**
+     * Init the PixiJS Application and hook into GSAP ticker.
+     * @param options
+     * @private
+     */
     private initPixi;
     private initLottie;
     getPixi(): any;

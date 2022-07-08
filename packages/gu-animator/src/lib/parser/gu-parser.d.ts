@@ -3,8 +3,12 @@
  * Takes json and redirects to the respective renderers depending on animation format.
  */
 export declare class GuParser {
-    private json;
+    private rootJson;
     private config;
+    private url;
+    private animationAsset;
     constructor(config: any);
-    createAnimationInstance(url: string): Promise<any[]>;
+    loadAnimation(url: string): Promise<any[]>;
+    private loadGuAnimatorJson;
+    private loadBodymovinJson;
 }
