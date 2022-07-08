@@ -9,7 +9,7 @@
   "ddd": 0,
   "assets": [
     {
-      "id": "image_0",
+      "id": "pack_image_0",
       "w": 1024,
       "h": 1024,
       "u": "images/",
@@ -17,7 +17,7 @@
       "e": 0
     },
     {
-      "id": "image_1",
+      "id": "pack_image_1",
       "w": 1024,
       "h": 1024,
       "u": "images/",
@@ -25,7 +25,7 @@
       "e": 0
     },
     {
-      "id": "image_2",
+      "id": "pack_image_2",
       "w": 500,
       "h": 500,
       "u": "images/",
@@ -33,7 +33,7 @@
       "e": 0
     },
     {
-      "id": "image_3",
+      "id": "pack_image_3",
       "w": 1024,
       "h": 1024,
       "u": "images/",
@@ -41,7 +41,7 @@
       "e": 0
     },
     {
-      "id": "image_4",
+      "id": "pack_image_4",
       "w": 1920,
       "h": 1080,
       "u": "images/",
@@ -49,7 +49,7 @@
       "e": 0
     },
     {
-      "id": "image_5",
+      "id": "pack_image_5",
       "w": 1920,
       "h": 1080,
       "u": "images/",
@@ -57,7 +57,7 @@
       "e": 0
     },
     {
-      "id": "image_6",
+      "id": "pack_image_6",
       "w": 1920,
       "h": 1920,
       "u": "images/",
@@ -65,7 +65,7 @@
       "e": 0
     },
     {
-      "id": "image_7",
+      "id": "pack_image_7",
       "w": 2048,
       "h": 2048,
       "u": "images/",
@@ -73,7 +73,7 @@
       "e": 0
     },
     {
-      "id": "image_8",
+      "id": "pack_image_8",
       "w": 1920,
       "h": 1920,
       "u": "images/",
@@ -81,7 +81,7 @@
       "e": 0
     },
     {
-      "id": "image_9",
+      "id": "pack_image_9",
       "w": 1920,
       "h": 1920,
       "u": "images/",
@@ -89,7 +89,7 @@
       "e": 0
     },
     {
-      "id": "image_10",
+      "id": "pack_image_10",
       "w": 1920,
       "h": 1920,
       "u": "images/",
@@ -97,7 +97,7 @@
       "e": 0
     },
     {
-      "id": "image_11",
+      "id": "pack_image_11",
       "w": 1920,
       "h": 1920,
       "u": "images/",
@@ -115,7 +115,7 @@
           "ty": 2,
           "nm": "fxtex_pack_cut-up_gem.png",
           "cl": "png",
-          "refId": "image_6",
+          "refId": "pack_image_6",
           "sr": 1,
           "ks": {
             "o": {
@@ -495,7 +495,7 @@
           "ty": 2,
           "nm": "fxtex_pack_separate_glow.png",
           "cl": "png",
-          "refId": "image_7",
+          "refId": "pack_image_7",
           "sr": 1,
           "ks": {
             "o": {
@@ -604,7 +604,7 @@
           "ty": 2,
           "nm": "fxtex_pack_rt_bot.png",
           "cl": "png",
-          "refId": "image_8",
+          "refId": "pack_image_8",
           "sr": 1,
           "ks": {
             "o": {
@@ -695,7 +695,7 @@
           "ty": 2,
           "nm": "fxtex_pack_rt_top.png",
           "cl": "png",
-          "refId": "image_9",
+          "refId": "pack_image_9",
           "sr": 1,
           "ks": {
             "o": {
@@ -786,7 +786,7 @@
           "ty": 2,
           "nm": "fxtex_pack_lt_bot.png",
           "cl": "png",
-          "refId": "image_10",
+          "refId": "pack_image_10",
           "sr": 1,
           "ks": {
             "o": {
@@ -877,7 +877,7 @@
           "ty": 2,
           "nm": "fxtex_pack_lt_top.png",
           "cl": "png",
-          "refId": "image_11",
+          "refId": "pack_image_11",
           "sr": 1,
           "ks": {
             "o": {
@@ -972,7 +972,7 @@
       "ty": 2,
       "nm": "fxtex_burst_01.png",
       "cl": "png",
-      "refId": "image_0",
+      "refId": "pack_image_0",
       "sr": 1,
       "ks": {
         "o": {
@@ -1175,7 +1175,7 @@
       "ty": 2,
       "nm": "fxtex_star.png",
       "cl": "png",
-      "refId": "image_1",
+      "refId": "pack_image_1",
       "sr": 1,
       "ks": {
         "o": {
@@ -1415,7 +1415,7 @@
       "nm": "electric_globe.png",
       "cl": "png",
       "parent": 8,
-      "refId": "image_2",
+      "refId": "pack_image_2",
       "sr": 1,
       "ks": {
         "o": {
@@ -1588,7 +1588,7 @@
       "ip": 0,
       "op": 172.8,
       "st": 0,
-      "bm": 5
+      "bm": 16
     },
     {
       "ddd": 0,
@@ -1596,7 +1596,7 @@
       "ty": 2,
       "nm": "fxtex_swirl_01.png",
       "cl": "png",
-      "refId": "image_3",
+      "refId": "pack_image_3",
       "sr": 1,
       "ks": {
         "o": {
@@ -1904,7 +1904,7 @@
       "ty": 2,
       "nm": "fxvid_magic_energy.mp4",
       "cl": "mp4",
-      "refId": "image_4",
+      "refId": "pack_image_4",
       "sr": 1,
       "ks": {
         "o": {
@@ -2073,7 +2073,7 @@
       "ty": 2,
       "nm": "fxtex_magic_energy.png",
       "cl": "png",
-      "refId": "image_5",
+      "refId": "pack_image_5",
       "sr": 1,
       "ks": {
         "o": {
