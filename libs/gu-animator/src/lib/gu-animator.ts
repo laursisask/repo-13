@@ -90,6 +90,7 @@ export class GuAnimator extends LitElement {
       });
     }
 
+    // Bootstrap the gu-animator parser
     if (!this.parser) {
       this.parser = new GuParser({
         loaders : {
@@ -101,8 +102,6 @@ export class GuAnimator extends LitElement {
     }
 
     // Auto load the gu-animator src attribute
-    // TODO: Possibly do this within a different lifecycle event
-    console.log('GuAnimator::firstUpdated()', this.container, this.container.value);
     if (this.src && this.currentSrc != this.src) {
       this.loadAnimation(this.src);
     }

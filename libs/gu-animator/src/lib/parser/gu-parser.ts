@@ -69,7 +69,6 @@ export class GuParser {
   private loadBodymovinJson() {
     return new Promise<any[]>((resolve, reject) => {
       // Create lottie animation and hook into loading state
-      console.log('body movin asset', this.animationAsset);
       const animation = {
         meta: {
           ...this.animationAsset,
@@ -78,8 +77,8 @@ export class GuParser {
         totalFrames: 0,
         frameRate: 0,
         play: function () {
-          // this.config.loaders.lottie.play()
-          console.log('this play', this.meta.timeline.play());
+          // play via gsap
+          this.meta.timeline && this.meta.timeline.play();
         },
         stop: () => this.config.loaders.lottie.stop(),
         pause: () => this.config.loaders.lottie.pause(),
@@ -118,7 +117,7 @@ export class GuParser {
       });
 
       animation.instance.addEventListener('error', (error: any) => {
-        console.log(error, 'error');
+        console.error(error);
         reject('error loading');
       });
     });

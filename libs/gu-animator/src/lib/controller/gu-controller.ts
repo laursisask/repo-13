@@ -153,29 +153,17 @@ export class GuController {
           repeat: animation.meta.repeat,
           onUpdateParams: [animation],
           onUpdate: function(targetAnimation) {
-            // console.log('Animating tween', animation.meta.id, targetAnimation, totalDuration / 1000);
             const nextMoment = Math.floor(totalDuration * this.progress());
-
-            // console.log('Animating', targetAnimation.instance, nextMoment);
             targetAnimation.instance.goToAndStop(nextMoment); // in milliseconds
             // checkFrame(this, anim, nextMoment);
-          },
-          onComplete: function() {
-            console.log('Animating Complete', animation.meta.timeline.repeat());
-            // if (!isNaN(animation.meta.repeat)) {
-            //   animation.meta.timeline.play(0);
-            // }
           }
         });
         animation.meta.timeline = animationTween;
-        console.log('Set repeat', animation);
-        // if (!isNaN(animation.meta.repeat)) {
-        //   animation.meta.timeline.repeat(animation.meta.repeat);
-        // }
+
+        // TODO: parse the timeline and build into root
         // this.rootTimeline?.add(animationTween, 0);
       });
     } else {
-      console.log('Set animation', this.animations, this.config);
       // animation.play();
       // const animation = animations[0];
       // const totalDuration = (animation.totalFrames / animation.frameRate) * 1000;
