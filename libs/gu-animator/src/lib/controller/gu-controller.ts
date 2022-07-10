@@ -10,7 +10,7 @@ import { PixiPlugin } from 'gsap/PixiPlugin';
 
 gsap.registerPlugin(PixiPlugin, GSDevTools);
 PixiPlugin.registerPIXI(PIXI);
-PIXI.Loader.registerPlugin(AnimatedGIFLoader);
+// PIXI.Loader.registerPlugin(AnimatedGIFLoader);
 
 /**
  * GU Animator Controller.

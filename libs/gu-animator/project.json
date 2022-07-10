@@ -29,22 +29,22 @@
       }
     },
     "package": {
-      "build": {
-        "executor": "@nrwl/web:rollup",
-        "outputs": [
-          "{options.outputPath}"
+      "executor": "@nrwl/web:rollup",
+      "outputs": [
+        "{options.outputPath}"
+      ],
+      "options": {
+        "deleteOutputPath": true,
+        "outputPath": "packages/gu-animator",
+        "tsConfig": "libs/gu-animator/tsconfig.lib.json",
+        "rollupConfig": "libs/gu-animator/rollup.config.js",
+        "project": "libs/gu-animator/package.json",
+        "entryFile": "libs/gu-animator/src/index.ts",
+        "format": [
+          "esm",
+          "umd"
         ],
-        "options": {
-          "outputPath": "dist/packages/gu-animator",
-          "tsConfig": "libs/gu-animator/tsconfig.lib.json",
-          "project": "libs/gu-animator/package.json",
-          "entryFile": "libs/gu-animator/src/index.ts",
-          "rollupConfig": "libs/gu-animator/rollup.config.js",
-          "format": [
-            "esm",
-            "cjs"
-          ]
-        }
+        "external": []
       }
     }
   },

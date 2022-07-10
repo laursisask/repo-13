@@ -1,5 +1,5 @@
 import './app.element.scss';
-import '@immutable/gu-animator';
+// import '@immutable/gu-animator';
 import { html, LitElement } from 'lit';
 import { Ref, createRef, ref } from 'lit/directives/ref.js';
 import { customElement, eventOptions } from 'lit/decorators.js';
@@ -27,10 +27,9 @@ export class AppElement extends LitElement {
     timeline.repeat = -1;
     timeline.play();
 
-
-    let forcex = 0;
-    let forcey = 0;
-    let magnet = 1500;
+    // let forcex = 0;
+    // let forcey = 0;
+    // let magnet = 1500;
 
     document.addEventListener('mousemove', (e) => {
       const rect = guAnimator.getBoundingClientRect();
