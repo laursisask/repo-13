@@ -6,9 +6,13 @@ import { customElement, eventOptions } from 'lit/decorators.js';
 import { gsap, Power1 } from 'gsap';
 import { PixiPlugin } from 'gsap/all';
 import * as PIXI from 'pixi.js';
+import { InteractionEvent } from "pixi.js";
 
 gsap.registerPlugin(PixiPlugin);
 PixiPlugin.registerPIXI(PIXI);
+
+// Scale mode for all textures, will retain pixelation
+PIXI.settings.SCALE_MODE = PIXI.SCALE_MODES.NEAREST;
 
 @customElement('animator-examples')
 export class AppElement extends LitElement {
@@ -39,16 +43,16 @@ export class AppElement extends LitElement {
       this.home.x = comp.baseElement.x;
       this.home.y = comp.baseElement.y;
       comp.baseElement.interactive = true;
+      comp.baseElement.buttonMode = true;
+      comp.baseElement.on('pointerdown', (e) => {
+        this.openPack(e);
+      });
     }
 
     // Make stage interactive so you can click on it too
     const pixiApp = pack.instance.renderer.pixiApplication;
     pixiApp.stage.interactive = true;
     pixiApp.stage.hitArea = pixiApp.renderer.screen;
-
-    // pixiApp.stage.addEventListener('click', (e) => {
-    //   console.log('Pixi click', e);
-    // });
 
     // Hover animation
     const tlCan = gsap.timeline({repeat:-1, yoyo: true, paused: false});
@@ -102,7 +106,7 @@ export class AppElement extends LitElement {
     `;
   }
 
-  private openPack(e: MouseEvent) {
+  private openPack(e: MouseEvent | InteractionEvent) {
 
     // Open the pack
     const guAnimator = this.animatorRef.value as any;
