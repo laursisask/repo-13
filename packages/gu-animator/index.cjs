@@ -83589,43 +83589,14 @@ else
 	          repeat: animation.meta.repeat,
 	          onUpdateParams: [animation],
 	          onUpdate: function (targetAnimation) {
-	            // console.log('Animating tween', animation.meta.id, targetAnimation, totalDuration / 1000);
-	            const nextMoment = Math.floor(totalDuration * this.progress()); // console.log('Animating', targetAnimation.instance, nextMoment);
-
+	            const nextMoment = Math.floor(totalDuration * this.progress());
 	            targetAnimation.instance.goToAndStop(nextMoment); // in milliseconds
 	            // checkFrame(this, anim, nextMoment);
-	          },
-	          onComplete: function () {
-	            console.log('Animating Complete', animation.meta.timeline.repeat()); // if (!isNaN(animation.meta.repeat)) {
-	            //   animation.meta.timeline.play(0);
-	            // }
 	          }
 	        });
-	        animation.meta.timeline = animationTween;
-	        console.log('Set repeat', animation); // if (!isNaN(animation.meta.repeat)) {
-	        //   animation.meta.timeline.repeat(animation.meta.repeat);
-	        // }
+	        animation.meta.timeline = animationTween; // TODO: parse the timeline and build into root
 	        // this.rootTimeline?.add(animationTween, 0);
 	      });
-	    } else {
-	      console.log('Set animation', this.animations, this.config); // animation.play();
-	      // const animation = animations[0];
-	      // const totalDuration = (animation.totalFrames / animation.frameRate) * 1000;
-	      // this.rootTimeline = gsap.timeline({
-	      //   id: 'root',
-	      //   x : 1,
-	      //   duration : (totalDuration / 1000),
-	      //   repeat : 10,
-	      //   yoyo : true,
-	      //   paused : true,
-	      //   ease : Sine.easeOut,
-	      //   onUpdateParams : [animation],
-	      //   onUpdate : function(targetAnimation) {
-	      //     const nextMoment = Math.floor(totalDuration * this.progress());
-	      //     targetAnimation.goToAndStop(nextMoment); // in milliseconds
-	      //     // checkFrame(this, anim, nextMoment);
-	      //   },
-	      // });
 	    } // TODO: Move this debug stuff below into browser extension
 	    // GSAP timeline tool
 	    // GSDevTools.create(); // { animation: this.rootTimeline }
@@ -83881,7 +83852,6 @@ else
 	  loadBodymovinJson() {
 	    return new Promise((resolve, reject) => {
 	      // Create lottie animation and hook into loading state
-	      console.log('body movin asset', this.animationAsset);
 	      const animation = {
 	        meta: Object.assign(Object.assign({}, this.animationAsset), {
 	          frame: 0
@@ -83889,8 +83859,8 @@ else
 	        totalFrames: 0,
 	        frameRate: 0,
 	        play: function () {
-	          // this.config.loaders.lottie.play()
-	          console.log('this play', this.meta.timeline.play());
+	          // play via gsap
+	          this.meta.timeline && this.meta.timeline.play();
 	        },
 	        stop: () => this.config.loaders.lottie.stop(),
 	        pause: () => this.config.loaders.lottie.pause(),
@@ -83925,7 +83895,7 @@ else
 	        reject('error failed load');
 	      });
 	      animation.instance.addEventListener('error', error => {
-	        console.log(error, 'error');
+	        console.error(error);
 	        reject('error loading');
 	      });
 	    });
@@ -84006,7 +83976,8 @@ else
 	      this.controller = new GuController({
 	        container: this.container.value
 	      });
-	    }
+	    } // Bootstrap the gu-animator parser
+
 
 	    if (!this.parser) {
 	      this.parser = new GuParser({
@@ -84017,10 +83988,7 @@ else
 	        wrapper: this.container.value
 	      });
 	    } // Auto load the gu-animator src attribute
-	    // TODO: Possibly do this within a different lifecycle event
 
-
-	    console.log('GuAnimator::firstUpdated()', this.container, this.container.value);
 
 	    if (this.src && this.currentSrc != this.src) {
 	      this.loadAnimation(this.src);
