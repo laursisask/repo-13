@@ -25,6 +25,7 @@ jobs:
         run: npm test
       # Publish to npm if this version is not published
       - name: Publish
+        run: npm config set '//npm.pkg.github.com/:_authToken' "${GU_PACKAGES_GITHUB_TOKEN}"
         run: |
           npx can-npm-publish packages/gu-animator --verbose && npm publish packages/gu-animator --access restricted || echo "Does not publish"
         env:
