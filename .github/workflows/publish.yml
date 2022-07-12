@@ -31,7 +31,7 @@ jobs:
           NODE_AUTH_TOKEN: ${{ secrets.GU_PACKAGES_GITHUB_TOKEN }}
       # Push tag to GitHub if the version's tag is not tagged
       - name: package-version
-        run: node -p -e '`PACKAGE_VERSION=${require("./package.json").version}`' >> $GITHUB_ENV
+        run: node -p -e '`PACKAGE_VERSION=${require("./libs/gu-animator/package.json").version}`' >> $GITHUB_ENV
       - name: package-version-to-git-tag
         uses: pkgdeps/git-tag-action@v2
         with:
