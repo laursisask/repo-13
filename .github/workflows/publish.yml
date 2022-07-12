@@ -23,14 +23,16 @@ jobs:
         run: npm install
       - name: test
         run: npm test
-      - name: Configure deployment
-        run: npm config set '//npm.pkg.github.com/:_authToken' "${GU_PACKAGES_GITHUB_TOKEN}"
+      - name: test config
+        script:
+          - echo "npm config set \"//npm.pkg.github.com/:_authToken\" $GU_PACKAGES_GITHUB_TOKEN"
+          - npm config set "//npm.pkg.github.com/:_authToken" $GU_PACKAGES_GITHUB_TOKEN
       # Publish to npm if this version is not published
       - name: Publish
         run: |
           npx can-npm-publish packages/gu-animator --verbose && npm publish packages/gu-animator --access restricted || echo "Does not publish"
         env:
-          NODE_AUTH_TOKEN: ${{ secrets.GU_PACKAGES_GITHUB_TOKEN }}
+          GU_PACKAGES_GITHUB_TOKEN: ${{ secrets.GU_PACKAGES_GITHUB_TOKEN }}
       # Push tag to GitHub if the version's tag is not tagged
       - name: package-version
         run: node -p -e '`PACKAGE_VERSION=${require("./package.json").version}`' >> $GITHUB_ENV
