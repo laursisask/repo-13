@@ -16,9 +16,13 @@
         "main": "apps/examples/src/main.ts",
         "polyfills": "apps/examples/src/polyfills.ts",
         "tsConfig": "apps/examples/tsconfig.app.json",
-        "assets": ["apps/examples/src/favicon.ico", "apps/examples/src/assets"],
+        "assets": [
+          "apps/examples/src/favicon.ico",
+          "apps/examples/src/assets"
+        ],
         "styles": ["apps/examples/src/styles.scss"],
-        "scripts": []
+        "scripts": [],
+        "webpackConfig": "apps/examples/custom-webpack.config.js"
       },
       "configurations": {
         "production": {

@@ -20,17 +20,21 @@ export class GuParser {
 
     if (Object.keys(this.rootJson).includes('timeline')) {
       return this.loadGuAnimatorJson();
+
     } else if (Object.keys(this.rootJson).includes('ddd')) {
       return this.loadBodymovinJson();
+
+    } else {
+
+      // TODO: Spine Animation support
+      // if (Object.keys(this.rootJson).includes('skeleton')) {
+      // // returns pixi animation instance
+      //   return this.loaders.pixi.loadAnimation(this.rootJson);
+      // }
+
+      console.warn('Unknown JSON to parse', url);
+      return Promise.resolve([]);
     }
-
-    // TODO: Spine Animation support
-    // if (Object.keys(this.rootJson).includes('skeleton')) {
-    // // returns pixi animation instance
-    //   return this.loaders.pixi.loadAnimation(this.rootJson);
-    // }
-
-    return Promise.resolve([]);
   }
 
   private loadGuAnimatorJson() {
@@ -68,8 +72,14 @@ export class GuParser {
       const animation = {
         meta: {
           ...this.animationAsset,
+          frame: 0,
         },
-        play: () => this.config.loaders.lottie.play(),
+        totalFrames: 0,
+        frameRate: 0,
+        play: function () {
+          // play via gsap
+          this.meta.timeline && this.meta.timeline.play();
+        },
         stop: () => this.config.loaders.lottie.stop(),
         pause: () => this.config.loaders.lottie.pause(),
         setSpeed: (speed: number) => this.config.loaders.lottie.setSpeed(speed),
@@ -97,6 +107,8 @@ export class GuParser {
       };
 
       animation.instance.addEventListener('DOMLoaded', () => {
+        animation.totalFrames = animation.instance.totalFrames;
+        animation.frameRate = animation.instance.frameRate;
         resolve([animation]);
       });
 
@@ -105,7 +117,7 @@ export class GuParser {
       });
 
       animation.instance.addEventListener('error', (error: any) => {
-        console.log(error, 'error');
+        console.error(error);
         reject('error loading');
       });
     });

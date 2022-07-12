@@ -1,6 +1,6 @@
 {
   "name": "@immutable/gu-animator",
-  "version": "0.1.2",
+  "version": "0.1.4",
   "description": "Gods Unchained animation system",
   "license": "UNLICENSED",
   "author": "immutable",
@@ -17,21 +17,13 @@
     "url": "https://github.com/immutable/gu-animator.git",
     "directory": "packages/gu-animator"
   },
-  "bundleDependencies": [
+  "peerDependencies": [
     "pixi.js",
-    "@pixi/gif",
-    "lottie-web",
-    "gsap"
+    "@pixi/gif"
   ],
-  "main": "./src/index.js",
-  "typings": "./src/index.d.ts",
-  "dependencies": {},
-  "peerDependencies": {
-    "pixi.js": "^6.3.2",
-    "gsap": "file:gsap-bonus.tgz",
-    "@pixi/gif": "^1.0.2",
-    "lottie-web": "git+https://github.com/immutable/lottie-web.git",
-    "lit": "^2.2.6",
-    "tslib": "^2.0.0"
-  }
+  "module": "./index.js",
+  "main": "./index.cjs",
+  "type": "module",
+  "types": "./index.d.ts",
+  "dependencies": {}
 }
