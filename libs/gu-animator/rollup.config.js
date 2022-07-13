@@ -19,7 +19,9 @@ module.exports = (config) => {
     '@pixi/gif': 'PIXI',
     'lit/directives/ref.js': 'lit',
     'lit/decorators.js': 'lit',
-    'gsap/PixiPlugin': 'gsap'
+    // 'gsap': 'gsap',
+    // 'gsap/all': 'gsap',
+    // 'gsap/PixiPlugin': 'gsap'
   };
 
   const bundled = [
@@ -30,8 +32,6 @@ module.exports = (config) => {
     'gsap/PixiPlugin',
     'lottie-web',
   ];
-  //    'pixi.js'
-  //    '@pixi/gif'
 
   return {
     ...config,

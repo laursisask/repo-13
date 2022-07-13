@@ -22,7 +22,7 @@
     "pixi.js": "^6.3.2",
     "@pixi/gif": "^1.0.2",
     "@pixi/picture": "^3.0.5",
-    "lottie-web": "git+https://github.com/immutable/lottie-web.git",
+    "lottie-web": "git+https://github.com/immutable/lottie-web.git#v5.9.6",
     "lit": "^2.2.6"
   },
   "module": "./index.js",

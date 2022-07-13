@@ -1,5 +1,5 @@
 import './app.element.scss';
-// import '@immutable/gu-animator';
+import '@immutable/gu-animator';
 import { html, LitElement } from 'lit';
 import { Ref, createRef, ref } from 'lit/directives/ref.js';
 import { customElement, eventOptions } from 'lit/decorators.js';
