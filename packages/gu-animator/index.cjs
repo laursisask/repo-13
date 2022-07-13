@@ -1,8 +1,8 @@
 (function (global, factory) {
-	typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('pixi.js'), require('gsap'), require('gsap/GSDevTools'), require('gsap/PixiPlugin')) :
-	typeof define === 'function' && define.amd ? define(['exports', 'pixi.js', 'gsap', 'gsap/GSDevTools', 'gsap/PixiPlugin'], factory) :
-	(global = typeof globalThis !== 'undefined' ? globalThis : global || self, factory(global.GuAnimator = {}, global.PIXI, global.gsap, global.gsap, global.gsap));
-})(this, (function (exports, PIXI, gsap, GSDevTools, PixiPlugin) { 'use strict';
+	typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('pixi.js'), require('gsap'), require('gsap/PixiPlugin')) :
+	typeof define === 'function' && define.amd ? define(['exports', 'pixi.js', 'gsap', 'gsap/PixiPlugin'], factory) :
+	(global = typeof globalThis !== 'undefined' ? globalThis : global || self, factory(global.GuAnimator = {}, global.PIXI, global.gsap, global.gsap));
+})(this, (function (exports, PIXI, gsap, PixiPlugin) { 'use strict';
 
 	function _interopNamespace(e) {
 		if (e && e.__esModule) return e;
@@ -72871,7 +72871,8 @@ else
 
 	var Lottie = /*@__PURE__*/getDefaultExportFromCjs(lottie.exports);
 
-	gsap.gsap.registerPlugin(PixiPlugin.PixiPlugin, GSDevTools.GSDevTools);
+	gsap.gsap.registerPlugin(PixiPlugin.PixiPlugin); // GSDevTools
+
 	PixiPlugin.PixiPlugin.registerPIXI(PIXI__namespace); // PIXI.Loader.registerPlugin(AnimatedGIFLoader);
 
 	/**

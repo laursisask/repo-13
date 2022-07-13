@@ -5,10 +5,10 @@ import { gsap, Sine } from 'gsap';
 import { AnimatedGIFLoader } from '@pixi/gif';
 import Lottie from 'lottie-web';
 import * as PIXI from 'pixi.js';
-import { GSDevTools } from 'gsap/GSDevTools';
+// import { GSDevTools } from 'gsap/GSDevTools';
 import { PixiPlugin } from 'gsap/PixiPlugin';
 
-gsap.registerPlugin(PixiPlugin, GSDevTools);
+gsap.registerPlugin(PixiPlugin); // GSDevTools
 PixiPlugin.registerPIXI(PIXI);
 // PIXI.Loader.registerPlugin(AnimatedGIFLoader);
 

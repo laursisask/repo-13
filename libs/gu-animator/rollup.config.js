@@ -19,7 +19,6 @@ module.exports = (config) => {
     '@pixi/gif': 'PIXI',
     'lit/directives/ref.js': 'lit',
     'lit/decorators.js': 'lit',
-    'gsap/GSDevTools': 'gsap',
     'gsap/PixiPlugin': 'gsap'
   };
 
@@ -28,7 +27,6 @@ module.exports = (config) => {
     'lit/decorators.js',
     'lit',
     'gsap',
-    'gsap/GSDevTools',
     'gsap/PixiPlugin',
     'lottie-web',
   ];

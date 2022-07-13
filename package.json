@@ -27,7 +27,7 @@
     "@pixi/gif": "^1.0.2",
     "@pixi/picture": "^3.0.5",
     "core-js": "^3.23.1",
-    "gsap": "file:vendor/gsap-bonus.tgz",
+    "gsap": "^3.10.4",
     "lit": "^2.2.6",
     "lottie-web": "git+https://github.com/immutable/lottie-web.git",
     "pixi.js": "^6.3.2",

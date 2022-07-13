@@ -1,7 +1,6 @@
 import * as PIXI from 'pixi.js';
 import { Application } from 'pixi.js';
 import { gsap } from 'gsap';
-import { GSDevTools } from 'gsap/GSDevTools';
 import { PixiPlugin } from 'gsap/PixiPlugin';
 
 var commonjsGlobal = typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {};
@@ -72851,7 +72850,8 @@ else
 
 var Lottie = /*@__PURE__*/getDefaultExportFromCjs(lottie.exports);
 
-gsap.registerPlugin(PixiPlugin, GSDevTools);
+gsap.registerPlugin(PixiPlugin); // GSDevTools
+
 PixiPlugin.registerPIXI(PIXI); // PIXI.Loader.registerPlugin(AnimatedGIFLoader);
 
 /**
