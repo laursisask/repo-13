@@ -26,6 +26,8 @@ jobs:
       - name: Npm github registry configuration
         run: |
           echo "npm config set \"//npm.pkg.github.com/:_authToken\" $GU_PACKAGES_GITHUB_TOKEN" && npm config set "//npm.pkg.github.com/:_authToken" $GU_PACKAGES_GITHUB_TOKEN
+        env:
+          GU_PACKAGES_GITHUB_TOKEN: ${{ secrets.GU_PACKAGES_GITHUB_TOKEN }}
       # Publish to npm if this version is not published
       - name: Publish
         run: |
