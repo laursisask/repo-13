@@ -32,8 +32,6 @@ jobs:
       - name: Publish
         run: |
           npx can-npm-publish packages/gu-animator --verbose && npm publish packages/gu-animator --access restricted || echo "Does not publish"
-        env:
-          GU_PACKAGES_GITHUB_TOKEN: ${{ secrets.GU_PACKAGES_GITHUB_TOKEN }}
       # Push tag to GitHub if the version's tag is not tagged
       - name: package-version
         run: node -p -e '`PACKAGE_VERSION=${require("./package.json").version}`' >> $GITHUB_ENV
