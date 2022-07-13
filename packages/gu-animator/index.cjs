@@ -1,7 +1,7 @@
 (function (global, factory) {
 	typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('pixi.js'), require('gsap'), require('gsap/PixiPlugin')) :
 	typeof define === 'function' && define.amd ? define(['exports', 'pixi.js', 'gsap', 'gsap/PixiPlugin'], factory) :
-	(global = typeof globalThis !== 'undefined' ? globalThis : global || self, factory(global.GuAnimator = {}, global.PIXI, global.gsap, global.PixiPlugin));
+	(global = typeof globalThis !== 'undefined' ? globalThis : global || self, factory(global.GuAnimator = {}, global.PIXI, global.gsap, global.gsap));
 })(this, (function (exports, PIXI, gsap, PixiPlugin) { 'use strict';
 
 	function _interopNamespace(e) {

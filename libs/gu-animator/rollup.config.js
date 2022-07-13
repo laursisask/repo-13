@@ -19,9 +19,9 @@ module.exports = (config) => {
     '@pixi/gif': 'PIXI',
     'lit/directives/ref.js': 'lit',
     'lit/decorators.js': 'lit',
-    // 'gsap': 'gsap',
-    // 'gsap/all': 'gsap',
-    // 'gsap/PixiPlugin': 'gsap'
+    'gsap': 'gsap',
+    'gsap/all': 'gsap',
+    'gsap/PixiPlugin': 'gsap'
   };
 
   const bundled = [
