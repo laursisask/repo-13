@@ -6,10 +6,13 @@ import { customElement, eventOptions } from 'lit/decorators.js';
 import { gsap, Power1 } from 'gsap';
 import { PixiPlugin } from 'gsap/all';
 import * as PIXI from 'pixi.js';
-import { InteractionEvent } from "pixi.js";
+import { InteractionEvent, BLEND_MODES } from "pixi.js";
+import { blendFullArray } from '@pixi/picture';
 
 gsap.registerPlugin(PixiPlugin);
 PixiPlugin.registerPIXI(PIXI);
+
+const customBlendModes = [blendFullArray[BLEND_MODES.LIGHTEN]];
 
 // Scale mode for all textures, will retain pixelation
 PIXI.settings.SCALE_MODE = PIXI.SCALE_MODES.NEAREST;
