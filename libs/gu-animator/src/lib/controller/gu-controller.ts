@@ -24,6 +24,8 @@ export class GuController {
   public animations: any[] = [];
   public rootTimeline: gsap.core.Timeline | undefined;
 
+  public onMarker: any;
+
   constructor(config: GuConfig) {
     if (!config) {
       throw new Error('Invalid gu-animator configuration.');
@@ -96,6 +98,82 @@ export class GuController {
     return Lottie;
   }
 
+  private defineAnimations(animations: any) {
+    console.log('GUController::set animations()', animations);
+    if (animations.length > 0) {
+      animations.forEach((animation: any) => {
+        const totalDuration = (animation.totalFrames / animation.frameRate) * 1000;
+        const target = { frame: 0 };
+        const animationTimeline = gsap.timeline();
+        const animationTween = animationTimeline.to(target, {
+          id: animation.meta.id,
+          duration: (totalDuration / 1000),
+          frame: 5,
+          paused: true,
+          repeat: animation.meta.repeat,
+          onUpdateParams: [animation],
+          onUpdate: function(targetAnimation) {
+            const nextMoment = Math.floor(totalDuration * this.progress());
+            targetAnimation.instance.goToAndStop(nextMoment); // in milliseconds
+            // checkFrame(this, anim, nextMoment);
+          }
+        });
+        console.log('*** GUController::timeline', animationTimeline);
+        animation.meta.timeline = animationTimeline;
+
+        console.log('>> GUController::animation meta', animation);
+        const markers = animation.instance.markers;
+        if (markers?.length > 0) {
+          markers.forEach((marker: any) => {
+
+            // TODO: Switch out composition tweens to timelines.
+            const markerTime = marker.time / animation.frameRate;
+
+            console.log('GUController::marker setup', marker, markerTime, animation.meta.timeline);
+
+            animation.meta.timeline.addLabel('charlie', 1);
+            animation.meta.timeline.call((x: string, t: any) => {
+              console.log('GUController::hit the frame', x, t.currentLabel());
+              if (this.onMarker) {
+                this.onMarker(x, t.currentLabel);
+              }
+            }, ['charlie', animation.meta.timeline], 1);
+
+            animation.meta.timeline.addLabel(marker.payload.name, marker.time);
+            animation.meta.timeline.call((x: string, t: any) => {
+              console.log('GUController::Meta frame', x, t.currentLabel());
+              if (this.onMarker) {
+                this.onMarker(x, t.currentLabel);
+              }
+            }, [marker.payload.name, animation.meta.timeline], markerTime);
+          });
+        }
+
+        // TODO: parse the timeline and build into root
+        // this.rootTimeline?.add(animationTween, 0);
+      });
+    } else {
+      // animation.play();
+      // const animation = animations[0];
+      // const totalDuration = (animation.totalFrames / animation.frameRate) * 1000;
+      // this.rootTimeline = gsap.timeline({
+      //   id: 'root',
+      //   x : 1,
+      //   duration : (totalDuration / 1000),
+      //   repeat : 10,
+      //   yoyo : true,
+      //   paused : true,
+      //   ease : Sine.easeOut,
+      //   onUpdateParams : [animation],
+      //   onUpdate : function(targetAnimation) {
+      //     const nextMoment = Math.floor(totalDuration * this.progress());
+      //     targetAnimation.goToAndStop(nextMoment); // in milliseconds
+      //     // checkFrame(this, anim, nextMoment);
+      //   },
+      // });
+    }
+  }
+
   public getPixi() {
     return this.applications.pixi;
   }
@@ -141,48 +219,7 @@ export class GuController {
     });
 
     // Define tweens for all the animations
-    if (animations.length > 0) {
-      animations.forEach((animation: any) => {
-        const totalDuration = (animation.totalFrames / animation.frameRate) * 1000;
-        const target = { frame: 0 };
-        const animationTween = gsap.to(target,{
-          id: animation.meta.id,
-          duration: (totalDuration / 1000),
-          frame: 5,
-          paused: true,
-          repeat: animation.meta.repeat,
-          onUpdateParams: [animation],
-          onUpdate: function(targetAnimation) {
-            const nextMoment = Math.floor(totalDuration * this.progress());
-            targetAnimation.instance.goToAndStop(nextMoment); // in milliseconds
-            // checkFrame(this, anim, nextMoment);
-          }
-        });
-        animation.meta.timeline = animationTween;
-
-        // TODO: parse the timeline and build into root
-        // this.rootTimeline?.add(animationTween, 0);
-      });
-    } else {
-      // animation.play();
-      // const animation = animations[0];
-      // const totalDuration = (animation.totalFrames / animation.frameRate) * 1000;
-      // this.rootTimeline = gsap.timeline({
-      //   id: 'root',
-      //   x : 1,
-      //   duration : (totalDuration / 1000),
-      //   repeat : 10,
-      //   yoyo : true,
-      //   paused : true,
-      //   ease : Sine.easeOut,
-      //   onUpdateParams : [animation],
-      //   onUpdate : function(targetAnimation) {
-      //     const nextMoment = Math.floor(totalDuration * this.progress());
-      //     targetAnimation.goToAndStop(nextMoment); // in milliseconds
-      //     // checkFrame(this, anim, nextMoment);
-      //   },
-      // });
-    }
+    this.defineAnimations(animations);
 
     // TODO: Move this debug stuff below into browser extension
     // GSAP timeline tool

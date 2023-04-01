@@ -6,10 +6,13 @@ import { customElement, eventOptions } from 'lit/decorators.js';
 import { gsap, Power1 } from 'gsap';
 import { PixiPlugin } from 'gsap/all';
 import * as PIXI from 'pixi.js';
-import { InteractionEvent } from "pixi.js";
+import { InteractionEvent, BLEND_MODES } from "pixi.js";
+import { blendFullArray } from '@pixi/picture';
 
 gsap.registerPlugin(PixiPlugin);
 PixiPlugin.registerPIXI(PIXI);
+
+const customBlendModes = [blendFullArray[BLEND_MODES.LIGHTEN]];
 
 // Scale mode for all textures, will retain pixelation
 PIXI.settings.SCALE_MODE = PIXI.SCALE_MODES.NEAREST;
@@ -49,6 +52,11 @@ export class AppElement extends LitElement {
       });
     }
 
+    // pack.meta.timeline.addLabel('charlie', 1);
+    // pack.meta.timeline.call((x, t) => {
+    //   console.log('hit the frame', x, t.currentLabel());
+    // }, ['charlie', pack.meta.timeline], 1);
+
     // Make stage interactive so you can click on it too
     const pixiApp = pack.instance.renderer.pixiApplication;
     pixiApp.stage.interactive = true;
@@ -81,6 +89,11 @@ export class AppElement extends LitElement {
     console.log('Examples error:', event);
   }
 
+  @eventOptions({ passive: true })
+  onMarker(event) {
+    console.log('Examples marker:', event);
+  }
+
   override render() {
     const title = 'GU Animator examples';
     return html`
@@ -99,6 +112,7 @@ export class AppElement extends LitElement {
             src="/assets/gu-animator-pack-opening/data.json"
             @loaded=${this.onLoaded}
             @loading=${this.onLoading}
+            @marker=${this.onMarker}
             @error=${this.onError}
           ></gu-animator>
         </div>

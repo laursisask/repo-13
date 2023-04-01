@@ -9,6 +9,7 @@ export declare class GuController {
     private config;
     animations: any[];
     rootTimeline: gsap.core.Timeline | undefined;
+    onMarker: any;
     constructor(config: GuConfig);
     /**
      * Init the GU Animator.
@@ -23,6 +24,7 @@ export declare class GuController {
      */
     private initPixi;
     private initLottie;
+    private defineAnimations;
     getPixi(): any;
     /**
      * Returns a reference to Lottie.

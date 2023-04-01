@@ -70505,6 +70505,63 @@ class GuController {
     return Lottie;
   }
 
+  defineAnimations(animations) {
+    console.log('GUController::set animations()', animations);
+
+    if (animations.length > 0) {
+      animations.forEach(animation => {
+        const totalDuration = animation.totalFrames / animation.frameRate * 1000;
+        const target = {
+          frame: 0
+        };
+        const animationTimeline = gsap.timeline();
+        animationTimeline.to(target, {
+          id: animation.meta.id,
+          duration: totalDuration / 1000,
+          frame: 5,
+          paused: true,
+          repeat: animation.meta.repeat,
+          onUpdateParams: [animation],
+          onUpdate: function (targetAnimation) {
+            const nextMoment = Math.floor(totalDuration * this.progress());
+            targetAnimation.instance.goToAndStop(nextMoment); // in milliseconds
+            // checkFrame(this, anim, nextMoment);
+          }
+        });
+        console.log('*** GUController::timeline', animationTimeline);
+        animation.meta.timeline = animationTimeline;
+        console.log('>> GUController::animation meta', animation);
+        const markers = animation.instance.markers;
+
+        if ((markers === null || markers === void 0 ? void 0 : markers.length) > 0) {
+          markers.forEach(marker => {
+            // TODO: Switch out composition tweens to timelines.
+            const markerTime = marker.time / animation.frameRate;
+            console.log('GUController::marker setup', marker, markerTime, animation.meta.timeline);
+            animation.meta.timeline.addLabel('charlie', 1);
+            animation.meta.timeline.call((x, t) => {
+              console.log('GUController::hit the frame', x, t.currentLabel());
+
+              if (this.onMarker) {
+                this.onMarker(x, t.currentLabel);
+              }
+            }, ['charlie', animation.meta.timeline], 1);
+            animation.meta.timeline.addLabel(marker.payload.name, marker.time);
+            animation.meta.timeline.call((x, t) => {
+              console.log('GUController::Meta frame', x, t.currentLabel());
+
+              if (this.onMarker) {
+                this.onMarker(x, t.currentLabel);
+              }
+            }, [marker.payload.name, animation.meta.timeline], markerTime);
+          });
+        } // TODO: parse the timeline and build into root
+        // this.rootTimeline?.add(animationTween, 0);
+
+      });
+    }
+  }
+
   getPixi() {
     return this.applications.pixi;
   }
@@ -70548,32 +70605,9 @@ class GuController {
       }
     }); // Define tweens for all the animations
 
-    if (animations.length > 0) {
-      animations.forEach(animation => {
-        const totalDuration = animation.totalFrames / animation.frameRate * 1000;
-        const target = {
-          frame: 0
-        };
-        const animationTween = gsap.to(target, {
-          id: animation.meta.id,
-          duration: totalDuration / 1000,
-          frame: 5,
-          paused: true,
-          repeat: animation.meta.repeat,
-          onUpdateParams: [animation],
-          onUpdate: function (targetAnimation) {
-            const nextMoment = Math.floor(totalDuration * this.progress());
-            targetAnimation.instance.goToAndStop(nextMoment); // in milliseconds
-            // checkFrame(this, anim, nextMoment);
-          }
-        });
-        animation.meta.timeline = animationTween; // TODO: parse the timeline and build into root
-        // this.rootTimeline?.add(animationTween, 0);
-      });
-    } // TODO: Move this debug stuff below into browser extension
+    this.defineAnimations(animations); // TODO: Move this debug stuff below into browser extension
     // GSAP timeline tool
     // GSDevTools.create(); // { animation: this.rootTimeline }
-
 
     const css = '.gs-dev-tools {z-index: 999;}';
     const head = document.head || document.getElementsByTagName('head')[0];
@@ -70904,8 +70938,6 @@ let GuAnimator = class GuAnimator extends s {
 
 
   loadAnimation(url) {
-    var _a;
-
     return __awaiter(this, void 0, void 0, function* () {
       // console.log('GuAnimator::loadAnimation()', url);
       this.currentSrc = url;
@@ -70927,10 +70959,19 @@ let GuAnimator = class GuAnimator extends s {
           }
         });
         this.dispatchEvent(event);
-      } // Wire up the animations for playback
+      } // Wire up the marker events
 
 
-      (_a = this.controller) === null || _a === void 0 ? void 0 : _a.setAnimations(animations);
+      if (this.controller) {
+        this.controller.onMarker = (a, b) => {
+          console.log('GUAnimator::onMarker', a, b);
+          this.marker(a);
+        }; // Wire up the animations for playback
+
+
+        this.controller.setAnimations(animations);
+      }
+
       this.loaded();
       return {
         animations
@@ -71035,6 +71076,24 @@ let GuAnimator = class GuAnimator extends s {
       }
     });
     this.dispatchEvent(loadedEvent);
+  }
+  /**
+   * Dispatch marker event.
+   * @private
+   */
+
+
+  marker(marker) {
+    // Marker
+    const markerEvent = new CustomEvent('marker', {
+      bubbles: true,
+      composed: true,
+      detail: {
+        marker,
+        target: this
+      }
+    });
+    this.dispatchEvent(markerEvent);
   }
 
 };

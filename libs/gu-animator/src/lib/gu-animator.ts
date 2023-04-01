@@ -20,6 +20,11 @@ export interface ErrorEvent {
   target: GuAnimator;
 }
 
+export interface MarkerEvent {
+  marker: any;
+  target: GuAnimator;
+}
+
 @customElement('gu-animator')
 export class GuAnimator extends LitElement {
   @property()
@@ -69,8 +74,16 @@ export class GuAnimator extends LitElement {
       this.dispatchEvent(event);
     }
 
-    // Wire up the animations for playback
-    this.controller?.setAnimations(animations);
+    // Wire up the marker events
+    if (this.controller) {
+      this.controller.onMarker = (a: any, b: any) => {
+        console.log('GUAnimator::onMarker', a, b);
+        this.marker(a);
+      };
+
+      // Wire up the animations for playback
+      this.controller.setAnimations(animations);
+    }
     this.loaded();
 
     return {
@@ -165,6 +178,23 @@ export class GuAnimator extends LitElement {
       },
     });
     this.dispatchEvent(loadedEvent);
+  }
+
+  /**
+   * Dispatch marker event.
+   * @private
+   */
+  private marker(marker: any) {
+    // Marker
+    const markerEvent = new CustomEvent<MarkerEvent>('marker', {
+      bubbles: true,
+      composed: true,
+      detail: {
+        marker,
+        target: this,
+      },
+    });
+    this.dispatchEvent(markerEvent);
   }
 }
 

@@ -17,6 +17,8 @@ module.exports = (config) => {
     '@pixi/display': 'PIXI',
     '@pixi/runner': 'PIXI',
     '@pixi/gif': 'PIXI',
+    '@pixi/filter-shockwave': 'PIXI',
+    '@pixi/picture': 'PIXI',
     'lit/directives/ref.js': 'lit',
     'lit/decorators.js': 'lit',
     'gsap': 'gsap',
