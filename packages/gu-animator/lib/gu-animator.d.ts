@@ -12,6 +12,10 @@ export interface ErrorEvent {
     message: string;
     target: GuAnimator;
 }
+export interface MarkerEvent {
+    marker: any;
+    target: GuAnimator;
+}
 export declare class GuAnimator extends LitElement {
     src: string;
     private container;
@@ -45,6 +49,11 @@ export declare class GuAnimator extends LitElement {
      * @private
      */
     private loaded;
+    /**
+     * Dispatch marker event.
+     * @private
+     */
+    private marker;
 }
 declare global {
     interface HTMLElementTagNameMap {
