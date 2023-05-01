@@ -68,6 +68,9 @@ export class GuParser {
 
   private loadBodymovinJson() {
     return new Promise<any[]>((resolve, reject) => {
+      const assetsPath = this.url.substring(0, this.url.lastIndexOf('/') + 1);
+      console.log('GUParser::loadBodyMovinJson()', this.url, assetsPath);
+
       // Create lottie animation and hook into loading state
       const animation = {
         meta: {
@@ -93,18 +96,20 @@ export class GuParser {
         getDuration: (inFrames: boolean) => this.config.loaders.lottie.getDuration(inFrames),
         instance: this.config.loaders.lottie.loadAnimation({
           wrapper: this.config.wrapper,
-          animType: 'pixi',
-          loop: false,
-          autoplay: false,
+          animType: 'threejs',
+          loop: true,
+          prerender: true,
+          autoplay: true,
           path: this.url,
           rendererSettings: {
             className: 'animation',
             preserveAspectRatio: 'xMidYMid meet',
             clearCanvas: true,
-            pixiApplication: this.config.loaders.pixi,
+            assetsPath: this.config.assetsPath,
           },
         } as any),
       };
+      // pixiApplication: this.config.loaders.pixi,
 
       animation.instance.addEventListener('DOMLoaded', () => {
         animation.totalFrames = animation.instance.totalFrames;

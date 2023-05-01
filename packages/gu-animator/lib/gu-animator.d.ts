@@ -14,6 +14,7 @@ export interface ErrorEvent {
 }
 export interface MarkerEvent {
     marker: any;
+    animation: any;
     target: GuAnimator;
 }
 export declare class GuAnimator extends LitElement {

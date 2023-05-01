@@ -70527,54 +70527,44 @@ else
 	  }
 
 	  defineAnimations(animations) {
-	    console.log('GUController::set animations()', animations);
-
 	    if (animations.length > 0) {
 	      animations.forEach(animation => {
 	        const totalDuration = animation.totalFrames / animation.frameRate * 1000;
 	        const target = {
 	          frame: 0
 	        };
-	        const animationTimeline = gsap.gsap.timeline();
-	        animationTimeline.to(target, {
+	        const animationTimeline = gsap.gsap.timeline({
 	          id: animation.meta.id,
-	          duration: totalDuration / 1000,
-	          frame: 5,
 	          paused: true,
-	          repeat: animation.meta.repeat,
+	          repeat: animation.meta.repeat
+	        }); // Define tween for animation frame
+
+	        animationTimeline.to(target, {
+	          duration: totalDuration / 1000,
+	          frame: 1,
 	          onUpdateParams: [animation],
 	          onUpdate: function (targetAnimation) {
 	            const nextMoment = Math.floor(totalDuration * this.progress());
 	            targetAnimation.instance.goToAndStop(nextMoment); // in milliseconds
-	            // checkFrame(this, anim, nextMoment);
+	            // if (targetAnimation.instance.path === '/assets/pack-opening/') {
+	            //   console.log(targetAnimation.instance.currentFrame, nextMoment);
+	            // }
 	          }
 	        });
-	        console.log('*** GUController::timeline', animationTimeline);
-	        animation.meta.timeline = animationTimeline;
-	        console.log('>> GUController::animation meta', animation);
+	        animation.meta.timeline = animationTimeline; // Convert animation markers to GSAP labels
+
 	        const markers = animation.instance.markers;
 
 	        if ((markers === null || markers === void 0 ? void 0 : markers.length) > 0) {
 	          markers.forEach(marker => {
-	            // TODO: Switch out composition tweens to timelines.
+	            // Convert marker frame to timeline time
 	            const markerTime = marker.time / animation.frameRate;
-	            console.log('GUController::marker setup', marker, markerTime, animation.meta.timeline);
-	            animation.meta.timeline.addLabel('charlie', 1);
-	            animation.meta.timeline.call((x, t) => {
-	              console.log('GUController::hit the frame', x, t.currentLabel());
-
+	            animation.meta.timeline.addLabel(marker.payload.name, markerTime);
+	            animation.meta.timeline.call((payload, anim) => {
 	              if (this.onMarker) {
-	                this.onMarker(x, t.currentLabel);
+	                this.onMarker(payload, anim);
 	              }
-	            }, ['charlie', animation.meta.timeline], 1);
-	            animation.meta.timeline.addLabel(marker.payload.name, marker.time);
-	            animation.meta.timeline.call((x, t) => {
-	              console.log('GUController::Meta frame', x, t.currentLabel());
-
-	              if (this.onMarker) {
-	                this.onMarker(x, t.currentLabel);
-	              }
-	            }, [marker.payload.name, animation.meta.timeline], markerTime);
+	            }, [marker.payload, animation], markerTime);
 	          });
 	        } // TODO: parse the timeline and build into root
 	        // this.rootTimeline?.add(animationTween, 0);
@@ -70645,8 +70635,6 @@ else
 	  }
 
 	  play() {
-	    console.log('GuAnimator::play()', this.rootTimeline);
-
 	    if (this.rootTimeline) {
 	      this.rootTimeline.play();
 	    }
@@ -70984,9 +70972,9 @@ else
 
 
 	      if (this.controller) {
-	        this.controller.onMarker = (a, b) => {
-	          console.log('GUAnimator::onMarker', a, b);
-	          this.marker(a);
+	        this.controller.onMarker = (marker, animation) => {
+	          // console.log('GUAnimator::onMarker', marker, animation);
+	          this.marker(marker, animation);
 	        }; // Wire up the animations for playback
 
 
@@ -71104,13 +71092,14 @@ else
 	   */
 
 
-	  marker(marker) {
+	  marker(marker, animation) {
 	    // Marker
 	    const markerEvent = new CustomEvent('marker', {
 	      bubbles: true,
 	      composed: true,
 	      detail: {
 	        marker,
+	        animation,
 	        target: this
 	      }
 	    });
