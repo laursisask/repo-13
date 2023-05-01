@@ -22,13 +22,22 @@ export interface ErrorEvent {
 
 export interface MarkerEvent {
   marker: any;
+  animation: any;
   target: GuAnimator;
 }
+
+export type GuRenderer = 'pixi' | 'threejs';
 
 @customElement('gu-animator')
 export class GuAnimator extends LitElement {
   @property()
   public src = '';
+
+  @property()
+  public assetsPath = '';
+
+  @property()
+  public renderer: GuRenderer = 'threejs';
 
   private container: Ref<HTMLElement> = createRef();
   private currentSrc = '';
@@ -76,9 +85,9 @@ export class GuAnimator extends LitElement {
 
     // Wire up the marker events
     if (this.controller) {
-      this.controller.onMarker = (a: any, b: any) => {
-        console.log('GUAnimator::onMarker', a, b);
-        this.marker(a);
+      this.controller.onMarker = (marker: any, animation: any) => {
+        // console.log('GUAnimator::onMarker', marker, animation);
+        this.marker(marker, animation);
       };
 
       // Wire up the animations for playback
@@ -105,12 +114,22 @@ export class GuAnimator extends LitElement {
 
     // Bootstrap the gu-animator parser
     if (!this.parser) {
+      let rendererInstance: any;
+      if (this.renderer === 'pixi') {
+
+        rendererInstance = this.controller.getPixi();
+      } else if (this.renderer === 'threejs') {
+
+        rendererInstance = this.controller.getThree();
+      }
+
       this.parser = new GuParser({
-        loaders : {
-          lottie : this.controller.getLottie(),
-          pixi : this.controller.getPixi(),
+        loaders: {
+          lottie: this.controller.getLottie(),
+          [this.renderer]: rendererInstance,
         },
-        wrapper : this.container.value,
+        wrapper: this.container.value,
+        assetsPath: '/assets/bg_camera/' // this.assetsPath,
       });
     }
 
@@ -184,13 +203,14 @@ export class GuAnimator extends LitElement {
    * Dispatch marker event.
    * @private
    */
-  private marker(marker: any) {
+  private marker(marker: any, animation: any) {
     // Marker
     const markerEvent = new CustomEvent<MarkerEvent>('marker', {
       bubbles: true,
       composed: true,
       detail: {
         marker,
+        animation,
         target: this,
       },
     });

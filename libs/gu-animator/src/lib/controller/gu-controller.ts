@@ -48,17 +48,20 @@ export class GuController {
     const SIZEH = 1080;
 
     this.applications = {
-      pixi: this.initPixi({
-        width: SIZEW,
-        height: SIZEH,
-        backgroundColor: 0xff00ff, // pink
-        // backgroundAlpha: 0.5,
-        sharedTicker: true,
-        sharedLoader: true,
-        antialias: false,
-        clearBeforeRender: true,
-        resolution: 1,
-      }),
+      three: this.initThree(),
+
+      // TODO: Abstract out to a renderer application provider
+      // pixi: this.initPixi({
+      //   width: SIZEW,
+      //   height: SIZEH,
+      //   backgroundColor: 0xff00ff, // pink
+      //   // backgroundAlpha: 0.5,
+      //   sharedTicker: true,
+      //   sharedLoader: true,
+      //   antialias: false,
+      //   clearBeforeRender: true,
+      //   resolution: 1,
+      // }),
       lottie: this.initLottie(),
     };
   }
@@ -94,58 +97,53 @@ export class GuController {
     return app;
   }
 
+  private initThree() {
+
+  }
+
   private initLottie() {
     return Lottie;
   }
 
   private defineAnimations(animations: any) {
-    console.log('GUController::set animations()', animations);
     if (animations.length > 0) {
       animations.forEach((animation: any) => {
         const totalDuration = (animation.totalFrames / animation.frameRate) * 1000;
         const target = { frame: 0 };
-        const animationTimeline = gsap.timeline();
-        const animationTween = animationTimeline.to(target, {
+        const animationTimeline = gsap.timeline({
           id: animation.meta.id,
-          duration: (totalDuration / 1000),
-          frame: 5,
           paused: true,
           repeat: animation.meta.repeat,
+        });
+
+        // Define tween for animation frame
+        animationTimeline.to(target, {
+          duration: (totalDuration / 1000),
+          frame: 1,
           onUpdateParams: [animation],
           onUpdate: function(targetAnimation) {
             const nextMoment = Math.floor(totalDuration * this.progress());
             targetAnimation.instance.goToAndStop(nextMoment); // in milliseconds
-            // checkFrame(this, anim, nextMoment);
+            // if (targetAnimation.instance.path === '/assets/pack-opening/') {
+            //   console.log(targetAnimation.instance.currentFrame, nextMoment);
+            // }
           }
         });
-        console.log('*** GUController::timeline', animationTimeline);
         animation.meta.timeline = animationTimeline;
 
-        console.log('>> GUController::animation meta', animation);
+        // Convert animation markers to GSAP labels
         const markers = animation.instance.markers;
         if (markers?.length > 0) {
           markers.forEach((marker: any) => {
 
-            // TODO: Switch out composition tweens to timelines.
+            // Convert marker frame to timeline time
             const markerTime = marker.time / animation.frameRate;
-
-            console.log('GUController::marker setup', marker, markerTime, animation.meta.timeline);
-
-            animation.meta.timeline.addLabel('charlie', 1);
-            animation.meta.timeline.call((x: string, t: any) => {
-              console.log('GUController::hit the frame', x, t.currentLabel());
+            animation.meta.timeline.addLabel(marker.payload.name, markerTime);
+            animation.meta.timeline.call((payload: any, anim: any) => {
               if (this.onMarker) {
-                this.onMarker(x, t.currentLabel);
+                this.onMarker(payload, anim);
               }
-            }, ['charlie', animation.meta.timeline], 1);
-
-            animation.meta.timeline.addLabel(marker.payload.name, marker.time);
-            animation.meta.timeline.call((x: string, t: any) => {
-              console.log('GUController::Meta frame', x, t.currentLabel());
-              if (this.onMarker) {
-                this.onMarker(x, t.currentLabel);
-              }
-            }, [marker.payload.name, animation.meta.timeline], markerTime);
+            }, [marker.payload, animation], markerTime);
           });
         }
 
@@ -178,12 +176,16 @@ export class GuController {
     return this.applications.pixi;
   }
 
+  public getThree() {
+    return this.applications.three;
+  }
+
   /**
    * Returns a reference to Lottie.
    * Lottie.loadAnimation would need to accept a params:
    * {
    *       wrapper: svgContainer,
-   *       animType: 'pixi', // svg
+   *       animType: 'threejs', // svg | html | pixi
    *       loop: false,
    *       autoplay: false,
    *       path: 'data.json',
@@ -192,6 +194,7 @@ export class GuController {
    *         preserveAspectRatio: 'xMidYMid meet',
    *         clearCanvas: true,
    *         pixiApplication: app
+   *         assetsPath: '' // path to application
    *       },
    *     }
    */
@@ -238,7 +241,6 @@ export class GuController {
   }
 
   public play() {
-    console.log('GuAnimator::play()', this.rootTimeline);
     if (this.rootTimeline) {
       this.rootTimeline.play();
     }
