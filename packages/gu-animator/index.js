@@ -398,7 +398,7 @@ let GuAnimator = class GuAnimator extends LitElement {
                     [this.renderer]: rendererInstance,
                 },
                 wrapper: this.container.value,
-                assetsPath: '/assets/bg_camera/' // this.assetsPath,
+                assetsPath: this.assetsPath,
             });
         }
         // Auto load the gu-animator src attribute
