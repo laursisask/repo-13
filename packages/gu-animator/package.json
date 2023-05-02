@@ -9,7 +9,6 @@
   "bugs": {
     "url": "https://github.com/immutable/gu-animator/issues"
   },
-  "type": "module",
   "publishConfig": {
     "registry": "https://npm.pkg.github.com/"
   },
