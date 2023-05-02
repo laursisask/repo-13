@@ -108,7 +108,8 @@ export class GuAnimator extends LitElement {
     // Bootstrap the gu-animator controller
     if (!this.controller) {
       this.controller = new GuController({
-        container : this.container.value,
+        container: this.container.value,
+        renderer: this.renderer
       });
     }
 

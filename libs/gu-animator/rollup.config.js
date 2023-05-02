@@ -23,7 +23,8 @@ const globals = {
   'lit/decorators.js': 'lit',
   'gsap': 'gsap',
   'gsap/all': 'gsap',
-  'gsap/PixiPlugin': 'gsap'
+  'gsap/PixiPlugin': 'gsap',
+  'three': 'three'
 };
 
 const bundled = [
@@ -33,6 +34,7 @@ const bundled = [
   'gsap',
   'gsap/PixiPlugin',
   'lottie-web',
+  'three'
 ];
 
 export default [

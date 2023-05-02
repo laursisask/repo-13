@@ -106,6 +106,7 @@ export class GuParser {
             preserveAspectRatio: 'xMidYMid meet',
             clearCanvas: true,
             assetsPath: this.config.assetsPath,
+            renderer: this.config.loaders.threejs,
           },
         } as any),
       };

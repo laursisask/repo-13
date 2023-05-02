@@ -2,14 +2,24 @@ import { GuConfig } from '../core/gu-config';
 import { Application, IApplicationOptions } from 'pixi.js';
 // import { EventSystem } '@pixi/events';
 import { gsap, Sine } from 'gsap';
-import { AnimatedGIFLoader } from '@pixi/gif';
+// import { AnimatedGIFLoader } from '@pixi/gif';
 import Lottie from 'lottie-web';
-import * as PIXI from 'pixi.js';
+import {
+  DefaultLoadingManager,
+  Group,
+  Matrix4,
+  PerspectiveCamera,
+  Scene,
+  TextureLoader,
+  WebGLRenderer,
+} from 'three';
+// import * as PIXI from 'pixi.js';
 // import { GSDevTools } from 'gsap/GSDevTools';
-import { PixiPlugin } from 'gsap/PixiPlugin';
+// import { PixiPlugin } from 'gsap/PixiPlugin';
+import { SchematicEngineHost } from "@angular/cli/models/schematic-engine-host";
 
-gsap.registerPlugin(PixiPlugin); // GSDevTools
-PixiPlugin.registerPIXI(PIXI);
+// gsap.registerPlugin(PixiPlugin); // GSDevTools
+// PixiPlugin.registerPIXI(PIXI);
 // PIXI.Loader.registerPlugin(AnimatedGIFLoader);
 
 /**
@@ -48,7 +58,10 @@ export class GuController {
     const SIZEH = 1080;
 
     this.applications = {
-      three: this.initThree(),
+      three: this.initThree({
+        width: SIZEW,
+        height: SIZEH,
+      }),
 
       // TODO: Abstract out to a renderer application provider
       // pixi: this.initPixi({
@@ -97,8 +110,26 @@ export class GuController {
     return app;
   }
 
-  private initThree() {
+  private initThree(options: IApplicationOptions) {
+    const three = {
+      scene: new Scene(),
+      camera: new PerspectiveCamera(25, (options.width || 1) / (options.height || 1), 0.1, 20000),
+      renderer: new WebGLRenderer(),
+    };
 
+    three.camera.fov = 25;
+    three.camera.focus = 10;
+    three.camera.updateProjectionMatrix();
+
+    three.renderer.setPixelRatio(window.devicePixelRatio);
+    three.renderer.setSize(options.width, options.height);
+
+    // if (!three.controls) {
+    //   three.controls = new OrbitControls(three.camera, three.renderer.domElement);
+    //   three.controls.listenToKeyEvents(window); // optional
+    // }
+
+    return three;
   }
 
   private initLottie() {

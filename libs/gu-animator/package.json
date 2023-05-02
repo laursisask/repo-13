@@ -1,6 +1,6 @@
 {
   "name": "@immutable/gu-animator",
-  "version": "0.1.18",
+  "version": "0.1.20",
   "description": "Gods Unchained animation system",
   "license": "UNLICENSED",
   "author": "immutable",
@@ -23,7 +23,8 @@
     "@pixi/gif": "^1.0.2",
     "@pixi/picture": "^3.0.5",
     "gsap": "^3.9.0",
-    "pixi.js": "^6.3.2"
+    "pixi.js": "^6.3.2",
+    "three": "^0.152.2"
   },
   "devDependencies": {
     "@rollup/plugin-commonjs": "^24.1.0",

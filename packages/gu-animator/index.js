@@ -2,14 +2,13 @@ import { __awaiter, __decorate, __metadata } from '/Users/charlie/Development/Im
 import { LitElement, css, html } from 'lit';
 import { createRef, ref } from 'lit/directives/ref.js';
 import { property, customElement } from 'lit/decorators.js';
-import * as PIXI from 'pixi.js';
 import { Application } from 'pixi.js';
 import { gsap } from 'gsap';
 import Lottie from 'lottie-web';
-import { PixiPlugin } from 'gsap/PixiPlugin';
+import { Scene, PerspectiveCamera, WebGLRenderer } from 'three';
 
-gsap.registerPlugin(PixiPlugin); // GSDevTools
-PixiPlugin.registerPIXI(PIXI);
+// gsap.registerPlugin(PixiPlugin); // GSDevTools
+// PixiPlugin.registerPIXI(PIXI);
 // PIXI.Loader.registerPlugin(AnimatedGIFLoader);
 /**
  * GU Animator Controller.
@@ -35,8 +34,13 @@ class GuController {
      * @private
      */
     init() {
+        const SIZEW = 1920;
+        const SIZEH = 1080;
         this.applications = {
-            three: this.initThree(),
+            three: this.initThree({
+                width: SIZEW,
+                height: SIZEH,
+            }),
             // TODO: Abstract out to a renderer application provider
             // pixi: this.initPixi({
             //   width: SIZEW,
@@ -80,7 +84,22 @@ class GuController {
         });
         return app;
     }
-    initThree() {
+    initThree(options) {
+        const three = {
+            scene: new Scene(),
+            camera: new PerspectiveCamera(25, (options.width || 1) / (options.height || 1), 0.1, 20000),
+            renderer: new WebGLRenderer(),
+        };
+        three.camera.fov = 25;
+        three.camera.focus = 10;
+        three.camera.updateProjectionMatrix();
+        three.renderer.setPixelRatio(window.devicePixelRatio);
+        three.renderer.setSize(options.width, options.height);
+        // if (!three.controls) {
+        //   three.controls = new OrbitControls(three.camera, three.renderer.domElement);
+        //   three.controls.listenToKeyEvents(window); // optional
+        // }
+        return three;
     }
     initLottie() {
         return Lottie;
@@ -291,6 +310,7 @@ class GuParser {
                         preserveAspectRatio: 'xMidYMid meet',
                         clearCanvas: true,
                         assetsPath: this.config.assetsPath,
+                        renderer: this.config.loaders.threejs,
                     },
                 }),
             };
@@ -381,6 +401,7 @@ let GuAnimator = class GuAnimator extends LitElement {
         if (!this.controller) {
             this.controller = new GuController({
                 container: this.container.value,
+                renderer: this.renderer
             });
         }
         // Bootstrap the gu-animator parser

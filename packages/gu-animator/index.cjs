@@ -1,30 +1,11 @@
 (function (global, factory) {
-    typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('/Users/charlie/Development/Immutable/source/gu-animator/libs/gu-animator/node_modules/tslib/tslib.es6.js'), require('lit'), require('lit/directives/ref.js'), require('lit/decorators.js'), require('pixi.js'), require('gsap'), require('lottie-web'), require('gsap/PixiPlugin')) :
-    typeof define === 'function' && define.amd ? define(['exports', '/Users/charlie/Development/Immutable/source/gu-animator/libs/gu-animator/node_modules/tslib/tslib.es6.js', 'lit', 'lit/directives/ref.js', 'lit/decorators.js', 'pixi.js', 'gsap', 'lottie-web', 'gsap/PixiPlugin'], factory) :
-    (global = typeof globalThis !== 'undefined' ? globalThis : global || self, factory(global.guAnimator = {}, global.tslib_es6_js, global.lit, global.lit, global.lit, global.PIXI, global.gsap, global.Lottie, global.gsap));
-})(this, (function (exports, tslib_es6_js, lit, ref_js, decorators_js, PIXI, gsap, Lottie, PixiPlugin) { 'use strict';
+    typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('/Users/charlie/Development/Immutable/source/gu-animator/libs/gu-animator/node_modules/tslib/tslib.es6.js'), require('lit'), require('lit/directives/ref.js'), require('lit/decorators.js'), require('pixi.js'), require('gsap'), require('lottie-web'), require('three')) :
+    typeof define === 'function' && define.amd ? define(['exports', '/Users/charlie/Development/Immutable/source/gu-animator/libs/gu-animator/node_modules/tslib/tslib.es6.js', 'lit', 'lit/directives/ref.js', 'lit/decorators.js', 'pixi.js', 'gsap', 'lottie-web', 'three'], factory) :
+    (global = typeof globalThis !== 'undefined' ? globalThis : global || self, factory(global.guAnimator = {}, global.tslib_es6_js, global.lit, global.lit, global.lit, global.PIXI, global.gsap, global.Lottie, global.three));
+})(this, (function (exports, tslib_es6_js, lit, ref_js, decorators_js, pixi_js, gsap, Lottie, three) { 'use strict';
 
-    function _interopNamespaceDefault(e) {
-        var n = Object.create(null);
-        if (e) {
-            Object.keys(e).forEach(function (k) {
-                if (k !== 'default') {
-                    var d = Object.getOwnPropertyDescriptor(e, k);
-                    Object.defineProperty(n, k, d.get ? d : {
-                        enumerable: true,
-                        get: function () { return e[k]; }
-                    });
-                }
-            });
-        }
-        n.default = e;
-        return Object.freeze(n);
-    }
-
-    var PIXI__namespace = /*#__PURE__*/_interopNamespaceDefault(PIXI);
-
-    gsap.gsap.registerPlugin(PixiPlugin.PixiPlugin); // GSDevTools
-    PixiPlugin.PixiPlugin.registerPIXI(PIXI__namespace);
+    // gsap.registerPlugin(PixiPlugin); // GSDevTools
+    // PixiPlugin.registerPIXI(PIXI);
     // PIXI.Loader.registerPlugin(AnimatedGIFLoader);
     /**
      * GU Animator Controller.
@@ -50,8 +31,13 @@
          * @private
          */
         init() {
+            const SIZEW = 1920;
+            const SIZEH = 1080;
             this.applications = {
-                three: this.initThree(),
+                three: this.initThree({
+                    width: SIZEW,
+                    height: SIZEH,
+                }),
                 // TODO: Abstract out to a renderer application provider
                 // pixi: this.initPixi({
                 //   width: SIZEW,
@@ -74,7 +60,7 @@
          */
         initPixi(options) {
             // PIXI Background layer
-            const app = new PIXI.Application(options);
+            const app = new pixi_js.Application(options);
             // Install EventSystem, if not already
             // (PixiJS 6 doesn't add it by default)
             // if (!('events' in app.renderer)) {
@@ -95,7 +81,22 @@
             });
             return app;
         }
-        initThree() {
+        initThree(options) {
+            const three$1 = {
+                scene: new three.Scene(),
+                camera: new three.PerspectiveCamera(25, (options.width || 1) / (options.height || 1), 0.1, 20000),
+                renderer: new three.WebGLRenderer(),
+            };
+            three$1.camera.fov = 25;
+            three$1.camera.focus = 10;
+            three$1.camera.updateProjectionMatrix();
+            three$1.renderer.setPixelRatio(window.devicePixelRatio);
+            three$1.renderer.setSize(options.width, options.height);
+            // if (!three.controls) {
+            //   three.controls = new OrbitControls(three.camera, three.renderer.domElement);
+            //   three.controls.listenToKeyEvents(window); // optional
+            // }
+            return three$1;
         }
         initLottie() {
             return Lottie;
@@ -306,6 +307,7 @@
                             preserveAspectRatio: 'xMidYMid meet',
                             clearCanvas: true,
                             assetsPath: this.config.assetsPath,
+                            renderer: this.config.loaders.threejs,
                         },
                     }),
                 };
@@ -396,6 +398,7 @@
             if (!this.controller) {
                 this.controller = new GuController({
                     container: this.container.value,
+                    renderer: this.renderer
                 });
             }
             // Bootstrap the gu-animator parser
