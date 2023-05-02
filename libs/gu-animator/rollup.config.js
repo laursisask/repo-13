@@ -61,7 +61,6 @@ export default [
       copy({
         targets: [
           { src: 'package.json', dest: '../../packages/gu-animator' },
-          { src: 'index.d.ts', dest: '../../packages/gu-animator' },
         ]
       }),
       typescript({
