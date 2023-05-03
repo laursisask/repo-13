@@ -307,7 +307,7 @@
                             preserveAspectRatio: 'xMidYMid meet',
                             clearCanvas: true,
                             assetsPath: this.config.assetsPath,
-                            renderer: this.config.loaders.threejs,
+                            renderer: this.config.renderer,
                         },
                     }),
                 };
@@ -413,10 +413,10 @@
                 this.parser = new GuParser({
                     loaders: {
                         lottie: this.controller.getLottie(),
-                        [this.renderer]: rendererInstance,
                     },
                     wrapper: this.container.value,
                     assetsPath: this.assetsPath,
+                    renderer: rendererInstance,
                 });
             }
             // Auto load the gu-animator src attribute
