@@ -1,6 +1,6 @@
 {
   "name": "@immutable/gu-animator",
-  "version": "0.1.20",
+  "version": "0.1.21",
   "description": "Gods Unchained animation system",
   "license": "UNLICENSED",
   "author": "immutable",
@@ -40,5 +40,8 @@
     "rollup-plugin-terser": "^7.0.2",
     "rollup-plugin-typescript": "^1.0.1",
     "rollup-plugin-visualizer": "^5.6.0"
+  },
+  "dependencies": {
+    "@types/three": "^0.151.0"
   }
 }

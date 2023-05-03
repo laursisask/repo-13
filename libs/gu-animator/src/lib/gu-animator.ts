@@ -127,10 +127,10 @@ export class GuAnimator extends LitElement {
       this.parser = new GuParser({
         loaders: {
           lottie: this.controller.getLottie(),
-          [this.renderer]: rendererInstance,
         },
         wrapper: this.container.value,
         assetsPath: this.assetsPath,
+        renderer: rendererInstance,
       });
     }
 

@@ -122,7 +122,7 @@ export class GuController {
     three.camera.updateProjectionMatrix();
 
     three.renderer.setPixelRatio(window.devicePixelRatio);
-    three.renderer.setSize(options.width, options.height);
+    three.renderer.setSize(options.width as number, options.height as number);
 
     // if (!three.controls) {
     //   three.controls = new OrbitControls(three.camera, three.renderer.domElement);
