@@ -1,6 +1,6 @@
 {
   "name": "@immutable/gu-animator",
-  "version": "0.1.21",
+  "version": "0.1.22",
   "description": "Gods Unchained animation system",
   "license": "UNLICENSED",
   "author": "immutable",
@@ -10,6 +10,9 @@
     "url": "https://github.com/immutable/gu-animator/issues"
   },
   "type": "module",
+  "scripts": {
+    "build": "nx build examples"
+  },
   "publishConfig": {
     "registry": "https://npm.pkg.github.com/"
   },

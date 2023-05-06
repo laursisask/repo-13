@@ -34,8 +34,8 @@ class GuController {
      * @private
      */
     init() {
-        const SIZEW = 1920;
-        const SIZEH = 1080;
+        const SIZEW = 1778; // 1920;
+        const SIZEH = 1000; // 1080;
         this.applications = {
             three: this.initThree({
                 width: SIZEW,
