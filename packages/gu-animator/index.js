@@ -1,15 +1,12 @@
-import { __awaiter, __decorate, __metadata } from '/Users/charlie/Development/Immutable/source/gu-animator/libs/gu-animator/node_modules/tslib/tslib.es6.js';
+import { __awaiter, __decorate, __metadata } from '../node_modules/tslib/tslib.es6.js';
 import { LitElement, css, html } from 'lit';
 import { createRef, ref } from 'lit/directives/ref.js';
 import { property, customElement } from 'lit/decorators.js';
-import { Application } from 'pixi.js';
 import { gsap } from 'gsap';
 import Lottie from 'lottie-web';
-import { Scene, PerspectiveCamera, WebGLRenderer } from 'three';
+import { Scene, PerspectiveCamera, WebGLRenderer, LinearEncoding } from 'three';
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 
-// gsap.registerPlugin(PixiPlugin); // GSDevTools
-// PixiPlugin.registerPIXI(PIXI);
-// PIXI.Loader.registerPlugin(AnimatedGIFLoader);
 /**
  * GU Animator Controller.
  * Takes a set of animations and manages the playback.
@@ -37,6 +34,7 @@ class GuController {
         const SIZEW = 1778; // 1920;
         const SIZEH = 1000; // 1080;
         this.applications = {
+            // three: {},
             three: this.initThree({
                 width: SIZEW,
                 height: SIZEH,
@@ -63,7 +61,7 @@ class GuController {
      */
     initPixi(options) {
         // PIXI Background layer
-        const app = new Application(options);
+        const app = {}; // new Application(options);
         // Install EventSystem, if not already
         // (PixiJS 6 doesn't add it by default)
         // if (!('events' in app.renderer)) {
@@ -71,28 +69,35 @@ class GuController {
         // }
         if (this.container) {
             this.container.innerHTML = '';
-            this.container.appendChild(app.view);
+            // this.container.appendChild(app.view);
         }
         else {
             throw new Error('Invalid gu-animator container.');
         }
         // We stop Pixi ticker using stop() function because autoStart = false does NOT stop the shared ticker:
         // doc: http://pixijs.download/release/docs/PIXI.Application.html
-        app.ticker.stop();
-        gsap.ticker.add(() => {
-            app.ticker.update();
-        });
+        // app.ticker.stop();
+        // gsap.ticker.add(() => {
+        //   app.ticker.update();
+        // });
         return app;
     }
     initThree(options) {
         const three = {
             scene: new Scene(),
             camera: new PerspectiveCamera(25, (options.width || 1) / (options.height || 1), 0.1, 20000),
-            renderer: new WebGLRenderer(),
+            renderer: new WebGLRenderer({ antialias: true }),
+            load: (filePath, onLoad, onProgress, onError) => {
+                const loader = new GLTFLoader();
+                loader.load(filePath, onLoad, onProgress, onError);
+                return loader;
+            }
         };
         three.camera.fov = 25;
         three.camera.focus = 10;
         three.camera.updateProjectionMatrix();
+        // NOTE: Default to previous color space for pngs in After Effects
+        three.renderer.outputEncoding = LinearEncoding;
         three.renderer.setPixelRatio(window.devicePixelRatio);
         three.renderer.setSize(options.width, options.height);
         // if (!three.controls) {
@@ -277,6 +282,7 @@ class GuParser {
     }
     loadBodymovinJson() {
         return new Promise((resolve, reject) => {
+            var _a;
             const assetsPath = this.url.substring(0, this.url.lastIndexOf('/') + 1);
             console.log('GUParser::loadBodyMovinJson()', this.url, assetsPath);
             // Create lottie animation and hook into loading state
@@ -300,7 +306,7 @@ class GuParser {
                 getDuration: (inFrames) => this.config.loaders.lottie.getDuration(inFrames),
                 instance: this.config.loaders.lottie.loadAnimation({
                     wrapper: this.config.wrapper,
-                    animType: 'threejs',
+                    animType: 'three',
                     loop: true,
                     prerender: true,
                     autoplay: true,
@@ -309,7 +315,7 @@ class GuParser {
                         className: 'animation',
                         preserveAspectRatio: 'xMidYMid meet',
                         clearCanvas: true,
-                        assetsPath: this.config.assetsPath,
+                        assetsPath: ((_a = this.config.assetsPath) === null || _a === void 0 ? void 0 : _a.length) > 0 ? this.config.assetsPath : assetsPath,
                         renderer: this.config.renderer,
                     },
                 }),
@@ -517,3 +523,4 @@ GuAnimator = __decorate([
 ], GuAnimator);
 
 export { GuAnimator };
+//# sourceMappingURL=index.js.map

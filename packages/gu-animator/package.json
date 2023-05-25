@@ -1,6 +1,6 @@
 {
   "name": "@immutable/gu-animator",
-  "version": "0.1.22",
+  "version": "0.1.31",
   "description": "Gods Unchained animation system",
   "license": "UNLICENSED",
   "author": "immutable",
@@ -11,7 +11,7 @@
   },
   "type": "module",
   "scripts": {
-    "build": "nx build examples"
+    "build": "rollup --config rollup.config.js"
   },
   "publishConfig": {
     "registry": "https://npm.pkg.github.com/"
@@ -22,11 +22,7 @@
     "directory": "packages/gu-animator"
   },
   "peerDependencies": {
-    "@pixi/filter-shockwave": "^4.1.5",
-    "@pixi/gif": "^1.0.2",
-    "@pixi/picture": "^3.0.5",
     "gsap": "^3.9.0",
-    "pixi.js": "^6.3.2",
     "three": "^0.152.2"
   },
   "devDependencies": {

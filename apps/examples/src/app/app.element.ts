@@ -3,6 +3,8 @@ import '@immutable/gu-animator';
 import { html, LitElement } from 'lit';
 import { Ref, createRef, ref } from 'lit/directives/ref.js';
 import { customElement, eventOptions } from 'lit/decorators.js';
+import * as THREE from 'three';
+
 import { gsap, Power1 } from 'gsap';
 // import { PixiPlugin } from 'gsap/all';
 // import * as PIXI from 'pixi.js';
@@ -21,12 +23,15 @@ import { gsap, Power1 } from 'gsap';
 export class AppElement extends LitElement {
   private animatorRef: Ref<HTMLElement> = createRef();
   private mouse = { x: 0, y: 0 };
-  private home = { x: 980, y: 475 };
+  private openPosition = [1150, 645, 780];
+
+  private initPack = false;
 
   @eventOptions({ passive: true })
   onLoaded(event) {
 
     // Start the background animation
+    let packObj;
     const guAnimator = event.detail.target;
     const background = guAnimator.getAnimationAsset('bg');
     const timeline = background.meta.timeline;
@@ -145,6 +150,96 @@ export class AppElement extends LitElement {
       camera.ks.p.k[1].s[1] = currentPos[1];
     });
     console.log('Find camera', camera);
+
+    // Setup pack
+    if (!this.initPack) {
+      this.initPack = true;
+
+      const anim = bg.instance;
+      const threeData = guAnimator.controller.getThree();
+
+      // camera = anim.animationData.layers.find((layer) => layer.nm === 'Camera 1');
+      // threeData.renderer.toneMapping = THREE.ACESFilmicToneMapping;
+      // threeData.renderer.toneMappingExposure = 1;
+
+      // TODO: Load a gltf file..
+      const loader = threeData.load('/assets/model/m2.gltf', (gltf) => {
+        console.log('Loaded GLTF', gltf);
+        packObj = gltf;
+        gltf.scene.scale.set(900, 900, 900);
+        gltf.scene.position.set(this.openPosition[0], this.openPosition[1], this.openPosition[2]);
+
+        threeData.scene.add(gltf.scene);
+
+        const ambientLight = new THREE.AmbientLight(0x404040, 1);
+        threeData.scene.add(ambientLight);
+
+        const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
+        directionalLight.position.set(1, 1, 1).normalize();
+        threeData.scene.add(directionalLight);
+
+        // Add axes helper
+        // const axesHelper = new THREE.AxesHelper(5);
+        // threeData.scene.add(axesHelper);
+        //
+        // // Add camera helper (for perspective camera)
+        // const cameraHelper = new THREE.CameraHelper(threeData.camera);
+        // threeData.scene.add(cameraHelper);
+
+        const albedoTexture = new THREE.TextureLoader().load(`/assets/model/m2_pack_booster_albedo.png`);
+        const normalTexture = new THREE.TextureLoader().load(`/assets/model/m2_pack_booster_normal.png`);
+        const aoTexture = new THREE.TextureLoader().load(`/assets/model/m2_pack_booster_AO.png`);
+        const ormTexture = new THREE.TextureLoader().load(`/assets/model/m2_pack_booster_ORM.png`);
+        const emissiveTexture = new THREE.TextureLoader().load(`/assets/model/m2_pack_booster_emissive.png`);
+
+        // this.three.scene.environment = diffuseCubemap;
+        const mat = new THREE.MeshPhysicalMaterial();
+        gltf.scene.children[0].children[0].material = mat;
+
+        // mat.envMap = diffuseCubemap;
+        mat.map = albedoTexture;
+        mat.map.flipY = false;
+        mat.aoMap = aoTexture;
+        mat.aoMap.flipY = false;
+        mat.normalMap = normalTexture;
+        mat.normalMap.flipY = false;
+        mat.emissiveMap = emissiveTexture;
+        mat.emissiveMap.flipY = false;
+        mat.roughnessMap = ormTexture;
+        mat.roughnessMap.flipY = false;
+
+        mat.side = THREE.FrontSide;
+        mat.roughness = 2;
+        mat.needsUpdate = true;
+
+        // Create TransformControls
+        // const transformControls = new THREE.TransformControls(threeData.camera, threeData.renderer.domElement);
+        // threeData.scene.add(transformControls);
+
+        // // Add directional light helper
+        //  const directionalLightHelper = new THREE.DirectionalLightHelper(directionalLight, 1);
+        // threeData.scene.add(directionalLightHelper);
+
+        console.log('Loaded GLTF', gltf);
+        // transformControls.attach(gltf.scene);
+
+        // gltf.scene.children[0].children[0].material.wireframe = true;
+
+        // Details of the KHR_materials_variants extension used here can be found below
+        // https://github.com/KhronosGroup/glTF/tree/master/extensions/2.0/Khronos/KHR_materials_variants
+        // const parser = gltf.parser;
+        // const variantsExtension = gltf.userData.gltfExtensions[ 'KHR_materials_variants' ];
+        // const variants = variantsExtension.variants.map( ( variant ) => variant.name );
+        // const variantsCtrl = gui.add( state, 'variant', variants ).name( 'Variant' );
+        //selectVariant( scene, parser, variantsExtension, state.variant );
+
+        console.log('AnimatedMorphSphere::onLoaded', gltf);
+        // variantsCtrl.onChange( ( value ) => selectVariant( scene, parser, variantsExtension, value ) );
+        //
+        // render();
+
+      });
+    }
   }
 
   @eventOptions({ passive: true })

@@ -1,26 +1,13 @@
 import { GuConfig } from '../core/gu-config';
-import { Application, IApplicationOptions } from 'pixi.js';
-// import { EventSystem } '@pixi/events';
 import { gsap, Sine } from 'gsap';
-// import { AnimatedGIFLoader } from '@pixi/gif';
 import Lottie from 'lottie-web';
 import {
-  DefaultLoadingManager,
-  Group,
-  Matrix4,
+  LinearEncoding,
   PerspectiveCamera,
   Scene,
-  TextureLoader,
-  WebGLRenderer,
-} from 'three';
-// import * as PIXI from 'pixi.js';
-// import { GSDevTools } from 'gsap/GSDevTools';
-// import { PixiPlugin } from 'gsap/PixiPlugin';
-import { SchematicEngineHost } from "@angular/cli/models/schematic-engine-host";
-
-// gsap.registerPlugin(PixiPlugin); // GSDevTools
-// PixiPlugin.registerPIXI(PIXI);
-// PIXI.Loader.registerPlugin(AnimatedGIFLoader);
+  WebGLRenderer
+} from "three";
+import { GLTF, GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
 
 /**
  * GU Animator Controller.
@@ -58,6 +45,7 @@ export class GuController {
     const SIZEH = 1000; // 1080;
 
     this.applications = {
+      // three: {},
       three: this.initThree({
         width: SIZEW,
         height: SIZEH,
@@ -84,9 +72,9 @@ export class GuController {
    * @param options
    * @private
    */
-  private initPixi(options: IApplicationOptions) {
+  private initPixi(options: any) {
     // PIXI Background layer
-    const app = new Application(options);
+    const app = {}; // new Application(options);
 
     // Install EventSystem, if not already
     // (PixiJS 6 doesn't add it by default)
@@ -96,31 +84,39 @@ export class GuController {
 
     if (this.container) {
       this.container.innerHTML = '';
-      this.container.appendChild(app.view);
+      // this.container.appendChild(app.view);
     } else {
       throw new Error('Invalid gu-animator container.');
     }
 
     // We stop Pixi ticker using stop() function because autoStart = false does NOT stop the shared ticker:
     // doc: http://pixijs.download/release/docs/PIXI.Application.html
-    app.ticker.stop();
-    gsap.ticker.add(() => {
-      app.ticker.update();
-    });
+    // app.ticker.stop();
+    // gsap.ticker.add(() => {
+    //   app.ticker.update();
+    // });
     return app;
   }
 
-  private initThree(options: IApplicationOptions) {
+  private initThree(options: any) {
     const three = {
       scene: new Scene(),
       camera: new PerspectiveCamera(25, (options.width || 1) / (options.height || 1), 0.1, 20000),
-      renderer: new WebGLRenderer(),
+      renderer: new WebGLRenderer({ antialias: true }),
+      load: (filePath: string, onLoad: (gltf: GLTF) => void, onProgress?: any, onError?: any) => {
+        const loader = new GLTFLoader();
+        loader.load(filePath, onLoad, onProgress, onError);
+
+        return loader;
+      }
     };
 
     three.camera.fov = 25;
     three.camera.focus = 10;
     three.camera.updateProjectionMatrix();
 
+    // NOTE: Default to previous color space for pngs in After Effects
+    three.renderer.outputEncoding = LinearEncoding;
     three.renderer.setPixelRatio(window.devicePixelRatio);
     three.renderer.setSize(options.width as number, options.height as number);
 

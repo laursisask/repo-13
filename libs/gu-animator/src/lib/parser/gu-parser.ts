@@ -96,7 +96,7 @@ export class GuParser {
         getDuration: (inFrames: boolean) => this.config.loaders.lottie.getDuration(inFrames),
         instance: this.config.loaders.lottie.loadAnimation({
           wrapper: this.config.wrapper,
-          animType: 'threejs',
+          animType: 'three',
           loop: true,
           prerender: true,
           autoplay: true,
@@ -105,7 +105,7 @@ export class GuParser {
             className: 'animation',
             preserveAspectRatio: 'xMidYMid meet',
             clearCanvas: true,
-            assetsPath: this.config.assetsPath,
+            assetsPath: this.config.assetsPath?.length > 0 ? this.config.assetsPath : assetsPath,
             renderer: this.config.renderer,
           },
         } as any),

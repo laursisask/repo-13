@@ -1,12 +1,13 @@
 (function (global, factory) {
-    typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('/Users/charlie/Development/Immutable/source/gu-animator/libs/gu-animator/node_modules/tslib/tslib.es6.js'), require('lit'), require('lit/directives/ref.js'), require('lit/decorators.js'), require('pixi.js'), require('gsap'), require('lottie-web'), require('three')) :
-    typeof define === 'function' && define.amd ? define(['exports', '/Users/charlie/Development/Immutable/source/gu-animator/libs/gu-animator/node_modules/tslib/tslib.es6.js', 'lit', 'lit/directives/ref.js', 'lit/decorators.js', 'pixi.js', 'gsap', 'lottie-web', 'three'], factory) :
-    (global = typeof globalThis !== 'undefined' ? globalThis : global || self, factory(global.guAnimator = {}, global.tslib_es6_js, global.lit, global.lit, global.lit, global.PIXI, global.gsap, global.Lottie, global.three));
-})(this, (function (exports, tslib_es6_js, lit, ref_js, decorators_js, pixi_js, gsap, Lottie, three) { 'use strict';
+    typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('../node_modules/tslib/tslib.es6.js'), require('lit'), require('lit/directives/ref.js'), require('lit/decorators.js'), require('gsap'), require('lottie-web'), require('three'), require('three/examples/jsm/loaders/GLTFLoader')) :
+    typeof define === 'function' && define.amd ? define(['exports', '../node_modules/tslib/tslib.es6', 'lit', 'lit/directives/ref.js', 'lit/decorators.js', 'gsap', 'lottie-web', 'three', 'three/examples/jsm/loaders/GLTFLoader'], factory) :
+    (global = typeof globalThis !== 'undefined' ? globalThis : global || self, factory(global.guAnimator = {}, global.tslib_es6_js, global.lit, global.lit, global.lit, global.gsap, global.lottie, global.three, global.GLTFLoader));
+})(this, (function (exports, tslib_es6_js, lit, ref_js, decorators_js, gsap, Lottie, three, GLTFLoader) { 'use strict';
 
-    // gsap.registerPlugin(PixiPlugin); // GSDevTools
-    // PixiPlugin.registerPIXI(PIXI);
-    // PIXI.Loader.registerPlugin(AnimatedGIFLoader);
+    function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
+
+    var Lottie__default = /*#__PURE__*/_interopDefaultLegacy(Lottie);
+
     /**
      * GU Animator Controller.
      * Takes a set of animations and manages the playback.
@@ -34,6 +35,7 @@
             const SIZEW = 1778; // 1920;
             const SIZEH = 1000; // 1080;
             this.applications = {
+                // three: {},
                 three: this.initThree({
                     width: SIZEW,
                     height: SIZEH,
@@ -60,7 +62,7 @@
          */
         initPixi(options) {
             // PIXI Background layer
-            const app = new pixi_js.Application(options);
+            const app = {}; // new Application(options);
             // Install EventSystem, if not already
             // (PixiJS 6 doesn't add it by default)
             // if (!('events' in app.renderer)) {
@@ -68,28 +70,35 @@
             // }
             if (this.container) {
                 this.container.innerHTML = '';
-                this.container.appendChild(app.view);
+                // this.container.appendChild(app.view);
             }
             else {
                 throw new Error('Invalid gu-animator container.');
             }
             // We stop Pixi ticker using stop() function because autoStart = false does NOT stop the shared ticker:
             // doc: http://pixijs.download/release/docs/PIXI.Application.html
-            app.ticker.stop();
-            gsap.gsap.ticker.add(() => {
-                app.ticker.update();
-            });
+            // app.ticker.stop();
+            // gsap.ticker.add(() => {
+            //   app.ticker.update();
+            // });
             return app;
         }
         initThree(options) {
             const three$1 = {
                 scene: new three.Scene(),
                 camera: new three.PerspectiveCamera(25, (options.width || 1) / (options.height || 1), 0.1, 20000),
-                renderer: new three.WebGLRenderer(),
+                renderer: new three.WebGLRenderer({ antialias: true }),
+                load: (filePath, onLoad, onProgress, onError) => {
+                    const loader = new GLTFLoader.GLTFLoader();
+                    loader.load(filePath, onLoad, onProgress, onError);
+                    return loader;
+                }
             };
             three$1.camera.fov = 25;
             three$1.camera.focus = 10;
             three$1.camera.updateProjectionMatrix();
+            // NOTE: Default to previous color space for pngs in After Effects
+            three$1.renderer.outputEncoding = three.LinearEncoding;
             three$1.renderer.setPixelRatio(window.devicePixelRatio);
             three$1.renderer.setSize(options.width, options.height);
             // if (!three.controls) {
@@ -99,7 +108,7 @@
             return three$1;
         }
         initLottie() {
-            return Lottie;
+            return Lottie__default["default"];
         }
         defineAnimations(animations) {
             if (animations.length > 0) {
@@ -274,6 +283,7 @@
         }
         loadBodymovinJson() {
             return new Promise((resolve, reject) => {
+                var _a;
                 const assetsPath = this.url.substring(0, this.url.lastIndexOf('/') + 1);
                 console.log('GUParser::loadBodyMovinJson()', this.url, assetsPath);
                 // Create lottie animation and hook into loading state
@@ -297,7 +307,7 @@
                     getDuration: (inFrames) => this.config.loaders.lottie.getDuration(inFrames),
                     instance: this.config.loaders.lottie.loadAnimation({
                         wrapper: this.config.wrapper,
-                        animType: 'threejs',
+                        animType: 'three',
                         loop: true,
                         prerender: true,
                         autoplay: true,
@@ -306,7 +316,7 @@
                             className: 'animation',
                             preserveAspectRatio: 'xMidYMid meet',
                             clearCanvas: true,
-                            assetsPath: this.config.assetsPath,
+                            assetsPath: ((_a = this.config.assetsPath) === null || _a === void 0 ? void 0 : _a.length) > 0 ? this.config.assetsPath : assetsPath,
                             renderer: this.config.renderer,
                         },
                     }),
@@ -513,4 +523,7 @@
         decorators_js.customElement('gu-animator')
     ], exports.GuAnimator);
 
+    Object.defineProperty(exports, '__esModule', { value: true });
+
 }));
+//# sourceMappingURL=index.cjs.map

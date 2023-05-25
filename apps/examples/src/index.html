@@ -5,7 +5,17 @@
     <title>GU Animator Examples</title>
     <base href="/" />
 
-<!--    <script type="text/javascript" src="https://pixijs.download/release/pixi.js"></script>-->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/0.152.2/three.js"></script>
+    <script async src="https://unpkg.com/es-module-shims@1.6.3/dist/es-module-shims.js"></script>
+    <script type="importmap">
+       {
+         "imports": {
+           "three": "https://unpkg.com/three@v0.152.2/build/three.module.js",
+           "three/addons/": "https://unpkg.com/three@v0.152.2/examples/jsm/"
+         }
+       }
+     </script>
+    <!--    <script type="text/javascript" src="https://pixijs.download/release/pixi.js"></script>-->
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="icon" type="image/x-icon" href="favicon.ico" />
   </head>

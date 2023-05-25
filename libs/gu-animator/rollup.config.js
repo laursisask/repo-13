@@ -19,12 +19,15 @@ const globals = {
   '@pixi/gif': 'PIXI',
   '@pixi/filter-shockwave': 'PIXI',
   '@pixi/picture': 'PIXI',
+  'lit': 'lit',
   'lit/directives/ref.js': 'lit',
   'lit/decorators.js': 'lit',
+  'lottie-web': 'lottie',
   'gsap': 'gsap',
   'gsap/all': 'gsap',
   'gsap/PixiPlugin': 'gsap',
-  'three': 'three'
+  'three': 'three',
+  '/Users/charlie/Development/Immutable/source/gu-animator/libs/gu-animator/node_modules/tslib/tslib.es6.js': 'tslib'
 };
 
 const bundled = [
@@ -44,14 +47,14 @@ export default [
       {
         file: '../../packages/gu-animator/index.js',
         format: 'esm',
-        // sourcemap: true,
+        sourcemap: true,
         globals
       },
       {
         file: '../../packages/gu-animator/index.cjs',
         format: 'umd',
         name: 'guAnimator',
-        // sourcemap: true,
+        sourcemap: true,
         globals
       },
     ],
