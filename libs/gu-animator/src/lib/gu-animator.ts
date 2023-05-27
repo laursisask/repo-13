@@ -60,7 +60,7 @@ export class GuAnimator extends LitElement {
    * @param url
    */
   async loadAnimation(url: string) {
-    // console.log('GuAnimator::loadAnimation()', url);
+    console.log('GuAnimator::loadAnimation()', url, this.parser);
     this.currentSrc = url;
     let animations: any[] = [];
     await new Promise((resolve) => requestAnimationFrame(resolve));
@@ -105,6 +105,7 @@ export class GuAnimator extends LitElement {
    * Use this to bootstrap the gu-animator.
    */
   firstUpdated() {
+    console.log('GUAnimator::firstUpdated()')
     // Bootstrap the gu-animator controller
     if (!this.controller) {
       this.controller = new GuController({

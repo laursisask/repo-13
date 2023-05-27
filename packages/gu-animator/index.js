@@ -4,7 +4,7 @@ import { createRef, ref } from 'lit/directives/ref.js';
 import { property, customElement } from 'lit/decorators.js';
 import { gsap } from 'gsap';
 import Lottie from 'lottie-web';
-import { Scene, PerspectiveCamera, WebGLRenderer, Clock, LinearEncoding } from 'three';
+import { Scene, PerspectiveCamera, WebGLRenderer, Clock, ColorManagement, sRGBEncoding, LinearToneMapping } from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 
 /**
@@ -99,11 +99,15 @@ class GuController {
         three.camera.fov = 25;
         three.camera.focus = 10;
         three.camera.updateProjectionMatrix();
-        // NOTE: Default to previous color space for pngs in After Effects
-        three.renderer.outputEncoding = LinearEncoding;
+        ColorManagement.enabled = false;
+        three.renderer.useLegacyLights = false;
+        three.renderer.outputEncoding = sRGBEncoding;
+        three.renderer.toneMapping = LinearToneMapping;
+        three.renderer.toneMappingExposure = 0.4;
+        three.renderer.setClearColor(0xcccccc);
         three.renderer.setPixelRatio(window.devicePixelRatio);
         three.renderer.setSize(options.width, options.height);
-        // if (!three.controls) {
+        // if (!options.controls) {
         //   three.controls = new OrbitControls(three.camera, three.renderer.domElement);
         //   three.controls.listenToKeyEvents(window); // optional
         // }
@@ -365,7 +369,7 @@ let GuAnimator = class GuAnimator extends LitElement {
      */
     loadAnimation(url) {
         return __awaiter(this, void 0, void 0, function* () {
-            // console.log('GuAnimator::loadAnimation()', url);
+            console.log('GuAnimator::loadAnimation()', url, this.parser);
             this.currentSrc = url;
             let animations = [];
             yield new Promise((resolve) => requestAnimationFrame(resolve));
@@ -406,6 +410,7 @@ let GuAnimator = class GuAnimator extends LitElement {
      * Use this to bootstrap the gu-animator.
      */
     firstUpdated() {
+        console.log('GUAnimator::firstUpdated()');
         // Bootstrap the gu-animator controller
         if (!this.controller) {
             this.controller = new GuController({

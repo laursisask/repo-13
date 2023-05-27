@@ -100,11 +100,15 @@
             three$1.camera.fov = 25;
             three$1.camera.focus = 10;
             three$1.camera.updateProjectionMatrix();
-            // NOTE: Default to previous color space for pngs in After Effects
-            three$1.renderer.outputEncoding = three.LinearEncoding;
+            three.ColorManagement.enabled = false;
+            three$1.renderer.useLegacyLights = false;
+            three$1.renderer.outputEncoding = three.sRGBEncoding;
+            three$1.renderer.toneMapping = three.LinearToneMapping;
+            three$1.renderer.toneMappingExposure = 0.4;
+            three$1.renderer.setClearColor(0xcccccc);
             three$1.renderer.setPixelRatio(window.devicePixelRatio);
             three$1.renderer.setSize(options.width, options.height);
-            // if (!three.controls) {
+            // if (!options.controls) {
             //   three.controls = new OrbitControls(three.camera, three.renderer.domElement);
             //   three.controls.listenToKeyEvents(window); // optional
             // }
@@ -366,7 +370,7 @@
          */
         loadAnimation(url) {
             return tslib_es6_js.__awaiter(this, void 0, void 0, function* () {
-                // console.log('GuAnimator::loadAnimation()', url);
+                console.log('GuAnimator::loadAnimation()', url, this.parser);
                 this.currentSrc = url;
                 let animations = [];
                 yield new Promise((resolve) => requestAnimationFrame(resolve));
@@ -407,6 +411,7 @@
          * Use this to bootstrap the gu-animator.
          */
         firstUpdated() {
+            console.log('GUAnimator::firstUpdated()');
             // Bootstrap the gu-animator controller
             if (!this.controller) {
                 this.controller = new GuController({

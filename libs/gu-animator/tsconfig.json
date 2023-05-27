@@ -15,6 +15,7 @@
     "lib": ["es2017", "dom"],
     "skipLibCheck": true,
     "skipDefaultLibCheck": true,
+    "useDefineForClassFields": false,
     "baseUrl": ".",
     "paths": {
       "@immutable/gu-animator": ["libs/gu-animator/src/index.ts"]

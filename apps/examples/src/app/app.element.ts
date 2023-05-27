@@ -33,6 +33,10 @@ export class AppElement extends LitElement {
     // Start the background animation
     let packObj;
     const guAnimator = event.detail.target;
+    if (!guAnimator.controller) {
+      console.warn('GU-Animator failed to initialize.')
+      return;
+    }
     // const background = guAnimator.getAnimationAsset('bg');
     // const timeline = background.meta.timeline;
     // timeline.repeat = -1;
@@ -88,9 +92,11 @@ export class AppElement extends LitElement {
     const bg = guAnimator.getAnimationAsset('bg');
     // const camera = bg.instance.animationData.layers.find((layer) => layer.nm === 'Camera 1');
 
-    bg.instance.animationData.layers.forEach((layer) => {
-      console.log('BG layer', layer);
-    })
+    if (bg && bg.instance) {
+      bg.instance.animationData.layers.forEach((layer) => {
+        console.log('BG layer', layer);
+      });
+    }
     // anim.animationData.layers[0].ks.p.k[0]
 
     // const startX = camera.ks.p.k[0];
@@ -155,7 +161,7 @@ export class AppElement extends LitElement {
     if (!this.initPack) {
       this.initPack = true;
 
-      const anim = bg.instance;
+      // const anim = bg.instance;
       const threeData = guAnimator.controller.getThree();
 
       // camera = anim.animationData.layers.find((layer) => layer.nm === 'Camera 1');

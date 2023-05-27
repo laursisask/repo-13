@@ -1,11 +1,12 @@
 {
+  "name": "examples",
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "projectType": "application",
   "sourceRoot": "apps/examples/src",
   "tags": [],
   "targets": {
     "build": {
-      "executor": "@nrwl/web:webpack",
+      "executor": "@nx/webpack:webpack",
       "outputs": ["{options.outputPath}"],
       "defaultConfiguration": "production",
       "options": {
@@ -16,10 +17,7 @@
         "main": "apps/examples/src/main.ts",
         "polyfills": "apps/examples/src/polyfills.ts",
         "tsConfig": "apps/examples/tsconfig.app.json",
-        "assets": [
-          "apps/examples/src/favicon.ico",
-          "apps/examples/src/assets"
-        ],
+        "assets": ["apps/examples/src/favicon.ico", "apps/examples/src/assets"],
         "styles": ["apps/examples/src/styles.scss"],
         "scripts": [],
         "webpackConfig": "apps/examples/custom-webpack.config.js"
@@ -42,7 +40,7 @@
       }
     },
     "serve": {
-      "executor": "@nrwl/web:dev-server",
+      "executor": "@nx/webpack:dev-server",
       "options": {
         "buildTarget": "examples:build",
         "open": true

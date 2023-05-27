@@ -1,4 +1,5 @@
 {
+  "name": "gu-animator",
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "libs/gu-animator/src",
   "projectType": "library",
@@ -30,9 +31,7 @@
     },
     "package": {
       "executor": "@nrwl/web:rollup",
-      "outputs": [
-        "{options.outputPath}"
-      ],
+      "outputs": ["{options.outputPath}"],
       "options": {
         "deleteOutputPath": true,
         "outputPath": "packages/gu-animator",
@@ -40,10 +39,7 @@
         "rollupConfig": "libs/gu-animator/rollup.config.js",
         "project": "libs/gu-animator/package.json",
         "entryFile": "libs/gu-animator/src/index.ts",
-        "format": [
-          "esm",
-          "umd"
-        ],
+        "format": ["esm", "umd"],
         "external": []
       }
     }

@@ -3,12 +3,14 @@ import { gsap, Sine } from 'gsap';
 import Lottie from 'lottie-web';
 import {
   Clock,
-  LinearEncoding,
+  ColorManagement,
+  LinearToneMapping,
   PerspectiveCamera,
   Scene,
+  sRGBEncoding,
   WebGLRenderer
-} from "three";
-import { GLTF, GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
+} from 'three';
+import { GLTF, GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 
 /**
  * GU Animator Controller.
@@ -119,12 +121,16 @@ export class GuController {
     three.camera.focus = 10;
     three.camera.updateProjectionMatrix();
 
-    // NOTE: Default to previous color space for pngs in After Effects
-    three.renderer.outputEncoding = LinearEncoding;
+    ColorManagement.enabled = false;
+    three.renderer.useLegacyLights = false;
+    three.renderer.outputEncoding = sRGBEncoding;
+    three.renderer.toneMapping = LinearToneMapping;
+    three.renderer.toneMappingExposure = 0.4;
+    three.renderer.setClearColor( 0xcccccc );
     three.renderer.setPixelRatio(window.devicePixelRatio);
-    three.renderer.setSize(options.width as number, options.height as number);
+    three.renderer.setSize(options.width, options.height);
 
-    // if (!three.controls) {
+    // if (!options.controls) {
     //   three.controls = new OrbitControls(three.camera, three.renderer.domElement);
     //   three.controls.listenToKeyEvents(window); // optional
     // }
