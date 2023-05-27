@@ -2,6 +2,7 @@ import { GuConfig } from '../core/gu-config';
 import { gsap, Sine } from 'gsap';
 import Lottie from 'lottie-web';
 import {
+  Clock,
   LinearEncoding,
   PerspectiveCamera,
   Scene,
@@ -108,7 +109,10 @@ export class GuController {
         loader.load(filePath, onLoad, onProgress, onError);
 
         return loader;
-      }
+      },
+      clock: new Clock(),
+      mixers: [],
+      controls: false
     };
 
     three.camera.fov = 25;
