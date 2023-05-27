@@ -92,7 +92,10 @@
                     const loader = new GLTFLoader.GLTFLoader();
                     loader.load(filePath, onLoad, onProgress, onError);
                     return loader;
-                }
+                },
+                clock: new three.Clock(),
+                mixers: [],
+                controls: false
             };
             three$1.camera.fov = 25;
             three$1.camera.focus = 10;

@@ -33,10 +33,10 @@ export class AppElement extends LitElement {
     // Start the background animation
     let packObj;
     const guAnimator = event.detail.target;
-    const background = guAnimator.getAnimationAsset('bg');
-    const timeline = background.meta.timeline;
-    timeline.repeat = -1;
-    timeline.play();
+    // const background = guAnimator.getAnimationAsset('bg');
+    // const timeline = background.meta.timeline;
+    // timeline.repeat = -1;
+    // timeline.play();
 
     document.addEventListener('mousemove', (e) => {
       const rect = guAnimator.getBoundingClientRect();
@@ -86,16 +86,16 @@ export class AppElement extends LitElement {
     //   .to(comp.baseElement,{duration:2, y:'+=5', ease:Power1.easeInOut}, 19);
 
     const bg = guAnimator.getAnimationAsset('bg');
-    const camera = bg.instance.animationData.layers.find((layer) => layer.nm === 'Camera 1');
+    // const camera = bg.instance.animationData.layers.find((layer) => layer.nm === 'Camera 1');
 
     bg.instance.animationData.layers.forEach((layer) => {
       console.log('BG layer', layer);
     })
     // anim.animationData.layers[0].ks.p.k[0]
 
-    const startX = camera.ks.p.k[0];
-    const startY = camera.ks.p.k[1];
-    const obj = {x: startX, y:startY, z:0};
+    // const startX = camera.ks.p.k[0];
+    // const startY = camera.ks.p.k[1];
+    // const obj = {x: startX, y:startY, z:0};
     // gsap.to(obj, { duration: 5, x: startX + 100, y: startY + 100, onUpdate: () => {
     //     console.log('camera change x', obj.x, camera, bg.instance.renderer.camera);
     //     camera.ks.p.k[0].s[0] = obj.x;
@@ -142,14 +142,14 @@ export class AppElement extends LitElement {
       currentPos[2] = currentPos[2] + (mousePos[2] - currentPos[2])*0.25;
 
       // Pos x
-      camera.ks.p.k[0].s[0] = currentPos[0];
-      camera.ks.p.k[1].s[0] = currentPos[0];
-
-      // Pos y
-      camera.ks.p.k[0].s[1] = currentPos[1];
-      camera.ks.p.k[1].s[1] = currentPos[1];
+      // camera.ks.p.k[0].s[0] = currentPos[0];
+      // camera.ks.p.k[1].s[0] = currentPos[0];
+      //
+      // // Pos y
+      // camera.ks.p.k[0].s[1] = currentPos[1];
+      // camera.ks.p.k[1].s[1] = currentPos[1];
     });
-    console.log('Find camera', camera);
+   //  console.log('Find camera', camera);
 
     // Setup pack
     if (!this.initPack) {
@@ -193,24 +193,24 @@ export class AppElement extends LitElement {
         const emissiveTexture = new THREE.TextureLoader().load(`/assets/model/m2_pack_booster_emissive.png`);
 
         // this.three.scene.environment = diffuseCubemap;
-        const mat = new THREE.MeshPhysicalMaterial();
-        gltf.scene.children[0].children[0].material = mat;
+        // const mat = new THREE.MeshPhysicalMaterial();
+        // gltf.scene.children[0].children[0].material = mat;
 
         // mat.envMap = diffuseCubemap;
-        mat.map = albedoTexture;
-        mat.map.flipY = false;
-        mat.aoMap = aoTexture;
-        mat.aoMap.flipY = false;
-        mat.normalMap = normalTexture;
-        mat.normalMap.flipY = false;
-        mat.emissiveMap = emissiveTexture;
-        mat.emissiveMap.flipY = false;
-        mat.roughnessMap = ormTexture;
-        mat.roughnessMap.flipY = false;
+        // mat.map = albedoTexture;
+        // mat.map.flipY = false;
+        // mat.aoMap = aoTexture;
+        // mat.aoMap.flipY = false;
+        // mat.normalMap = normalTexture;
+        // mat.normalMap.flipY = false;
+        // mat.emissiveMap = emissiveTexture;
+        // mat.emissiveMap.flipY = false;
+        // mat.roughnessMap = ormTexture;
+        // mat.roughnessMap.flipY = false;
 
-        mat.side = THREE.FrontSide;
-        mat.roughness = 2;
-        mat.needsUpdate = true;
+        // mat.side = THREE.FrontSide;
+        // mat.roughness = 2;
+        // mat.needsUpdate = true;
 
         // Create TransformControls
         // const transformControls = new THREE.TransformControls(threeData.camera, threeData.renderer.domElement);
@@ -257,6 +257,13 @@ export class AppElement extends LitElement {
     console.log('Examples marker:', event);
   }
 
+  firstUpdated() {
+    const guAnimator: any = this.animatorRef.value;
+    guAnimator.loadAnimation('/assets/gu-pack-opening/data.json').then((animations: any) => {
+      console.log('GUAnimator::loadAnimation done', animations);
+    });
+  }
+
   override render() {
     const title = 'GU Animator examples';
     return html`
@@ -272,8 +279,6 @@ export class AppElement extends LitElement {
 
           <gu-animator
             ${ref(this.animatorRef)}
-            src="/assets/gu-animator-pack-opening/data.json"
-            assetsPath="/assets/bg_camera/"
             @loaded=${this.onLoaded}
             @loading=${this.onLoading}
             @marker=${this.onMarker}

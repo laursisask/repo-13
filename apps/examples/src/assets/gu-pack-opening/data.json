@@ -1,0 +1,18 @@
+{
+  "version": "1.0.0",
+  "timeline": [
+    {
+      "id": "bg",
+      "assetId": "bg",
+      "time": "0"
+    }
+  ],
+  "assets": [
+    {
+      "id": "bg",
+      "format": "bodymovin",
+      "contentPath": "/assets/lottie/data.json",
+      "repeat": -1
+    }
+  ]
+}

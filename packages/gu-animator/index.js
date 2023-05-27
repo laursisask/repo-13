@@ -4,7 +4,7 @@ import { createRef, ref } from 'lit/directives/ref.js';
 import { property, customElement } from 'lit/decorators.js';
 import { gsap } from 'gsap';
 import Lottie from 'lottie-web';
-import { Scene, PerspectiveCamera, WebGLRenderer, LinearEncoding } from 'three';
+import { Scene, PerspectiveCamera, WebGLRenderer, Clock, LinearEncoding } from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 
 /**
@@ -91,7 +91,10 @@ class GuController {
                 const loader = new GLTFLoader();
                 loader.load(filePath, onLoad, onProgress, onError);
                 return loader;
-            }
+            },
+            clock: new Clock(),
+            mixers: [],
+            controls: false
         };
         three.camera.fov = 25;
         three.camera.focus = 10;
