@@ -7,15 +7,15 @@
     "moduleResolution": "node",
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
-    "importHelpers": false,
-    "target": "es2015",
+    "importHelpers": true,
+    "target": "es5",
     "module": "esnext",
-    "lib": ["es2017", "dom"],
+    "lib": ["es2020", "dom", "es2015.reflect"],
     "skipLibCheck": true,
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
-      "@immutable/gu-animator": ["libs/gu-animator/src/index.ts"]
+      "@imtbl/ig-animator": ["packages/ig-animator/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]

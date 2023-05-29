@@ -1,0 +1,78 @@
+{
+  "name": "ig-animator-demos",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "projectType": "application",
+  "sourceRoot": "packages/ig-animator-demos/src",
+  "tags": [],
+  "targets": {
+    "build": {
+      "executor": "@nx/webpack:webpack",
+      "outputs": ["{options.outputPath}"],
+      "defaultConfiguration": "production",
+      "options": {
+        "outputPath": "dist/packages/ig-animator-demos",
+        "compiler": "babel",
+        "main": "packages/ig-animator-demos/src/main.ts",
+        "tsConfig": "packages/ig-animator-demos/tsconfig.app.json",
+        "webpackConfig": "packages/ig-animator-demos/webpack.config.js",
+        "assets": [
+          "packages/ig-animator-demos/src/favicon.ico",
+          "packages/ig-animator-demos/src/assets"
+        ],
+        "index": "packages/ig-animator-demos/src/index.html",
+        "baseHref": "/",
+        "styles": ["packages/ig-animator-demos/src/styles.css"],
+        "scripts": []
+      },
+      "configurations": {
+        "production": {
+          "optimization": true,
+          "outputHashing": "all",
+          "sourceMap": false,
+          "namedChunks": false,
+          "extractLicenses": true,
+          "vendorChunk": false,
+          "fileReplacements": [
+            {
+              "replace": "packages/ig-animator-demos/src/environments/environment.ts",
+              "with": "packages/ig-animator-demos/src/environments/environment.prod.ts"
+            }
+          ]
+        }
+      }
+    },
+    "serve": {
+      "executor": "@nx/webpack:dev-server",
+      "options": {
+        "buildTarget": "ig-animator-demos:build",
+        "open": true
+      },
+      "configurations": {
+        "production": {
+          "buildTarget": "ig-animator-demos:build:production"
+        }
+      }
+    },
+    "lint": {
+      "executor": "@nx/linter:eslint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": ["packages/ig-animator-demos/**/*.ts"]
+      }
+    },
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+      "options": {
+        "jestConfig": "packages/ig-animator-demos/jest.config.ts",
+        "passWithNoTests": true
+      },
+      "configurations": {
+        "ci": {
+          "ci": true,
+          "codeCoverage": true
+        }
+      }
+    }
+  }
+}

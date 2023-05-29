@@ -1,0 +1,23 @@
+{
+  "version": "1.0.0",
+  "timeline": [
+    {
+      "id": "bg",
+      "assetId": "bg",
+      "time": "0"
+    }
+  ],
+  "assets": [
+    {
+      "id": "bg",
+      "format": "bodymovin",
+      "contentPath": "/assets/bg_camera/data.json",
+      "repeat": -1
+    },
+    {
+      "id": "pack",
+      "format": "bodymovin",
+      "contentPath": "/assets/pack-opening/data.json"
+    }
+  ]
+}
