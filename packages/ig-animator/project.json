@@ -5,13 +5,15 @@
   "projectType": "library",
   "targets": {
     "build": {
-      "executor": "@nx/js:swc",
+      "executor": "@nx/rollup:rollup",
       "outputs": ["{options.outputPath}"],
       "options": {
         "outputPath": "dist/packages/ig-animator",
         "main": "packages/ig-animator/src/index.ts",
         "tsConfig": "packages/ig-animator/tsconfig.lib.json",
-        "assets": ["packages/ig-animator/*.md"]
+        "assets": [],
+        "project": "packages/ig-animator/package.json",
+        "compiler": "swc"
       }
     },
     "publish": {

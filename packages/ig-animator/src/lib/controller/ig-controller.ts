@@ -52,6 +52,7 @@ export class IgController {
       three: this.initThree({
         width: SIZEW,
         height: SIZEH,
+        debug: this.config.debug
       }),
 
       // TODO: Abstract out to a renderer application provider
@@ -125,6 +126,8 @@ export class IgController {
       clock: new Clock(),
       mixers: [],
       controls: false,
+      debug: options.debug,
+      interaction: true
     };
 
     three.camera.fov = 25;

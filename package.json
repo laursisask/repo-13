@@ -15,12 +15,14 @@
     "node": ">=16.11.0"
   },
   "dependencies": {
+    "@nx/rollup": "^16.2.2",
     "@swc/helpers": "~0.5.0",
     "gsap": "^3.11.5",
     "lit": "^2.7.4",
     "lottie-web": "^5.11.0",
     "reflect-metadata": "^0.1.13",
     "three": "^0.151.3",
+    "three.interactive": "^1.7.0",
     "tslib": "^2.3.0"
   },
   "devDependencies": {

@@ -3,7 +3,6 @@ import { Ref, createRef, ref } from 'lit/directives/ref.js';
 import { customElement, property, query } from 'lit/decorators.js';
 import { IgController } from './controller/ig-controller';
 import { IgParser } from './parser/ig-parser';
-import { IgRenderer } from './types';
 
 export interface LoadingEvent {
   date: string;
@@ -27,16 +26,21 @@ export interface MarkerEvent {
   target: IgAnimator;
 }
 
+export type IgRenderer = 'pixi' | 'threejs';
+
 @customElement('ig-animator')
 export class IgAnimator extends LitElement {
   @property()
-  public declare src;
+  public declare src: string;
 
   @property()
-  public declare assetsPath;
+  public declare assetsPath: string;
 
   @property()
   public declare renderer: IgRenderer;
+
+  @property()
+  public declare debug: boolean;
 
   private container: Ref<HTMLElement> = createRef();
   private currentSrc = '';
@@ -50,6 +54,7 @@ export class IgAnimator extends LitElement {
     this.src = '';
     this.assetsPath = '';
     this.renderer = 'threejs';
+    this.debug = true;
   }
 
   static override get styles() {
@@ -117,6 +122,7 @@ export class IgAnimator extends LitElement {
       this.controller = new IgController({
         container: this.container.value,
         renderer: this.renderer,
+        debug: this.debug
       });
     }
 

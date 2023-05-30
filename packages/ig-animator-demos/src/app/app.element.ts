@@ -1,10 +1,8 @@
 import '@imtbl/ig-animator';
-import { css, html, LitElement } from 'lit';
+import { html, LitElement } from 'lit';
 import { Ref, createRef, ref } from 'lit/directives/ref.js';
 import {
   customElement,
-  property,
-  query,
   eventOptions,
 } from 'lit/decorators.js';
 import './app.element.css';
@@ -14,7 +12,6 @@ import {
   AnimationMixer,
   DirectionalLight,
   LoopOnce,
-  Object3D,
 } from 'three';
 import GUI from 'lil-gui';
 import { IgAnimator } from '@imtbl/ig-animator';
@@ -43,6 +40,9 @@ export class AppElement extends LitElement {
     packScaleX: 0,
     packScaleY: 0,
     packScaleZ: 0,
+    packRotationX: 0,
+    packRotationY: 0,
+    packRotationZ: 0,
     lightDirect: 0,
     lightAmbient: 0,
     selectPack: () => {
@@ -216,6 +216,9 @@ export class AppElement extends LitElement {
           this.config.packScaleX = this.config.selectedPack.scene.scale.x;
           this.config.packScaleY = this.config.selectedPack.scene.scale.y;
           this.config.packScaleZ = this.config.selectedPack.scene.scale.z;
+          this.config.packRotationX = this.config.selectedPack.scene.rotation.x;
+          this.config.packRotationY = this.config.selectedPack.scene.rotation.y;
+          this.config.packRotationZ = this.config.selectedPack.scene.rotation.z;
         }
       });
 
@@ -234,6 +237,9 @@ export class AppElement extends LitElement {
       packFolder.add(this.config, 'packScaleX').listen();
       packFolder.add(this.config, 'packScaleY').listen();
       packFolder.add(this.config, 'packScaleZ').listen();
+      packFolder.add(this.config, 'packRotationX').listen();
+      packFolder.add(this.config, 'packRotationY').listen();
+      packFolder.add(this.config, 'packRotationZ').listen();
 
       gui.add(this.config, 'selectPack');
       gui.add(this.config, 'openPack');
@@ -305,6 +311,11 @@ export class AppElement extends LitElement {
             this.config.packScaleY,
             this.config.packScaleZ
           );
+          (this.config.selectedPack as any).scene.rotation.set(
+            this.config.packRotationX,
+            this.config.packRotationY,
+            this.config.packRotationZ
+          );
         }
       });
 
@@ -317,7 +328,7 @@ export class AppElement extends LitElement {
         this.config.selectedPack = gltf;
         const model = gltf.scene;
         model.scale.set(20, 20, 20);
-        model.position.set(1156, 565, 1120);
+        model.position.set(1219, 465, 2244);
         model.visible = false;
 
         threeData.scene.add(model);
@@ -350,14 +361,35 @@ export class AppElement extends LitElement {
         threeData.directionalLight = directionalLight;
         threeData.scene.add(directionalLight);
 
-        // const animate = () => {
-        //   requestAnimationFrame(animate);
-        //   const delta = threeData.clock.getDelta();
-        //   if (threeData.mixers.length > 0) {
-        //     threeData.mixers.forEach((mixer) => mixer.update(delta));
-        //   }
-        // }
-        // animate();
+        // Testing pack interaction
+        const pack = gltf.scene.children[0];
+        if (pack) {
+          pack.material = pack.material.clone();
+          pack.userData.initialEmissive = pack.material.emissive.clone();
+          pack.material.emissiveIntensity = 0.5;
+
+          threeData.interaction.add(pack);
+
+          pack.addEventListener('mouseover', (event) => {
+            console.log('Pack::mouseover()', event);
+            document.body.style.cursor = 'pointer';
+
+            if (pack.material) {
+              pack.userData.materialEmissiveHex = pack.material.emissive.getHex();
+              pack.material.emissive.setHex(0xff0000);
+              pack.material.emissiveIntensity = 0.8;
+            }
+          });
+
+          pack.addEventListener('mouseout', (event) => {
+            console.log('Pack::mouseout()', event);
+            document.body.style.cursor = 'default';
+
+            if (pack.material) {
+              pack.material.emissiveIntensity = 0;
+            }
+          });
+        }
 
         // Add axes helper
         // const axesHelper = new THREE.AxesHelper(5);
@@ -486,15 +518,13 @@ export class AppElement extends LitElement {
       'Anim_0'
     );
     const openAction = mixer.clipAction(openClip);
-
-    console.log('Play the animation::selectPack()', openAction);
     if (openAction) {
       openAction.clampWhenFinished = true;
       openAction.reset();
       openAction.play();
       openAction.loop = LoopOnce;
 
-      // Play the animation
+      // Play the animation via GSAP
       gsap.to(mixer, {
         _time: openClip.duration,
         duration: openClip.duration,
