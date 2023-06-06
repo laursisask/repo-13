@@ -68,7 +68,7 @@ export class IgParser {
   private loadBodymovinJson() {
     return new Promise<any[]>((resolve, reject) => {
       const assetsPath = this.url.substring(0, this.url.lastIndexOf('/') + 1);
-      console.log('GUParser::loadBodyMovinJson()', this.url, assetsPath);
+      console.log('GUParser::loadBodyMovinJson() u:', this.url, 'a:', assetsPath, 'ca:', this.config.assetsPath);
 
       // Create lottie animation and hook into loading state
       const animation = {
@@ -100,7 +100,7 @@ export class IgParser {
           this.config.loaders.lottie.getDuration(inFrames),
         instance: this.config.loaders.lottie.loadAnimation({
           wrapper: this.config.wrapper,
-          animType: 'three',
+          animType: 'threejs',
           loop: true,
           prerender: true,
           autoplay: false,

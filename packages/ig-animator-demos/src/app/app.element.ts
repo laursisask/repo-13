@@ -10,7 +10,7 @@ import {
   AmbientLight,
   AnimationClip,
   AnimationMixer,
-  DirectionalLight,
+  DirectionalLight, GridHelper,
   LoopOnce,
 } from 'three';
 import GUI from 'lil-gui';
@@ -22,6 +22,7 @@ export class AppElement extends LitElement {
   private animatorRef: Ref<HTMLElement> = createRef();
   private mouse = { x: 0, y: 0 };
   private openPosition = [1150, 645, 780];
+  private camera: any;
 
   private initPack = false;
 
@@ -120,17 +121,19 @@ export class AppElement extends LitElement {
     //   .to(comp.baseElement,{duration:2, y:'+=5', ease:Power1.easeInOut}, 19);
 
     const bg = guAnimator.getAnimationAsset('bg');
-    const camera = bg.instance.animationData.layers.find(
-      (layer) => layer.nm === 'Camera 1'
-    );
+    if(bg && bg.instance) {
+      this.camera = bg.instance.animationData.layers.find(
+        (layer) => layer.nm === 'Camera 1'
+      );
 
-    if (bg && bg.instance) {
-      console.log('Animate the background', bg);
-      bg.meta.timeline.play();
+      if (bg && bg.instance) {
+        console.log('Animate the background', bg);
+        bg.meta.timeline.play();
 
-      bg.instance.animationData.layers.forEach((layer) => {
-        console.log('BG layer', layer);
-      });
+        bg.instance.animationData.layers.forEach((layer) => {
+          console.log('BG layer', layer);
+        });
+      }
     }
     // anim.animationData.layers[0].ks.p.k[0]
 
@@ -186,17 +189,17 @@ export class AppElement extends LitElement {
       currentPos[1] = currentPos[1] + (mousePos[1] - currentPos[1]) * 0.25 + 10;
       currentPos[2] = currentPos[2] + (mousePos[2] - currentPos[2]) * 0.25;
 
-      if (this.config && this.config.isFollowing) {
+      if (this.config && this.config.isFollowing && this.camera) {
         this.config.cameraX = currentPos[0];
         this.config.cameraY = currentPos[1];
 
         // Pos x
-        camera.ks.p.k[0].s[0] = currentPos[0];
-        camera.ks.p.k[1].s[0] = currentPos[0];
+        this.camera.ks.p.k[0].s[0] = currentPos[0];
+        this.camera.ks.p.k[1].s[0] = currentPos[0];
 
         // Pos y
-        camera.ks.p.k[0].s[1] = currentPos[1];
-        camera.ks.p.k[1].s[1] = currentPos[1];
+        this.camera.ks.p.k[0].s[1] = currentPos[1];
+        this.camera.ks.p.k[1].s[1] = currentPos[1];
       }
     });
     //  console.log('Find camera', camera);
@@ -261,21 +264,22 @@ export class AppElement extends LitElement {
 
       gui.onChange((changes) => {
         if (
+          this.camera,
           changes.property === 'cameraX' ||
           changes.property === 'cameraY' ||
           changes.property === 'cameraZ'
         ) {
           if (changes.property === 'cameraX') {
-            camera.ks.p.k[0].s[0] = changes.value;
-            camera.ks.p.k[1].s[0] = changes.value;
+            this.camera.ks.p.k[0].s[0] = changes.value;
+            this.camera.ks.p.k[1].s[0] = changes.value;
           }
           if (changes.property === 'cameraY') {
-            camera.ks.p.k[0].s[1] = changes.value;
-            camera.ks.p.k[1].s[1] = changes.value;
+            this.camera.ks.p.k[0].s[1] = changes.value;
+            this.camera.ks.p.k[1].s[1] = changes.value;
           }
           if (changes.property === 'cameraZ') {
-            camera.ks.p.k[0].s[2] = changes.value;
-            camera.ks.p.k[1].s[2] = changes.value;
+            this.camera.ks.p.k[0].s[2] = changes.value;
+            this.camera.ks.p.k[1].s[2] = changes.value;
           }
         }
         if (
@@ -360,6 +364,8 @@ export class AppElement extends LitElement {
         directionalLight.position.set(1, 1, 1).normalize();
         threeData.directionalLight = directionalLight;
         threeData.scene.add(directionalLight);
+
+        threeData.scene.add( new GridHelper( 2000, 10, 0x888888, 0x444444 ) );
 
         // Testing pack interaction
         const pack = gltf.scene.children[0];
@@ -478,9 +484,10 @@ export class AppElement extends LitElement {
     const guAnimator: IgAnimator = this.animatorRef.value as IgAnimator;
     console.log('Demos::firstUpdated()', guAnimator, guAnimator.loadAnimation);
     guAnimator
-      .loadAnimation('/assets/gu-pack-opening/data.json')
-      .then((animations: any) => {
-        console.log('GUAnimator::loadAnimation done', animations);
+      .loadAnimation('/assets/bg_camera/data.json') // gu-pack-opening
+      .then((response: any) => {
+        console.log('GUAnimator::loadAnimation done', response);
+        response.animations[0].instance.play();
       });
   }
 

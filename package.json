@@ -6,6 +6,7 @@
   "homepage": "https://github.com/immutable/ig-animator#readme",
   "license": "Apache-2.0",
   "scripts": {
+    "start": "npm run serve",
     "build": "npx nx build ig-animator-demos",
     "build:package": "npx nx build ig-animator",
     "serve": "npx nx serve ig-animator-demos"
@@ -19,7 +20,7 @@
     "@swc/helpers": "~0.5.0",
     "gsap": "^3.11.5",
     "lit": "^2.7.4",
-    "lottie-web": "^5.11.0",
+    "lottie-web": "github:immutable/lottie-web-threejs#master",
     "reflect-metadata": "^0.1.13",
     "three": "^0.151.3",
     "three.interactive": "^1.7.0",
