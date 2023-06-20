@@ -701,8 +701,8 @@ export class AppElement extends LitElement {
     const guAnimator: IgAnimator = this.animatorRef.value as IgAnimator;
     console.log('Demos::firstUpdated()', guAnimator, guAnimator.loadAnimation);
 
-    // const animationPath = `https://images.godsunchained.com/pack-opening/animations/opening/gu-pack-opening/data.json`;
-    const animationPath = '/assets/gu-data.json';
+    const animationPath = `https://images.godsunchained.com/pack-opening/animations/opening/ig-data.json`;
+    // const animationPath = '/assets/gu-data.json';
     guAnimator
       .loadAnimation(animationPath) // gu-pack-opening
       .then((response: any) => {

@@ -6,15 +6,20 @@ export class IgParser {
   private rootJson: any = {};
   private config: any = {};
   private url: any = {};
+  private initialUrl: string;
   private animationAsset: any = {};
 
   constructor(config: any) {
     this.config = config;
+    this.initialUrl = '';
   }
 
-  async loadAnimation(url: string): Promise<any[]> {
+  async loadAnimation(url: string, isChildAnimation = false): Promise<any[]> {
     // Load json to check json format
     this.url = url;
+    if (!isChildAnimation) {
+      this.initialUrl = url;
+    }
     const response = await fetch(this.url);
     this.rootJson = await response.json();
 
@@ -53,12 +58,13 @@ export class IgParser {
           // Append the content Path to be relative to the original url
           if (!loadingAnimation.contentPath.includes('/') ||
             (!loadingAnimation.contentPath.startsWith('http') && !loadingAnimation.contentPath.startsWith('/'))) {
-            const assetsPath = this.url.substring(0, this.url.lastIndexOf('/') + 1);
+            const assetsPath = this.initialUrl.substring(0, this.initialUrl.lastIndexOf('/') + 1);
+
             contentPath = `${assetsPath}${loadingAnimation.contentPath}`;
           }
         }
 
-        this.loadAnimation(contentPath).then((animations) => {
+        this.loadAnimation(contentPath, true).then((animations) => {
           loadedAnimations = loadedAnimations.concat(animations);
 
           if (pendingAnimations.length > 0) {
