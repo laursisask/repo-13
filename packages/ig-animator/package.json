@@ -1,6 +1,6 @@
 {
   "name": "ig-animator",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "Immutable games animation system",
   "author": "Charlie McKenzie <charlie.mckenzie@immutable.com>",
   "license": "Apache-2.0",
