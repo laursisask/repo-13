@@ -11,7 +11,12 @@
     {
       "id": "bg",
       "format": "bodymovin",
-      "contentPath": "data.json"
+      "contentPath": "bg_camera/data.json"
+    },
+    {
+      "id": "pack",
+      "format": "bodymovin",
+      "contentPath": "pack_opening/data.json"
     }
   ]
 }

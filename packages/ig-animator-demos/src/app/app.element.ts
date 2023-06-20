@@ -702,7 +702,7 @@ export class AppElement extends LitElement {
     console.log('Demos::firstUpdated()', guAnimator, guAnimator.loadAnimation);
 
     // const animationPath = `https://images.godsunchained.com/pack-opening/animations/opening/gu-pack-opening/data.json`;
-    const animationPath = '/assets/bg_camera/gu-data.json';
+    const animationPath = '/assets/gu-data.json';
     guAnimator
       .loadAnimation(animationPath) // gu-pack-opening
       .then((response: any) => {

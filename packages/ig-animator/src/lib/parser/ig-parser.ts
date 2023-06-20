@@ -51,7 +51,8 @@ export class IgParser {
           reject(loadingAnimation);
         } else {
           // Append the content Path to be relative to the original url
-          if (!loadingAnimation.contentPath.includes('/')) {
+          if (!loadingAnimation.contentPath.includes('/') ||
+            (!loadingAnimation.contentPath.startsWith('http') && !loadingAnimation.contentPath.startsWith('/'))) {
             const assetsPath = this.url.substring(0, this.url.lastIndexOf('/') + 1);
             contentPath = `${assetsPath}${loadingAnimation.contentPath}`;
           }
