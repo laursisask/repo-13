@@ -7,21 +7,34 @@ import {
 } from 'lit/decorators.js';
 import './app.element.css';
 import {
+  ACESFilmicToneMapping,
   AmbientLight,
   AnimationClip,
   AnimationMixer,
-  DirectionalLight, GridHelper,
+  DefaultLoadingManager,
+  DirectionalLight, EquirectangularReflectionMapping,
+  GridHelper,
   LoopOnce,
+  MathUtils,
+  Mesh,
+  MeshBasicMaterial,
+  MeshStandardMaterial,
+  PlaneGeometry, PMREMGenerator,
+  sRGBEncoding,
+  TextureLoader,
+  TorusKnotGeometry,
 } from 'three';
 import GUI from 'lil-gui';
 import { IgAnimator } from '@imtbl/ig-animator';
 import { gsap } from 'gsap';
+import {TransformControls} from "three/examples/jsm/controls/TransformControls";
+import {EXRLoader} from "three/examples/jsm/loaders/EXRLoader";
+import {RGBMLoader} from "three/examples/jsm/loaders/RGBMLoader";
 
 @customElement('app-root')
 export class AppElement extends LitElement {
   private animatorRef: Ref<HTMLElement> = createRef();
   private mouse = { x: 0, y: 0 };
-  private openPosition = [1150, 645, 780];
   private camera: any;
 
   private initPack = false;
@@ -44,8 +57,9 @@ export class AppElement extends LitElement {
     packRotationX: 0,
     packRotationY: 0,
     packRotationZ: 0,
-    lightDirect: 0,
-    lightAmbient: 0,
+    exposure: 0.6,
+    lightDirect: 20,
+    lightAmbient: 44,
     selectPack: () => {
       this.selectPack();
     },
@@ -55,7 +69,7 @@ export class AppElement extends LitElement {
     reset: () => {
       this.resetPack();
     },
-    selectedMesh: false,
+    selectedMesh: null,
     selectedModel: null,
     selectedPack: null,
   };
@@ -248,6 +262,12 @@ export class AppElement extends LitElement {
       gui.add(this.config, 'openPack');
       gui.add(this.config, 'reset');
 
+      const exposureController = gui.add(this.config, 'exposure'); // Number Field
+      exposureController.onChange((value) => {
+        if (threeData.renderer) {
+          threeData.renderer.toneMappingExposure = this.config.exposure;
+        }
+      });
       const directController = gui.add(this.config, 'lightDirect'); // Number Field
       directController.onChange((value) => {
         if (threeData.directionalLight) {
@@ -326,20 +346,127 @@ export class AppElement extends LitElement {
       // const anim = bg.instance;
       const threeData = guAnimator.controller.getThree();
 
-      const cardLoader = threeData.load('/assets/model/card.gltf', (gltf) => {
-        console.log('Loaded Card GLTF', gltf);
+      const cardLoader = threeData.load('/assets/model/base_4_gold.gltf', (gltf) => {
+        console.log('Loaded Cardback GLTF', gltf);
 
         this.config.selectedPack = gltf;
         const model = gltf.scene;
         model.scale.set(20, 20, 20);
-        model.position.set(1219, 465, 2244);
-        model.visible = false;
-
+        model.position.set(1219, 465, 2044);
+        model.visible = true;
         threeData.scene.add(model);
+
+        // Custom cardback
+        // const textureURL = `/assets/cardback/1024/cardback_2006.png`;
+        // const textureLoader = new TextureLoader();
+        // const texture = textureLoader.load(textureURL);
+        // texture.encoding = sRGBEncoding;
+        // texture.flipY = false;
+        // model.children[0].material.map = texture;
+
+        // Control operations
+        const control = new TransformControls(threeData.camera, threeData.renderer.domElement);
+        control.addEventListener('change', () => {
+          threeData.renderer.render(threeData.scene, threeData.camera);
+        });
+        control.attach(model.children[0]);
+        threeData.scene.add(control);
+
+        window.addEventListener( 'keydown', function ( event ) {
+
+          switch ( event.keyCode ) {
+
+            case 81: // Q
+              control.setSpace( control.space === 'local' ? 'world' : 'local' );
+              break;
+
+            case 16: // Shift
+              control.setTranslationSnap( 100 );
+              control.setRotationSnap( MathUtils.degToRad( 15 ) );
+              control.setScaleSnap( 0.25 );
+              break;
+
+            case 87: // W
+              control.setMode( 'translate' );
+              break;
+
+            case 69: // E
+              control.setMode( 'rotate' );
+              break;
+
+            case 82: // R
+              control.setMode( 'scale' );
+              break;
+
+            // case 67: // C
+            //   const position = currentCamera.position.clone();
+            //
+            //   currentCamera = currentCamera.isPerspectiveCamera ? cameraOrtho : cameraPersp;
+            //   currentCamera.position.copy( position );
+            //
+            //   orbit.object = currentCamera;
+            //   control.camera = currentCamera;
+            //
+            //   currentCamera.lookAt( orbit.target.x, orbit.target.y, orbit.target.z );
+            //   onWindowResize();
+            //   break;
+
+            case 86: { // V
+              const randomFoV = Math.random() + 0.1;
+              const randomZoom = Math.random() + 0.1;
+
+              threeData.camera.fov = randomFoV * 160;
+              threeData.camera.zoom = randomZoom * 5;
+              break;
+            }
+
+            case 187:
+            case 107: // +, =, num+
+              control.setSize( control.size + 0.1 );
+              break;
+
+            case 189:
+            case 109: // -, _, num-
+              control.setSize( Math.max( control.size - 0.1, 0.1 ) );
+              break;
+
+            case 88: // X
+              control.showX = ! control.showX;
+              break;
+
+            case 89: // Y
+              control.showY = ! control.showY;
+              break;
+
+            case 90: // Z
+              control.showZ = ! control.showZ;
+              break;
+
+            case 32: // Spacebar
+              control.enabled = ! control.enabled;
+              break;
+
+            case 27: // Esc
+              control.reset();
+              break;
+          }
+        });
+
+        window.addEventListener( 'keyup', function ( event ) {
+          switch ( event.keyCode ) {
+            case 16: // Shift
+              control.setTranslationSnap( null );
+              control.setRotationSnap( null );
+              control.setScaleSnap( null );
+              break;
+
+          }
+        });
       });
 
       // TODO: Load a gltf file..
-      const loader = threeData.load('/assets/model/m2.gltf', (gltf) => {
+      // loader.setCrossOrigin('anonymous');
+      const loader = threeData.load('/assets/model/base_4_gold.gltf', (gltf) => {
         console.log('Loaded GLTF', gltf);
         this.config.selectedModel = gltf;
         this.config.selectedMesh = gltf.scene; // .children[0];
@@ -352,18 +479,108 @@ export class AppElement extends LitElement {
           this.config.selectedZ
         );
 
-        // gltf.scene.position.set(this.openPosition[0], this.openPosition[1], this.openPosition[2]);
-
         threeData.scene.add(gltf.scene);
 
-        const ambientLight = new AmbientLight(0x404040, 10);
+        threeData.renderer.antialias = false;
+        threeData.renderer.toneMappingExposure = this.config.exposure;
+        threeData.renderer.toneMapping = ACESFilmicToneMapping;
+        threeData.renderer.useLegacyLights = false;
+        //
+        const ambientLight = new AmbientLight(0x404040, this.config.lightAmbient);
         threeData.ambientLight = ambientLight;
         threeData.scene.add(ambientLight);
 
-        const directionalLight = new DirectionalLight(0xffffff, 35);
+        const directionalLight = new DirectionalLight(0xffffff, this.config.lightDirect);
         directionalLight.position.set(1, 1, 1).normalize();
         threeData.directionalLight = directionalLight;
         threeData.scene.add(directionalLight);
+
+        // Setup env mapping EXR
+        let pngCubeRenderTarget, exrCubeRenderTarget;
+        let pngBackground, exrBackground;
+        let geometry: any = new TorusKnotGeometry( 18, 8, 150, 20 );
+        let material: any = new MeshStandardMaterial( {
+          metalness: 1,
+          roughness: 0.04,
+          envMapIntensity: 1
+        });
+
+        const torusMesh = new Mesh( geometry, material );
+        torusMesh.position.x = 1000;
+        torusMesh.scale.set(20, 20, 20);
+        torusMesh.position.z = 5;
+        threeData.scene.add( torusMesh );
+
+        geometry = new PlaneGeometry( 2000, 2000 );
+        material = new MeshBasicMaterial();
+
+        const planeMesh = new Mesh( geometry, material );
+        planeMesh.position.y = - 50;
+        // planeMesh.rotation.x = - Math.PI * 0.5;
+        threeData.scene.add( planeMesh );
+
+        DefaultLoadingManager.onLoad = function ( ) {
+          pmremGenerator.dispose();
+        };
+
+        const pmremGenerator = new PMREMGenerator( threeData.renderer );
+        pmremGenerator.compileEquirectangularShader();
+
+        const exrCubeMap = new EXRLoader().load( '/assets/textures/piz_compressed.exr', ( texture ) => {
+       // const exrCubeMap = new EXRLoader().load( '/assets/textures/table_mountain.exr', ( texture ) => {
+        // const exrCubeMap = new EXRLoader().load( '/assets/textures/satara_night.exr', ( texture ) => {
+
+          texture.mapping = EquirectangularReflectionMapping;
+          exrCubeRenderTarget = pmremGenerator.fromEquirectangular( texture );
+          exrBackground = texture;
+
+          torusMesh.material.envMap = exrCubeRenderTarget.texture;
+          torusMesh.material.needsUpdate = true;
+
+         //  this.config.selectedMesh.background = exrCubeMap;
+          this.config.selectedMesh.children.forEach((mesh) => {
+            mesh.material.toneMapped = true;
+            mesh.material.envMapIntensity = 2;
+            mesh.material.envMap = exrCubeRenderTarget.texture;
+            mesh.material.needsUpdate = true;
+          });
+
+          // torusMesh.material.envMap = exrCubeRenderTarget;
+          // torusMesh.material.needsUpdate = true;
+          // threeData.scene.background = exrBackground;
+          console.log('Finished loading EXR');
+        });
+        threeData.scene.background = exrCubeMap;
+        threeData.scene.environment = exrCubeMap;
+
+        // const pmremGenerator = new PMREMGenerator( threeData.renderer );
+        // pmremGenerator.compileCubemapShader();
+        // let rgbmCubeRenderTarget;
+        // const rgbmUrls = [ 'px.png', 'nx.png', 'py.png', 'ny.png', 'pz.png', 'nz.png' ];
+        // const rgbmCubeMap = new RGBMLoader().setMaxRange( 16 )
+        //   .setPath( '/assets/textures/rgbm16/' )
+        //   .loadCubemap( rgbmUrls, (textures) => {
+        //     console.log('Cube map loaded', textures);
+        //     rgbmCubeRenderTarget = pmremGenerator.fromCubemap( rgbmCubeMap );
+        //
+        //     torusMesh.material.envMap = rgbmCubeRenderTarget.texture;
+        //     torusMesh.material.needsUpdate = true;
+        //
+        //     this.config.selectedMesh.background = rgbmCubeMap;
+        //     this.config.selectedMesh.children.forEach((mesh) => {
+        //       mesh.material.toneMapped = true;
+        //       mesh.material.envMapIntensity = 2;
+        //       mesh.material.envMap = rgbmCubeRenderTarget.texture;
+        //       mesh.material.needsUpdate = true;
+        //     });
+        //     // torusMesh.material.needsUpdate = true;
+        //     // this.three.scene.background = exrBackground;
+        //   });
+        // threeData.scene.background = rgbmCubeMap;
+        // threeData.scene.environment = rgbmCubeMap;
+
+        const generatedCubeRenderTarget = pmremGenerator.fromScene(threeData.scene);
+
 
         threeData.scene.add( new GridHelper( 2000, 10, 0x888888, 0x444444 ) );
 
@@ -483,8 +700,11 @@ export class AppElement extends LitElement {
   firstUpdated() {
     const guAnimator: IgAnimator = this.animatorRef.value as IgAnimator;
     console.log('Demos::firstUpdated()', guAnimator, guAnimator.loadAnimation);
+
+    // const animationPath = `https://images.godsunchained.com/pack-opening/animations/opening/gu-pack-opening/data.json`;
+    const animationPath = '/assets/bg_camera/gu-data.json';
     guAnimator
-      .loadAnimation('/assets/bg_camera/data.json') // gu-pack-opening
+      .loadAnimation(animationPath) // gu-pack-opening
       .then((response: any) => {
         console.log('GUAnimator::loadAnimation done', response);
         response.animations[0].instance.play();

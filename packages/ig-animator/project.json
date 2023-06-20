@@ -4,7 +4,7 @@
   "sourceRoot": "packages/ig-animator/src",
   "projectType": "library",
   "targets": {
-    "build": {
+    "build-dist": {
       "executor": "@nx/rollup:rollup",
       "outputs": ["{options.outputPath}"],
       "options": {
@@ -13,7 +13,18 @@
         "tsConfig": "packages/ig-animator/tsconfig.lib.json",
         "assets": [],
         "project": "packages/ig-animator/package.json",
-        "compiler": "swc"
+        "compiler": "swc",
+        "declaration": true
+      }
+    },
+    "build": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "nx run ig-animator:build-dist",
+          "cp packages/ig-animator/README.md dist/packages/ig-animator/"
+        ],
+        "parallel": false
       }
     },
     "publish": {

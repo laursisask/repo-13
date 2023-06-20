@@ -1,4 +1,5 @@
 import { css, html, LitElement } from 'lit';
+import { styleMap } from 'lit/directives/style-map.js';
 import { Ref, createRef, ref } from 'lit/directives/ref.js';
 import { customElement, property, query } from 'lit/decorators.js';
 import { IgController } from './controller/ig-controller';
@@ -42,6 +43,9 @@ export class IgAnimator extends LitElement {
   @property()
   public declare debug: boolean;
 
+  @property()
+  public declare animatorStyles: any;
+
   private container: Ref<HTMLElement> = createRef();
   private currentSrc = '';
   private controller!: IgController;
@@ -63,6 +67,11 @@ export class IgAnimator extends LitElement {
         display: block;
         background-color: #f2f2f2;
         color: #5c5c5c;
+      }
+
+      > canvas {
+        position: absolute;
+        top: -10px;
       }
     `;
   }
@@ -152,7 +161,8 @@ export class IgAnimator extends LitElement {
   }
 
   override render() {
-    return html`<div ${ref(this.container)}></div>`;
+    const styles = this.animatorStyles || {};
+    return html`<div ${ref(this.container)} style=${styles}></div>`;
   }
 
   getAnimationAsset(name: string) {

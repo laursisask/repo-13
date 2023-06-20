@@ -43,14 +43,21 @@ export class IgParser {
         const loadingAnimation = pendingAnimations.shift();
         this.animationAsset = loadingAnimation;
 
+        let contentPath = loadingAnimation.contentPath;
         if (loadingAnimation.contentPath == this.url) {
           console.error(
             'Asset contentPath is the same as the parent path. Please check contentPath given.'
           );
           reject(loadingAnimation);
+        } else {
+          // Append the content Path to be relative to the original url
+          if (!loadingAnimation.contentPath.includes('/')) {
+            const assetsPath = this.url.substring(0, this.url.lastIndexOf('/') + 1);
+            contentPath = `${assetsPath}${loadingAnimation.contentPath}`;
+          }
         }
 
-        this.loadAnimation(loadingAnimation.contentPath).then((animations) => {
+        this.loadAnimation(contentPath).then((animations) => {
           loadedAnimations = loadedAnimations.concat(animations);
 
           if (pendingAnimations.length > 0) {

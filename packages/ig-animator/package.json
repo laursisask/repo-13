@@ -1,17 +1,14 @@
 {
-  "name": "@imtbl/ig-animator",
-  "version": "0.0.1",
+  "name": "ig-animator",
+  "version": "0.0.4",
   "description": "Immutable games animation system",
-  "author": "Immutable",
+  "author": "Charlie McKenzie <charlie.mckenzie@immutable.com>",
   "license": "Apache-2.0",
   "bugs": "https://github.com/immutable/ig-animator/issues",
   "keywords": [
     "immutable"
   ],
   "type": "module",
-  "publishConfig": {
-    "registry": "https://npm.pkg.github.com/"
-  },
   "repository": {
     "type": "git",
     "url": "https://github.com/immutable/ig-animator.git",
@@ -20,6 +17,9 @@
   "peerDependencies": {
     "gsap": "^3.9.0",
     "three": "^0.151.3",
-    "lottie-web": "^5.11.0"
-  }
+    "lottie-web": "^5.11.0",
+    "lit": "2.7.4"
+  },
+  "module": "./index.js",
+  "main": "./index.js"
 }
