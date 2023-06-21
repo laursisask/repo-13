@@ -434,7 +434,7 @@ function getPrNumber() {
   const pullRequest = github.context.payload.pull_request;
   if (!pullRequest) {
     const pr_config = core.getInput('pr-number', { required: false });
-    if (pr_config != "") return pr_config
+    if (pr_config != "") return parseInt(pr_config)
     return undefined;
   }
   return pullRequest.number;
