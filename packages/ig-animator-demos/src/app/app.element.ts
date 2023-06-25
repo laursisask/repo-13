@@ -10,26 +10,31 @@ import {
   ACESFilmicToneMapping,
   AmbientLight,
   AnimationClip,
-  AnimationMixer,
+  AnimationMixer, Color,
   DefaultLoadingManager,
-  DirectionalLight, EquirectangularReflectionMapping,
+  DirectionalLight, EquirectangularReflectionMapping, FrontSide,
   GridHelper,
   LoopOnce,
   MathUtils,
   Mesh,
-  MeshBasicMaterial,
+  MeshBasicMaterial, MeshPhysicalMaterial,
   MeshStandardMaterial,
-  PlaneGeometry, PMREMGenerator,
+  PlaneGeometry, PMREMGenerator, ShaderMaterial,
   sRGBEncoding,
   TextureLoader,
-  TorusKnotGeometry,
+  TorusKnotGeometry, Vector2,
+  RepeatWrapping,
 } from 'three';
 import GUI from 'lil-gui';
 import { IgAnimator } from '@imtbl/ig-animator';
 import { gsap } from 'gsap';
 import {TransformControls} from "three/examples/jsm/controls/TransformControls";
-import {EXRLoader} from "three/examples/jsm/loaders/EXRLoader";
-import {RGBMLoader} from "three/examples/jsm/loaders/RGBMLoader";
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
+import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader';
+import { frag as highlightFragShader, vert as highlightVertShader } from '../assets/shaders/highlight.glsl';
+import { FireMaterial } from '../assets/materials/fire-material';
+import { vec2 } from 'three/examples/jsm/nodes/shadernode/ShaderNodeBaseElements';
+
 
 @customElement('app-root')
 export class AppElement extends LitElement {
@@ -38,6 +43,8 @@ export class AppElement extends LitElement {
   private camera: any;
 
   private initPack = false;
+  private highlightMeshes: any[] = [];
+  private highlightMaterial;
 
   private config = {
     isEditing: false,
@@ -72,6 +79,18 @@ export class AppElement extends LitElement {
     selectedMesh: null,
     selectedModel: null,
     selectedPack: null,
+    material: {
+      grid: 1.0,
+      time: 1.0,
+      divisionScaleX: 0.5,
+      glowPower: 1.8,
+      controlPoint1: 0.0,
+      controlPoint2: 1.0,
+      gradientPower: 1.8,
+      gradientStartColor: '0x52fffc',
+      gradientEndColor: '0x00ced1',
+      gradientIntensity: 1.435
+    }
   };
 
   @eventOptions({ passive: true })
@@ -282,6 +301,34 @@ export class AppElement extends LitElement {
         }
       });
 
+      const materialFolder = gui.addFolder('Material');
+      materialFolder.add(this.config.material, 'grid').listen();
+      materialFolder.add(this.config.material, 'time').listen();
+      materialFolder.add(this.config.material, 'divisionScaleX').listen();
+      materialFolder.add(this.config.material, 'divisionScaleX').listen();
+      materialFolder.add(this.config.material, 'divisionScaleX').listen();
+      materialFolder.addColor(this.config.material, 'gradientStartColor').listen();
+      materialFolder.addColor(this.config.material, 'gradientEndColor').listen();
+      materialFolder.add(this.config.material, 'gradientIntensity', -2.0, 5.0).listen();
+      materialFolder.add(this.config.material, 'gradientPower', -2.0, 5.0).listen();
+      materialFolder.add(this.config.material, 'glowPower', -2.0, 5.0).listen();
+      materialFolder.add(this.config.material, 'controlPoint1', 0.0, 1.0).listen();
+      materialFolder.add(this.config.material, 'controlPoint2', 0.0, 1.0).listen();
+      materialFolder.onChange((args) => {
+        console.log('Material changed', args);
+        if (this.highlightMaterial) {
+          if (args.property === 'gradientStartColor' ||
+              args.property === 'gradientEndColor') {
+            this.highlightMaterial.uniforms[args.property].value = new Color(args.value);
+          } else  {
+            this.highlightMaterial.uniforms[args.property].value = args.value;
+          }
+          this.highlightMaterial.uniforms['isAnimate'].value = true;
+          this.highlightMaterial.uniformsNeedUpdate = true;
+          this.highlightMaterial.needsUpdate = true;
+        }
+      });
+
       gui.onChange((changes) => {
         if (
           this.camera,
@@ -346,15 +393,115 @@ export class AppElement extends LitElement {
       // const anim = bg.instance;
       const threeData = guAnimator.controller.getThree();
 
-      const cardLoader = threeData.load('/assets/model/base_4_gold.gltf', (gltf) => {
+      const dracoLoader = new DRACOLoader();
+      const dracoPath = `/assets/libs/draco/`;
+      dracoLoader.setDecoderPath(dracoPath);
+
+      const cardLoader = new GLTFLoader().setPath('/assets/model/');
+      cardLoader.setDRACOLoader(dracoLoader);
+      cardLoader.load('card.gltf', (gltf) => {
         console.log('Loaded Cardback GLTF', gltf);
 
         this.config.selectedPack = gltf;
+        // threeData.control.attach(gltf.scene);
+
         const model = gltf.scene;
-        model.scale.set(20, 20, 20);
+        model.scale.set(10, 10, 10);
         model.position.set(1219, 465, 2044);
         model.visible = true;
         threeData.scene.add(model);
+
+        const data = { god: 'Nature', rarity: 'rare', cardType: 'Weapon', tribe: 'neutral' };
+        this.setMesh(data);
+
+        const textureURL = '/assets/model/T_Card_Atlas_Diamond.png';
+        console.log('GUCard::setMeshTexture()', textureURL);
+        const textureLoader = new TextureLoader();
+        const texture = textureLoader.load(textureURL);
+        texture.encoding = sRGBEncoding;
+        texture.flipY = false;
+
+        console.log('Texture loaded', texture.format, texture);
+
+        // TODO: Optimise to share the card mesh materials for diff rarities
+        // TODO: Create an asset manager to share across models?
+        const material = new MeshPhysicalMaterial({
+          map: texture,
+          side: FrontSide,
+          transparent: false,
+          toneMapped: false,
+        });
+
+          threeData.renderer.antialias = false;
+          threeData.renderer.toneMappingExposure = this.config.exposure;
+          threeData.renderer.toneMapping = ACESFilmicToneMapping;
+          threeData.renderer.useLegacyLights = false;
+          //
+          const ambientLight = new AmbientLight(0x404040, this.config.lightAmbient);
+          threeData.ambientLight = ambientLight;
+          threeData.scene.add(ambientLight);
+
+          const directionalLight = new DirectionalLight(0xffffff, this.config.lightDirect);
+          directionalLight.position.set(1, 1, 1).normalize();
+          threeData.directionalLight = directionalLight;
+          threeData.scene.add(directionalLight);
+
+          // Setup env mapping EXR
+          let pngCubeRenderTarget, exrCubeRenderTarget;
+          let pngBackground, exrBackground;
+
+          DefaultLoadingManager.onLoad = function ( ) {
+            pmremGenerator.dispose();
+          };
+
+          const pmremGenerator = new PMREMGenerator( threeData.renderer );
+          pmremGenerator.compileEquirectangularShader();
+
+         //  const exrCubeMap = new EXRLoader().load( '/assets/textures/piz_compressed.exr', ( texture ) => {
+         // // const exrCubeMap = new EXRLoader().load( '/assets/textures/table_mountain.exr', ( texture ) => {
+         //  // const exrCubeMap = new EXRLoader().load( '/assets/textures/satara_night.exr', ( texture ) => {
+         //
+         //    texture.mapping = EquirectangularReflectionMapping;
+         //    exrCubeRenderTarget = pmremGenerator.fromEquirectangular( texture );
+         //    exrBackground = texture;
+         //
+         //    // torusMesh.material.envMap = exrCubeRenderTarget.texture;
+         //    // torusMesh.material.needsUpdate = true;
+         //
+         //    // material.envMap = this.envMap;
+         //    // material.envMapIntensity = isNaN(this.envMapIntensity) ? 1 : this.envMapIntensity;
+         //
+         //   //  this.config.selectedMesh.background = exrCubeMap;
+         //    this.config.selectedPack.scene.children.forEach((mesh) => {
+         //      mesh.material.toneMapped = true;
+         //      mesh.material.envMapIntensity = 2;
+         //      mesh.material.envMap = exrCubeRenderTarget.texture;
+         //      mesh.material.needsUpdate = true;
+         //    });
+         //
+         //    // torusMesh.material.envMap = exrCubeRenderTarget;
+         //    // torusMesh.material.needsUpdate = true;
+         //    // threeData.scene.background = exrBackground;
+         //    console.log('Finished loading EXR');
+         //  });
+         //  threeData.scene.background = exrCubeMap;
+         //  threeData.scene.environment = exrCubeMap;
+
+        // if (this.envMap) {
+        //
+        // }
+
+        // Apply Material
+        console.log('Apply material', this.config.selectedPack.scene);
+        this.config.selectedPack.scene.children.forEach((mesh: any) => {
+          if (mesh.name !== 'Illustration' && mesh.name !== 'M_Card_Text') {
+            mesh.material = material;
+          }
+
+          this.highlight();
+        });
+          // .finally(() => {
+          //   tex
 
         // Custom cardback
         // const textureURL = `/assets/cardback/1024/cardback_2006.png`;
@@ -369,8 +516,9 @@ export class AppElement extends LitElement {
         control.addEventListener('change', () => {
           threeData.renderer.render(threeData.scene, threeData.camera);
         });
-        control.attach(model.children[0]);
+        control.attach(model);
         threeData.scene.add(control);
+        threeData.control = control;
 
         window.addEventListener( 'keydown', function ( event ) {
 
@@ -466,215 +614,217 @@ export class AppElement extends LitElement {
 
       // TODO: Load a gltf file..
       // loader.setCrossOrigin('anonymous');
-      const loader = threeData.load('/assets/model/base_4_gold.gltf', (gltf) => {
-        console.log('Loaded GLTF', gltf);
-        this.config.selectedModel = gltf;
-        this.config.selectedMesh = gltf.scene; // .children[0];
-
-        const mesh = this.config.selectedMesh as any;
-        mesh.scale.set(9, 9, 9);
-        mesh.position.set(
-          this.config.selectedX,
-          this.config.selectedY,
-          this.config.selectedZ
-        );
-
-        threeData.scene.add(gltf.scene);
-
-        threeData.renderer.antialias = false;
-        threeData.renderer.toneMappingExposure = this.config.exposure;
-        threeData.renderer.toneMapping = ACESFilmicToneMapping;
-        threeData.renderer.useLegacyLights = false;
-        //
-        const ambientLight = new AmbientLight(0x404040, this.config.lightAmbient);
-        threeData.ambientLight = ambientLight;
-        threeData.scene.add(ambientLight);
-
-        const directionalLight = new DirectionalLight(0xffffff, this.config.lightDirect);
-        directionalLight.position.set(1, 1, 1).normalize();
-        threeData.directionalLight = directionalLight;
-        threeData.scene.add(directionalLight);
-
-        // Setup env mapping EXR
-        let pngCubeRenderTarget, exrCubeRenderTarget;
-        let pngBackground, exrBackground;
-        let geometry: any = new TorusKnotGeometry( 18, 8, 150, 20 );
-        let material: any = new MeshStandardMaterial( {
-          metalness: 1,
-          roughness: 0.04,
-          envMapIntensity: 1
-        });
-
-        const torusMesh = new Mesh( geometry, material );
-        torusMesh.position.x = 1000;
-        torusMesh.scale.set(20, 20, 20);
-        torusMesh.position.z = 5;
-        threeData.scene.add( torusMesh );
-
-        geometry = new PlaneGeometry( 2000, 2000 );
-        material = new MeshBasicMaterial();
-
-        const planeMesh = new Mesh( geometry, material );
-        planeMesh.position.y = - 50;
-        // planeMesh.rotation.x = - Math.PI * 0.5;
-        threeData.scene.add( planeMesh );
-
-        DefaultLoadingManager.onLoad = function ( ) {
-          pmremGenerator.dispose();
-        };
-
-        const pmremGenerator = new PMREMGenerator( threeData.renderer );
-        pmremGenerator.compileEquirectangularShader();
-
-        const exrCubeMap = new EXRLoader().load( '/assets/textures/piz_compressed.exr', ( texture ) => {
-       // const exrCubeMap = new EXRLoader().load( '/assets/textures/table_mountain.exr', ( texture ) => {
-        // const exrCubeMap = new EXRLoader().load( '/assets/textures/satara_night.exr', ( texture ) => {
-
-          texture.mapping = EquirectangularReflectionMapping;
-          exrCubeRenderTarget = pmremGenerator.fromEquirectangular( texture );
-          exrBackground = texture;
-
-          torusMesh.material.envMap = exrCubeRenderTarget.texture;
-          torusMesh.material.needsUpdate = true;
-
-         //  this.config.selectedMesh.background = exrCubeMap;
-          this.config.selectedMesh.children.forEach((mesh) => {
-            mesh.material.toneMapped = true;
-            mesh.material.envMapIntensity = 2;
-            mesh.material.envMap = exrCubeRenderTarget.texture;
-            mesh.material.needsUpdate = true;
-          });
-
-          // torusMesh.material.envMap = exrCubeRenderTarget;
-          // torusMesh.material.needsUpdate = true;
-          // threeData.scene.background = exrBackground;
-          console.log('Finished loading EXR');
-        });
-        threeData.scene.background = exrCubeMap;
-        threeData.scene.environment = exrCubeMap;
-
-        // const pmremGenerator = new PMREMGenerator( threeData.renderer );
-        // pmremGenerator.compileCubemapShader();
-        // let rgbmCubeRenderTarget;
-        // const rgbmUrls = [ 'px.png', 'nx.png', 'py.png', 'ny.png', 'pz.png', 'nz.png' ];
-        // const rgbmCubeMap = new RGBMLoader().setMaxRange( 16 )
-        //   .setPath( '/assets/textures/rgbm16/' )
-        //   .loadCubemap( rgbmUrls, (textures) => {
-        //     console.log('Cube map loaded', textures);
-        //     rgbmCubeRenderTarget = pmremGenerator.fromCubemap( rgbmCubeMap );
-        //
-        //     torusMesh.material.envMap = rgbmCubeRenderTarget.texture;
-        //     torusMesh.material.needsUpdate = true;
-        //
-        //     this.config.selectedMesh.background = rgbmCubeMap;
-        //     this.config.selectedMesh.children.forEach((mesh) => {
-        //       mesh.material.toneMapped = true;
-        //       mesh.material.envMapIntensity = 2;
-        //       mesh.material.envMap = rgbmCubeRenderTarget.texture;
-        //       mesh.material.needsUpdate = true;
-        //     });
-        //     // torusMesh.material.needsUpdate = true;
-        //     // this.three.scene.background = exrBackground;
-        //   });
-        // threeData.scene.background = rgbmCubeMap;
-        // threeData.scene.environment = rgbmCubeMap;
-
-        const generatedCubeRenderTarget = pmremGenerator.fromScene(threeData.scene);
-
-
-        threeData.scene.add( new GridHelper( 2000, 10, 0x888888, 0x444444 ) );
-
-        // Testing pack interaction
-        const pack = gltf.scene.children[0];
-        if (pack) {
-          pack.material = pack.material.clone();
-          pack.userData.initialEmissive = pack.material.emissive.clone();
-          pack.material.emissiveIntensity = 0.5;
-
-          threeData.interaction.add(pack);
-
-          pack.addEventListener('mouseover', (event) => {
-            console.log('Pack::mouseover()', event);
-            document.body.style.cursor = 'pointer';
-
-            if (pack.material) {
-              pack.userData.materialEmissiveHex = pack.material.emissive.getHex();
-              pack.material.emissive.setHex(0xff0000);
-              pack.material.emissiveIntensity = 0.8;
-            }
-          });
-
-          pack.addEventListener('mouseout', (event) => {
-            console.log('Pack::mouseout()', event);
-            document.body.style.cursor = 'default';
-
-            if (pack.material) {
-              pack.material.emissiveIntensity = 0;
-            }
-          });
-        }
-
-        // Add axes helper
-        // const axesHelper = new THREE.AxesHelper(5);
-        // threeData.scene.add(axesHelper);
-        //
-        // // Add camera helper (for perspective camera)
-        // const cameraHelper = new THREE.CameraHelper(threeData.camera);
-        // threeData.scene.add(cameraHelper);
-
-        // const albedoTexture = new THREE.TextureLoader().load(`/assets/model/m2_pack_booster_albedo.png`);
-        // const normalTexture = new THREE.TextureLoader().load(`/assets/model/m2_pack_booster_normal.png`);
-        // const aoTexture = new THREE.TextureLoader().load(`/assets/model/m2_pack_booster_AO.png`);
-        // const ormTexture = new THREE.TextureLoader().load(`/assets/model/m2_pack_booster_ORM.png`);
-        // const emissiveTexture = new THREE.TextureLoader().load(`/assets/model/m2_pack_booster_emissive.png`);
-
-        // this.three.scene.environment = diffuseCubemap;
-        // const mat = new THREE.MeshPhysicalMaterial();
-        // gltf.scene.children[0].children[0].material = mat;
-
-        // mat.envMap = diffuseCubemap;
-        // mat.map = albedoTexture;
-        // mat.map.flipY = false;
-        // mat.aoMap = aoTexture;
-        // mat.aoMap.flipY = false;
-        // mat.normalMap = normalTexture;
-        // mat.normalMap.flipY = false;
-        // mat.emissiveMap = emissiveTexture;
-        // mat.emissiveMap.flipY = false;
-        // mat.roughnessMap = ormTexture;
-        // mat.roughnessMap.flipY = false;
-
-        // mat.side = THREE.FrontSide;
-        // mat.roughness = 2;
-        // mat.needsUpdate = true;
-
-        // Create TransformControls
-        // const transformControls = new THREE.TransformControls(threeData.camera, threeData.renderer.domElement);
-        // threeData.scene.add(transformControls);
-
-        // // Add directional light helper
-        //  const directionalLightHelper = new THREE.DirectionalLightHelper(directionalLight, 1);
-        // threeData.scene.add(directionalLightHelper);
-
-        console.log('Loaded GLTF', gltf);
-
-        // transformControls.attach(gltf.scene);
-
-        // gltf.scene.children[0].children[0].material.wireframe = true;
-
-        // Details of the KHR_materials_variants extension used here can be found below
-        // https://github.com/KhronosGroup/glTF/tree/master/extensions/2.0/Khronos/KHR_materials_variants
-        // const parser = gltf.parser;
-        // const variantsExtension = gltf.userData.gltfExtensions[ 'KHR_materials_variants' ];
-        // const variants = variantsExtension.variants.map( ( variant ) => variant.name );
-        // const variantsCtrl = gui.add( state, 'variant', variants ).name( 'Variant' );
-        //selectVariant( scene, parser, variantsExtension, state.variant );
-
-        console.log('AnimatedMorphSphere::onLoaded', gltf);
-        // variantsCtrl.onChange( ( value ) => selectVariant( scene, parser, variantsExtension, value ) );
-        //
-        // render();
-      });
+      // const cardLoader = new GLTFLoader().setPath('/assets/model/');
+      // cardLoader.setDRACOLoader(dracoLoader);
+      // cardLoader.load('card.gltf', (gltf) => {
+      //   console.log('Loaded GLTF', gltf);
+      //   this.config.selectedModel = gltf;
+      //   this.config.selectedMesh = gltf.scene; // .children[0];
+      //
+      //   const mesh = this.config.selectedMesh as any;
+      //   mesh.scale.set(9, 9, 9);
+      //   mesh.position.set(
+      //     this.config.selectedX,
+      //     this.config.selectedY,
+      //     this.config.selectedZ
+      //   );
+      //
+      //   threeData.scene.add(gltf.scene);
+      //
+      //   threeData.renderer.antialias = false;
+      //   threeData.renderer.toneMappingExposure = this.config.exposure;
+      //   threeData.renderer.toneMapping = ACESFilmicToneMapping;
+      //   threeData.renderer.useLegacyLights = false;
+      //   //
+      //   const ambientLight = new AmbientLight(0x404040, this.config.lightAmbient);
+      //   threeData.ambientLight = ambientLight;
+      //   threeData.scene.add(ambientLight);
+      //
+      //   const directionalLight = new DirectionalLight(0xffffff, this.config.lightDirect);
+      //   directionalLight.position.set(1, 1, 1).normalize();
+      //   threeData.directionalLight = directionalLight;
+      //   threeData.scene.add(directionalLight);
+      //
+      //   // Setup env mapping EXR
+      //   let pngCubeRenderTarget, exrCubeRenderTarget;
+      //   let pngBackground, exrBackground;
+      //   let geometry: any = new TorusKnotGeometry( 18, 8, 150, 20 );
+      //   let material: any = new MeshStandardMaterial( {
+      //     metalness: 1,
+      //     roughness: 0.04,
+      //     envMapIntensity: 1
+      //   });
+      //
+      //   const torusMesh = new Mesh( geometry, material );
+      //   torusMesh.position.x = 1000;
+      //   torusMesh.scale.set(20, 20, 20);
+      //   torusMesh.position.z = 5;
+      //   threeData.scene.add( torusMesh );
+      //
+      //   geometry = new PlaneGeometry( 2000, 2000 );
+      //   material = new MeshBasicMaterial();
+      //
+      //   const planeMesh = new Mesh( geometry, material );
+      //   planeMesh.position.y = - 50;
+      //   // planeMesh.rotation.x = - Math.PI * 0.5;
+      //   threeData.scene.add( planeMesh );
+      //
+      //   DefaultLoadingManager.onLoad = function ( ) {
+      //     pmremGenerator.dispose();
+      //   };
+      //
+      //   const pmremGenerator = new PMREMGenerator( threeData.renderer );
+      //   pmremGenerator.compileEquirectangularShader();
+      //
+      //   const exrCubeMap = new EXRLoader().load( '/assets/textures/piz_compressed.exr', ( texture ) => {
+      //  // const exrCubeMap = new EXRLoader().load( '/assets/textures/table_mountain.exr', ( texture ) => {
+      //   // const exrCubeMap = new EXRLoader().load( '/assets/textures/satara_night.exr', ( texture ) => {
+      //
+      //     texture.mapping = EquirectangularReflectionMapping;
+      //     exrCubeRenderTarget = pmremGenerator.fromEquirectangular( texture );
+      //     exrBackground = texture;
+      //
+      //     torusMesh.material.envMap = exrCubeRenderTarget.texture;
+      //     torusMesh.material.needsUpdate = true;
+      //
+      //    //  this.config.selectedMesh.background = exrCubeMap;
+      //     this.config.selectedMesh.children.forEach((mesh) => {
+      //       mesh.material.toneMapped = true;
+      //       mesh.material.envMapIntensity = 2;
+      //       mesh.material.envMap = exrCubeRenderTarget.texture;
+      //       mesh.material.needsUpdate = true;
+      //     });
+      //
+      //     // torusMesh.material.envMap = exrCubeRenderTarget;
+      //     // torusMesh.material.needsUpdate = true;
+      //     // threeData.scene.background = exrBackground;
+      //     console.log('Finished loading EXR');
+      //   });
+      //   threeData.scene.background = exrCubeMap;
+      //   threeData.scene.environment = exrCubeMap;
+      //
+      //   // const pmremGenerator = new PMREMGenerator( threeData.renderer );
+      //   // pmremGenerator.compileCubemapShader();
+      //   // let rgbmCubeRenderTarget;
+      //   // const rgbmUrls = [ 'px.png', 'nx.png', 'py.png', 'ny.png', 'pz.png', 'nz.png' ];
+      //   // const rgbmCubeMap = new RGBMLoader().setMaxRange( 16 )
+      //   //   .setPath( '/assets/textures/rgbm16/' )
+      //   //   .loadCubemap( rgbmUrls, (textures) => {
+      //   //     console.log('Cube map loaded', textures);
+      //   //     rgbmCubeRenderTarget = pmremGenerator.fromCubemap( rgbmCubeMap );
+      //   //
+      //   //     torusMesh.material.envMap = rgbmCubeRenderTarget.texture;
+      //   //     torusMesh.material.needsUpdate = true;
+      //   //
+      //   //     this.config.selectedMesh.background = rgbmCubeMap;
+      //   //     this.config.selectedMesh.children.forEach((mesh) => {
+      //   //       mesh.material.toneMapped = true;
+      //   //       mesh.material.envMapIntensity = 2;
+      //   //       mesh.material.envMap = rgbmCubeRenderTarget.texture;
+      //   //       mesh.material.needsUpdate = true;
+      //   //     });
+      //   //     // torusMesh.material.needsUpdate = true;
+      //   //     // this.three.scene.background = exrBackground;
+      //   //   });
+      //   // threeData.scene.background = rgbmCubeMap;
+      //   // threeData.scene.environment = rgbmCubeMap;
+      //
+      //   const generatedCubeRenderTarget = pmremGenerator.fromScene(threeData.scene);
+      //
+      //
+      //   threeData.scene.add( new GridHelper( 2000, 10, 0x888888, 0x444444 ) );
+      //
+      //   // Testing pack interaction
+      //   // const pack = gltf.scene.children[0];
+      //   // if (pack) {
+      //   //   pack.material = pack.material.clone();
+      //   //   pack.userData.initialEmissive = pack.material.emissive.clone();
+      //   //   pack.material.emissiveIntensity = 0.5;
+      //   //
+      //   //   threeData.interaction.add(pack);
+      //   //
+      //   //   pack.addEventListener('mouseover', (event) => {
+      //   //     console.log('Pack::mouseover()', event);
+      //   //     document.body.style.cursor = 'pointer';
+      //   //
+      //   //     if (pack.material) {
+      //   //       pack.userData.materialEmissiveHex = pack.material.emissive.getHex();
+      //   //       pack.material.emissive.setHex(0xff0000);
+      //   //       pack.material.emissiveIntensity = 0.8;
+      //   //     }
+      //   //   });
+      //   //
+      //   //   pack.addEventListener('mouseout', (event) => {
+      //   //     console.log('Pack::mouseout()', event);
+      //   //     document.body.style.cursor = 'default';
+      //   //
+      //   //     if (pack.material) {
+      //   //       pack.material.emissiveIntensity = 0;
+      //   //     }
+      //   //   });
+      //   // }
+      //
+      //   // Add axes helper
+      //   // const axesHelper = new THREE.AxesHelper(5);
+      //   // threeData.scene.add(axesHelper);
+      //   //
+      //   // // Add camera helper (for perspective camera)
+      //   // const cameraHelper = new THREE.CameraHelper(threeData.camera);
+      //   // threeData.scene.add(cameraHelper);
+      //
+      //   // const albedoTexture = new THREE.TextureLoader().load(`/assets/model/m2_pack_booster_albedo.png`);
+      //   // const normalTexture = new THREE.TextureLoader().load(`/assets/model/m2_pack_booster_normal.png`);
+      //   // const aoTexture = new THREE.TextureLoader().load(`/assets/model/m2_pack_booster_AO.png`);
+      //   // const ormTexture = new THREE.TextureLoader().load(`/assets/model/m2_pack_booster_ORM.png`);
+      //   // const emissiveTexture = new THREE.TextureLoader().load(`/assets/model/m2_pack_booster_emissive.png`);
+      //
+      //   // this.three.scene.environment = diffuseCubemap;
+      //   // const mat = new THREE.MeshPhysicalMaterial();
+      //   // gltf.scene.children[0].children[0].material = mat;
+      //
+      //   // mat.envMap = diffuseCubemap;
+      //   // mat.map = albedoTexture;
+      //   // mat.map.flipY = false;
+      //   // mat.aoMap = aoTexture;
+      //   // mat.aoMap.flipY = false;
+      //   // mat.normalMap = normalTexture;
+      //   // mat.normalMap.flipY = false;
+      //   // mat.emissiveMap = emissiveTexture;
+      //   // mat.emissiveMap.flipY = false;
+      //   // mat.roughnessMap = ormTexture;
+      //   // mat.roughnessMap.flipY = false;
+      //
+      //   // mat.side = THREE.FrontSide;
+      //   // mat.roughness = 2;
+      //   // mat.needsUpdate = true;
+      //
+      //   // Create TransformControls
+      //   // const transformControls = new THREE.TransformControls(threeData.camera, threeData.renderer.domElement);
+      //   // threeData.scene.add(transformControls);
+      //
+      //   // // Add directional light helper
+      //   //  const directionalLightHelper = new THREE.DirectionalLightHelper(directionalLight, 1);
+      //   // threeData.scene.add(directionalLightHelper);
+      //
+      //   console.log('Loaded GLTF', gltf);
+      //
+      //   // transformControls.attach(gltf.scene);
+      //
+      //   // gltf.scene.children[0].children[0].material.wireframe = true;
+      //
+      //   // Details of the KHR_materials_variants extension used here can be found below
+      //   // https://github.com/KhronosGroup/glTF/tree/master/extensions/2.0/Khronos/KHR_materials_variants
+      //   // const parser = gltf.parser;
+      //   // const variantsExtension = gltf.userData.gltfExtensions[ 'KHR_materials_variants' ];
+      //   // const variants = variantsExtension.variants.map( ( variant ) => variant.name );
+      //   // const variantsCtrl = gui.add( state, 'variant', variants ).name( 'Variant' );
+      //   //selectVariant( scene, parser, variantsExtension, state.variant );
+      //
+      //   console.log('AnimatedMorphSphere::onLoaded', gltf);
+      //   // variantsCtrl.onChange( ( value ) => selectVariant( scene, parser, variantsExtension, value ) );
+      //   //
+      //   // render();
+      // });
     }
   }
 
@@ -697,6 +847,145 @@ export class AppElement extends LitElement {
     }
   }
 
+  highlight() {
+    if (!this.highlightMaterial) {
+      const textureURL = `/assets/model/highlight/Tex_Noise_Electro.png`;
+      const textureLoader = new TextureLoader();
+      const texture = textureLoader.load(textureURL);
+      texture.wrapS = texture.wrapT = RepeatWrapping;
+      // texture.needsUpdate = true;
+      // texture.encoding = sRGBEncoding;
+      // texture.flipY = false;
+      //
+      // this.highlightMaterial = new ShaderMaterial({
+      //   uniforms: {
+      //     texture1: { value: texture },
+      //     color: { value: new Color(0xFF00FF) },
+      //     time: { value: 1.0 },
+      //     // mask: {type: "t", value: mask},
+      //     resolution: { value: new Vector2(200, 200) }
+      //   },
+      //   vertexShader: highlightVertShader,
+      //   fragmentShader: highlightFragShader,
+      // });
+
+      const mat = new FireMaterial({
+        fog: false,
+      });
+      mat.uniforms.diffuse.value = new Color(0x75fbfb);
+      mat.uniforms.map.value = texture; // new Color(0xFF00FF);
+      mat.uniforms.additionalMap.value = texture; // new Color(0xFF00FF);
+      mat.uniforms.additionalMapUVSpeed.value = new Vector2(0.2, -0.3); // new Color(0xFF00FF);
+      mat.uniforms.grid.value = 10; // new Color(0xFF00FF);
+      mat.uniforms.divisionScaleX.value = 5; // new Color(0xFF00FF);
+      mat.uniforms.gradientPower.value = 1.8;
+      mat.uniforms.glowPower.value = 1.8;
+      mat.uniforms.gradientStartColor.value = new Color(0x52fffc);
+      mat.uniforms.gradientEndColor.value = new Color(0x00ced1);
+      mat.uniforms.gradientIntensity.value = 1.335;
+      mat.tiles = 1;
+      mat.hashLoop = 4.0;
+      mat.amp = 1.0;
+      mat.rimPow = 2.0;
+      mat.speed = -2.0;
+      mat.uniformsNeedUpdate = true;
+      mat.uniforms.isAnimate.value = true;
+
+      gsap.to(mat.uniforms.time, {
+        value: 3,
+        duration: 10,
+        repeat: -1,
+        yoyo: true,
+        ease: 'none'
+      });
+      this.highlightMaterial = mat
+    }
+
+    console.log('Highlight()');
+    this.highlightMeshes.forEach((mesh: Mesh) => {
+      console.log('Highlight mesh', mesh.name);
+
+      // const material: MeshBasicMaterial = new MeshBasicMaterial({
+      //     color: 0xff00ff,
+      //   });
+      mesh.visible = true;
+      mesh.material = this.highlightMaterial;
+
+      // if (mesh.name.endsWith('_Glow')) {
+      //
+      //   if (mesh.name === 'M_Card_Health_Glow')
+      //   mesh.visible = true;
+      //
+      //   // const material: MeshBasicMaterial = new MeshBasicMaterial({
+      //   //   color: 0xff00ff,
+      //   // });
+      //   // material.needsUpdate = true;
+      //   mesh.material = this.highlightMaterial;
+      // }
+    });
+  }
+
+  setMesh({ god, rarity, cardType, tribe }) {
+    console.log('Set mesh', god, rarity, cardType, tribe );
+    this.highlightMeshes.forEach((mesh) => {
+      mesh.visible = false;
+    });
+
+    this.highlightMeshes.length = 0;
+    this.config.selectedPack.scene.children.forEach((mesh: Mesh) => {
+      // God
+      if (mesh.name.startsWith('M_Rosette')) {
+        mesh.visible = mesh.name === `M_Rosette_${god}`;
+
+        if (mesh.name === `M_Rosette_${god}_Glow`) {
+          this.highlightMeshes.push(mesh);
+        }
+      }
+
+      // Rarity
+      if (mesh.name.startsWith('M_Card_Gem_')) {
+        mesh.visible = mesh.name === `M_Card_Gem_${rarity}`;
+      }
+
+      // Tribe
+      if (mesh.name === 'M_Card_Tribe') {
+        mesh.visible = !!(tribe && tribe.length);
+      }
+
+      // Card Type, show matching border and shadow
+      if (mesh.name.startsWith('M_Card_Border_')) {
+        mesh.visible = mesh.name === `M_Card_Border_${cardType}`;
+      }
+      if (mesh.name === 'M_Card_Creature_Attack' || mesh.name === 'M_Card_Creature_Health') {
+        mesh.visible = cardType === 'Creature'; // these meshes only exist in Creature card types
+      }
+      if (mesh.name === 'M_Card_Weapon_Attack' || mesh.name === 'M_Card_Weapon_Health') {
+        mesh.visible = cardType === 'Weapon'; // these meshes only exist in Weapon card types
+      }
+
+      if (cardType === 'Weapon' || cardType === 'Creature') {
+        if (mesh.name === `M_Card_Health_Glow` ||
+          mesh.name === `M_Card_Strength_Glow`) {
+          this.highlightMeshes.push(mesh);
+        }
+      }
+
+      // Glow
+      if (mesh.name === `M_Card_Glow`) {
+        this.highlightMeshes.push(mesh);
+      }
+
+      // if the card is of Advantage type, it shouldn't have a rosette
+      if (cardType === 'Advantage' && mesh.name.startsWith('M_Rosette')) {
+        mesh.visible = false;
+      }
+
+      if (mesh.name === `M_Card_Text`) {
+        mesh.visible = false;
+      }
+    });
+  }
+
   firstUpdated() {
     const guAnimator: IgAnimator = this.animatorRef.value as IgAnimator;
     console.log('Demos::firstUpdated()', guAnimator, guAnimator.loadAnimation);
@@ -707,7 +996,9 @@ export class AppElement extends LitElement {
       .loadAnimation(animationPath) // gu-pack-opening
       .then((response: any) => {
         console.log('GUAnimator::loadAnimation done', response);
-        response.animations[0].instance.play();
+        const animationItem =  response.animations[0].instance;
+        animationItem.resize(200, 200);
+        animationItem.play();
       });
   }
 
