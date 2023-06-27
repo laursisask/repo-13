@@ -52,7 +52,8 @@ export class IgController {
       three: this.initThree({
         width: SIZEW,
         height: SIZEH,
-        debug: this.config.debug
+        debug: this.config.debug,
+        scale: this.config.scale
       }),
 
       // TODO: Abstract out to a renderer application provider
@@ -127,7 +128,8 @@ export class IgController {
       mixers: [],
       controls: false,
       debug: options.debug,
-      interaction: true
+      interaction: true,
+      scale: 1
     };
 
     three.camera.fov = 25;
@@ -142,6 +144,10 @@ export class IgController {
     three.renderer.setClearColor(0xcccccc);
     three.renderer.setPixelRatio(window.devicePixelRatio);
     three.renderer.setSize(options.width, options.height);
+
+    if (options.scale) {
+      three.scale = options.scale;
+    }
 
     // if (!options.controls) {
     //   three.controls = new OrbitControls(three.camera, three.renderer.domElement);
@@ -175,12 +181,8 @@ export class IgController {
           onUpdate: function (targetAnimation) {
             const nextMoment = Math.floor(totalDuration * this['progress']());
             targetAnimation.instance.goToAndStop(nextMoment); // in milliseconds
-            // if (targetAnimation.instance.path === '/assets/pack-opening/') {
-            //   console.log(targetAnimation.instance.currentFrame, nextMoment);
-            // }
           },
         });
-        animation.meta.timeline = animationTimeline;
 
         // Convert animation markers to GSAP labels
         const markers = animation.instance.markers;
@@ -188,18 +190,23 @@ export class IgController {
           markers.forEach((marker: any) => {
             // Convert marker frame to timeline time
             const markerTime = marker.time / animation.frameRate;
-            animation.meta.timeline.addLabel(marker.payload.name, markerTime);
-            animation.meta.timeline.call(
+            marker.payload.time = markerTime;
+
+            const markerName = marker.payload.name;
+            animationTimeline.addLabel(markerName, markerTime);
+            animationTimeline.call(
               (payload: any, anim: any) => {
                 if (this.onMarker) {
                   this.onMarker(payload, anim);
                 }
               },
               [marker.payload, animation],
-              markerTime
+              markerName
             );
           });
         }
+
+        animation.meta.timeline = animationTimeline;
 
         // TODO: parse the timeline and build into root
         // this.rootTimeline?.add(animationTween, 0);

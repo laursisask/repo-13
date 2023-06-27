@@ -1,7 +1,6 @@
 import { css, html, LitElement } from 'lit';
-import { styleMap } from 'lit/directives/style-map.js';
 import { Ref, createRef, ref } from 'lit/directives/ref.js';
-import { customElement, property, query } from 'lit/decorators.js';
+import { customElement, property } from 'lit/decorators.js';
 import { IgController } from './controller/ig-controller';
 import { IgParser } from './parser/ig-parser';
 
@@ -43,6 +42,9 @@ export class IgAnimator extends LitElement {
   @property()
   public declare debug: boolean;
 
+  @property({ type: Number})
+  public declare scale: number;
+
   @property()
   public declare animatorStyles: any;
 
@@ -59,6 +61,7 @@ export class IgAnimator extends LitElement {
     this.assetsPath = '';
     this.renderer = 'threejs';
     this.debug = true;
+    this.scale = 1;
   }
 
   static override get styles() {
@@ -106,7 +109,7 @@ export class IgAnimator extends LitElement {
     // Wire up the marker events
     if (this.controller) {
       this.controller.onMarker = (marker: any, animation: any) => {
-        // console.log('GUAnimator::onMarker', marker, animation);
+        console.log('GUAnimator::onMarker', marker, animation);
         this.marker(marker, animation);
       };
 
@@ -131,7 +134,8 @@ export class IgAnimator extends LitElement {
       this.controller = new IgController({
         container: this.container.value,
         renderer: this.renderer,
-        debug: this.debug
+        debug: this.debug,
+        scale: this.scale
       });
     }
 

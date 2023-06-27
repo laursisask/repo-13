@@ -4,4 +4,5 @@ export interface IgConfig {
   container?: HTMLElement;
   renderer?: IgRenderer;
   debug: boolean;
+  scale: number;
 }
