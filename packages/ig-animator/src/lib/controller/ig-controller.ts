@@ -196,8 +196,14 @@ export class IgController {
             animationTimeline.addLabel(markerName, markerTime);
             animationTimeline.call(
               (payload: any, anim: any) => {
-                if (this.onMarker) {
-                  this.onMarker(payload, anim);
+
+                // Validate the timeline reflects this markers time
+                const currentAnimationTime = anim.meta.timeline.time();
+                const flooredTime = Math.floor(currentAnimationTime * 10) / 10;
+                if (payload.time === flooredTime) {
+                  if (this.onMarker) {
+                    this.onMarker(payload, anim);
+                  }
                 }
               },
               [marker.payload, animation],
