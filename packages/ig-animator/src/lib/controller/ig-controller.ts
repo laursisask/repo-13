@@ -2,7 +2,7 @@ import { IgConfig } from '../core/ig-config';
 import { gsap, Sine } from 'gsap';
 import Lottie from 'lottie-web';
 import {
-  Clock,
+  Clock, Color,
   ColorManagement,
   LinearToneMapping,
   PerspectiveCamera,
@@ -20,6 +20,7 @@ export class IgController {
   private applications: any = {};
   private container!: HTMLElement;
   private config: any;
+  private currentScene: Scene | undefined;
 
   public animations: any[] = [];
   public rootTimeline: gsap.core.Timeline | undefined;
@@ -48,7 +49,6 @@ export class IgController {
     const SIZEH = 1000; // 1080;
 
     this.applications = {
-      // three: {},
       three: this.initThree({
         width: SIZEW,
         height: SIZEH,
@@ -103,14 +103,16 @@ export class IgController {
     return app;
   }
 
+  // TODO: Pass the new scene in here with the options...
   private initThree(options: any) {
+    console.log('IgController::initThree()', options);
     const three = {
-      scene: new Scene(),
+      scene: options.scene || new Scene(),
       camera: new PerspectiveCamera(
         25,
         (options.width || 1) / (options.height || 1),
         0.1,
-        20000
+        6000
       ),
       renderer: new WebGLRenderer({ antialias: true }),
       load: (
@@ -129,8 +131,11 @@ export class IgController {
       controls: false,
       debug: options.debug,
       interaction: true,
-      scale: 1
+      scale: 1,
+      animate: true
     };
+
+    three.scene.background =  new Color('0x0a0a0a');
 
     three.camera.fov = 25;
     three.camera.focus = 10;
@@ -154,7 +159,31 @@ export class IgController {
     //   three.controls.listenToKeyEvents(window); // optional
     // }
 
+    const animate = () => {
+      this.render(three);
+      requestAnimationFrame(animate);
+    }
+
+    animate();
+
     return three;
+  }
+
+  private render(three: any) {
+    // Check for render override
+
+      if (three.controls) {
+        three.controls.update();
+      }
+
+      if (three.interaction && three.interaction.update) {
+        three.interaction.update();
+      }
+      if (three.renderer.composer) {
+        three.renderer.composer.render();
+      } else {
+        three.renderer.render(three.renderScene, three.renderCamera);
+      }
   }
 
   private initLottie() {
@@ -162,6 +191,8 @@ export class IgController {
   }
 
   private defineAnimations(animations: any) {
+    // console.log('IgController::defineAnimations()', animations);
+
     if (animations.length > 0) {
       animations.forEach((animation: any) => {
         const totalDuration =
@@ -175,10 +206,21 @@ export class IgController {
 
         // Define tween for animation frame
         animationTimeline.to(target, {
+          ease: 'Linear.easeNone',
           duration: totalDuration / 1000,
-          frame: 1,
+          frame: animation.totalFrames,
+          onStart: () => {
+            animation.instance.play();
+          },
           onUpdateParams: [animation],
           onUpdate: function (targetAnimation) {
+            // const nextMoment = Math.floor(totalDuration * this['progress']());
+            const nextFrame = Math.floor(targetAnimation.instance.totalFrames * this['progress']());
+            targetAnimation.instance.setCurrentRawFrameValue(nextFrame);
+            targetAnimation.instance.gotoFrame();
+          },
+          onCompleteParams: [animation],
+          onComplete: function (targetAnimation) {
             const nextMoment = Math.floor(totalDuration * this['progress']());
             targetAnimation.instance.goToAndStop(nextMoment); // in milliseconds
           },
@@ -200,18 +242,21 @@ export class IgController {
                 // Validate the timeline reflects this markers time
                 const currentAnimationTime = anim.meta.timeline.time();
                 const flooredTime = Math.floor(currentAnimationTime * 10) / 10;
-                if (payload.time === flooredTime) {
+                const flooredCheck = Math.floor(payload.time * 10) / 10;
+                if (flooredCheck === flooredTime) {
                   if (this.onMarker) {
+                    // console.log('IgController::onMarker()', payload, anim);
                     this.onMarker(payload, anim);
                   }
                 }
               },
               [marker.payload, animation],
-              markerName
+              markerTime
             );
           });
         }
 
+        animation.meta.animation = target;
         animation.meta.timeline = animationTimeline;
 
         // TODO: parse the timeline and build into root
@@ -269,7 +314,14 @@ export class IgController {
     return this.applications.lottie;
   }
 
+  public setScene(scene: Scene) {
+    this.currentScene = scene;
+  }
+
   public setAnimations(animations: any) {
+    // TODO: Unwind all the existing animations??
+    // Or store them for a scene transition
+
     this.animations = [...animations];
 
     // TODO: Define a root timeline if required
@@ -294,17 +346,17 @@ export class IgController {
     // TODO: Move this debug stuff below into browser extension
     // GSAP timeline tool
     // GSDevTools.create(); // { animation: this.rootTimeline }
-    const css = '.gs-dev-tools {z-index: 999;}';
-    const head = document.head || document.getElementsByTagName('head')[0];
-    const style: any = document.createElement('style');
-    head.appendChild(style);
-    style.type = 'text/css';
-    if (style.styleSheet) {
-      // This is required for IE8 and below.
-      style.styleSheet.cssText = css;
-    } else {
-      style.appendChild(document.createTextNode(css));
-    }
+    // const css = '.gs-dev-tools {z-index: 999;}';
+    // const head = document.head || document.getElementsByTagName('head')[0];
+    // const style: any = document.createElement('style');
+    // head.appendChild(style);
+    // style.type = 'text/css';
+    // if (style.styleSheet) {
+    //   // This is required for IE8 and below.
+    //   style.styleSheet.cssText = css;
+    // } else {
+    //   style.appendChild(document.createTextNode(css));
+    // }
   }
 
   public play() {

@@ -18,9 +18,11 @@
   "dependencies": {
     "@nx/rollup": "^16.2.2",
     "@swc/helpers": "~0.5.0",
+    "@types/howler": "^2.2.7",
     "gsap": "^3.11.5",
+    "howler": "^2.2.3",
     "lit": "^2.7.4",
-    "lottie-web": "github:immutable/lottie-web-threejs#master",
+    "lottie-web": "github:immutable/lottie-web-threejs#feature/v4",
     "reflect-metadata": "^0.1.13",
     "three": "^0.151.3",
     "three.interactive": "^1.7.0",

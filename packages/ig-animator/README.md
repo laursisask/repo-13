@@ -10,6 +10,9 @@
 
 # Immutable Games Animator
 
+> **Warning** **IMMUTABLE GAMES ANIMATOR IS UNSTABLE** <br/>
+> Since it has not hit the version 1.0 yet, its public interface should not be considered final. Future releases may include breaking changes without further notice. We will do our best to keep this documentation updated providing visibility on breaking changes planned.
+
 An animation framework that combines several libraries together (lottie / gsap / pixi / threejs). Ig-Animator helps to orchestrate syncing multiple animations from After Effects (exported via Bodymovin) and GLTF models in a 3D environment using threeJS.
 
 ## Installation and configuration

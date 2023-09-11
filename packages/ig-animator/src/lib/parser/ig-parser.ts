@@ -1,10 +1,14 @@
+import { Howl } from 'howler';
+import { AudioProxy } from '../audio/audio-proxy';
+
 /**
  * GU Animator Parser.
  * Takes json and redirects to the respective renderers depending on animation format.
  */
 export class IgParser {
+  public config: any = {};
+
   private rootJson: any = {};
-  private config: any = {};
   private url: any = {};
   private initialUrl: string;
   private animationAsset: any = {};
@@ -82,8 +86,10 @@ export class IgParser {
   private loadBodymovinJson() {
     return new Promise<any[]>((resolve, reject) => {
       const assetsPath = this.url.substring(0, this.url.lastIndexOf('/') + 1);
-      console.log('GUParser::loadBodyMovinJson() u:', this.url, 'a:', assetsPath, 'ca:', this.config.assetsPath);
 
+      console.log('Loading new animation', this.url, assetsPath, this.config);
+      console.log('LoadBodymovinJson', this.config);
+      console.log('LoadBodymovinJson >> ', this.config.renderer);
       // Create lottie animation and hook into loading state
       const animation = {
         meta: {
@@ -110,6 +116,7 @@ export class IgParser {
         setSubframe: (useSubFrames: boolean) =>
           this.config.loaders.lottie.getRegisteredAnimations(useSubFrames),
         destroy: () => this.config.loaders.lottie.destroy(),
+        unload: () => this.config.loaders.lottie.unload(),
         getDuration: (inFrames: boolean) =>
           this.config.loaders.lottie.getDuration(inFrames),
         instance: this.config.loaders.lottie.loadAnimation({
@@ -128,7 +135,13 @@ export class IgParser {
                 ? this.config.assetsPath
                 : assetsPath,
             renderer: this.config.renderer,
+            renderScene: this.config.scene,
+            scene: this.config.scene,
           },
+          audioFactory: (assetPath: string) => {
+            // console.log('Audio Factory new:', assetPath);
+            return new AudioProxy(assetPath);
+          }
         } as any),
       };
       // pixiApplication: this.config.loaders.pixi,

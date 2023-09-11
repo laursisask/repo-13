@@ -3,6 +3,8 @@ import { Ref, createRef, ref } from 'lit/directives/ref.js';
 import { customElement, property } from 'lit/decorators.js';
 import { IgController } from './controller/ig-controller';
 import { IgParser } from './parser/ig-parser';
+import { Color, Material, MeshBasicMaterial, MeshPhysicalMaterial, Scene } from 'three';
+import { Howler } from 'howler';
 
 export interface LoadingEvent {
   date: string;
@@ -48,11 +50,30 @@ export class IgAnimator extends LitElement {
   @property()
   public declare animatorStyles: any;
 
+  set volume(value: number) {
+    Howler.volume(value);
+
+    console.log('>> Setting volume', value, this.loadedAnimation);
+    Object.keys(this.loadedAnimation).forEach((animationId) => {
+      this.loadedAnimation[animationId].animations.forEach((animation: any) => {
+        console.log('>> Loaded animation', animation);
+        animation.instance.setVolume(value);
+      });
+    })
+  }
+
+  get volume(): number {
+    return Howler.volume();
+  }
+
   private container: Ref<HTMLElement> = createRef();
   private currentSrc = '';
+  private currentSceneId = '';
+  private previousSceneId = '';
   private controller!: IgController;
   private parser!: IgParser;
   private isLoaded = false;
+  private loadedAnimation: any;
 
   constructor() {
     super();
@@ -62,6 +83,7 @@ export class IgAnimator extends LitElement {
     this.renderer = 'threejs';
     this.debug = true;
     this.scale = 1;
+    this.loadedAnimation = {};
   }
 
   static override get styles() {
@@ -83,14 +105,61 @@ export class IgAnimator extends LitElement {
    * Load the animation and all it's assets.
    * @param url
    */
-  async loadAnimation(url: string) {
-    console.log('GuAnimator::loadAnimation()', url, this.parser);
+  async loadAnimation(url: string, name = 'new') {
+    // console.log('GuAnimator::loadAnimation()', name, url, this.parser);
     this.currentSrc = url;
     let animations: any[] = [];
+
+    // TODO: Render a snapshot of this previous scene for a transition
+    // Create something that transitions prev scene into new scene
+    // Establish that we can render either scene in the target camera/renderer
+    const prevSceneId = this.currentSceneId;
+    this.previousSceneId = prevSceneId;
+
+    if (prevSceneId) {
+      console.log('>>> Prev scene Id', prevSceneId);
+
+      const prevAnimationLoaded = this.loadedAnimation[prevSceneId];
+      prevAnimationLoaded.animations.forEach((animation: any) => {
+        animation.meta.timeline.revert();
+        animation.meta.timeline.clear();
+        animation.stop();
+
+        animation.instance?.videoPreloader?.stop();
+        console.log('Existing animation', animation);
+        // animation.instance.destroy();
+        // TODO: Look at unloading all loaded assets
+      });
+
+      // Clean up scene
+      // prevAnimationLoaded.scene.traverse((object: any) => {
+      //   console.log('>>> Cleaning up scene', object.name, object);
+      //   if (!object.isMesh) return;
+      //   object.geometry.dispose();
+      //
+      //   if (object.material.isMaterial) {
+      //     this.cleanMaterial(object.material);
+      //   } else {
+      //     for (const material of object.material) this.cleanMaterial(material);
+      //   }
+      // });
+    }
+
+    const scene = new Scene()
+    scene.visible = false;
+    scene.background =  new Color('0x0a0a0a');
+    scene.name = name;
+    console.log('Load Animation is', scene);
     await new Promise((resolve) => requestAnimationFrame(resolve));
     this.loading();
 
     try {
+
+      // TODO: Key to a scene transition is rendering the next load in a new scene
+      console.log('*** Set the options for the parser', scene, this.controller, this.parser);
+      // this.controller.setScene(scene);
+      // this.controller.getThree().scene = scene;
+      // this.parser.config.scene = scene;
       animations = await this.parser.loadAnimation(url);
     } catch (error) {
       // Error loading animation
@@ -107,20 +176,20 @@ export class IgAnimator extends LitElement {
     }
 
     // Wire up the marker events
-    if (this.controller) {
-      this.controller.onMarker = (marker: any, animation: any) => {
-        console.log('GUAnimator::onMarker', marker, animation);
-        this.marker(marker, animation);
-      };
+    // scene.visible = true;
+    this.controller.setAnimations(animations);
 
-      // Wire up the animations for playback
-      this.controller.setAnimations(animations);
-    }
     this.loaded();
-
-    return {
+    const loadedAnimation = {
+      scene,
       animations,
-    };
+      id: name
+    }
+    this.loadedAnimation[name] = loadedAnimation;
+    this.currentSceneId = name;
+
+    console.log('*** loaded animation', name, loadedAnimation);
+    return loadedAnimation;
   }
 
   /**
@@ -128,7 +197,7 @@ export class IgAnimator extends LitElement {
    * Use this to bootstrap the gu-animator.
    */
   override firstUpdated() {
-    console.log('GUAnimator::firstUpdated()');
+    // console.log('GUAnimator::firstUpdated()');
     // Bootstrap the gu-animator controller
     if (!this.controller) {
       this.controller = new IgController({
@@ -137,6 +206,10 @@ export class IgAnimator extends LitElement {
         debug: this.debug,
         scale: this.scale
       });
+
+      this.controller.onMarker = (marker: any, animation: any) => {
+        this.marker(marker, animation);
+      };
     }
 
     // Bootstrap the gu-animator parser
@@ -177,6 +250,86 @@ export class IgAnimator extends LitElement {
     }
 
     return animation;
+  }
+
+  unloadPreviousAnimationAssets() {
+    const animationId = this.previousSceneId;
+    if (this.previousSceneId === animationId) {
+
+      console.log('>>> Unload Prev scene Id', animationId);
+
+      const prevAnimationLoaded = this.loadedAnimation[animationId];
+      prevAnimationLoaded.animations.forEach((animation: any) => {
+        animation.meta.timeline.revert();
+        animation.meta.timeline.clear();
+        animation.stop();
+
+        animation.instance?.videoPreloader?.pause();
+        console.log('Unload Existing animation', animation);
+        // animation.destroy();
+      });
+
+      // Clean up scene
+      // prevAnimationLoaded.scene.traverse((object: any) => {
+      //   console.log('>>> Cleaning up scene', object.name, object);
+      //   if (!object.isMesh) return;
+      //   object.geometry.dispose();
+      //
+      //   if (object.material.isMaterial) {
+      //     this.cleanMaterial(object.material);
+      //   } else {
+      //     for (const material of object.material) this.cleanMaterial(material);
+      //   }
+      // });
+    }
+  }
+
+  play(name: string): gsap.core.Timeline | Promise<boolean> {
+    if (this.isLoaded) {
+      const animation = this.getAnimationAsset(name);
+      animation.meta.timeline.restart();
+      return animation.meta.timeline.play();
+    } else {
+      return Promise.resolve(false);
+    }
+  }
+
+  playMarker(name: string, marker: string): gsap.core.Timeline | null {
+    // console.log('playMarker()', name, marker, 'loaded', this.isLoaded);
+    if (this.isLoaded) {
+      let markerItem: any;
+      const animation = this.getAnimationAsset(name);
+      if (animation.instance?.markers?.length > 0) {
+        markerItem = animation.instance.markers.find((animationMarker: any) => animationMarker.payload.name === marker);
+      }
+
+      if (markerItem) {
+        if (markerItem.duration) {
+          const markerStartTime = markerItem.payload.time;
+          const markerEndTime = markerItem.payload.time + (markerItem.duration / animation.instance.frameRate);
+          // animation.instance.audioController.play();
+          const tween = animation.meta.timeline.tweenFromTo(markerStartTime, markerEndTime);
+          tween.then(() => {
+            animation.instance.pause();
+          });
+          return tween;
+
+        } else {
+          // animation.instance.play();
+          // animation.instance.audioController.play();
+          const tween = animation.meta.timeline.play(markerItem.payload.name);
+          tween.then(() => {
+            animation.instance.pause();
+          });
+
+          return tween;
+        }
+      } else {
+        return null;
+      }
+    } else {
+      return null;
+    }
   }
 
   getTimeline() {
@@ -246,6 +399,17 @@ export class IgAnimator extends LitElement {
       },
     });
     this.dispatchEvent(markerEvent);
+  }
+
+  private cleanMaterial(material: MeshPhysicalMaterial) {
+    material.dispose();
+
+    // for those materials that have texture maps or env maps
+    if (material.map) material.map.dispose();
+    if (material.lightMap) material.lightMap.dispose();
+    if (material.bumpMap) material.bumpMap.dispose();
+    if (material.normalMap) material.normalMap.dispose();
+    if (material.envMap) material.envMap.dispose();
   }
 }
 

@@ -23,7 +23,7 @@ import {
   sRGBEncoding,
   TextureLoader,
   TorusKnotGeometry, Vector2,
-  RepeatWrapping,
+  RepeatWrapping, VideoTexture,
 } from 'three';
 import GUI from 'lil-gui';
 import { IgAnimator } from '@imtbl/ig-animator';
@@ -75,14 +75,38 @@ export class AppElement extends LitElement {
     exposure: 0.6,
     lightDirect: 20,
     lightAmbient: 44,
+    selectTimeline: () => {
+      this.selectTimeline();
+    },
+    openTimeline: () => {
+      this.openTimeline();
+    },
     selectPack: () => {
       this.selectPack();
     },
     openPack: () => {
       this.openPack();
     },
+    loadBlue: () => {
+      this.firstUpdated();
+    },
+    loadRed: () => {
+      this.loadNext();
+    },
     reset: () => {
       this.resetPack();
+    },
+    mute: () => {
+      const guAnimator: IgAnimator = this.animatorRef.value as IgAnimator;
+      guAnimator.volume = 0;
+    },
+    unmute: () => {
+      const guAnimator: IgAnimator = this.animatorRef.value as IgAnimator;
+      guAnimator.volume = 0.9;
+    },
+    trackVolume: () => {
+      const guAnimator: IgAnimator = this.animatorRef.value as IgAnimator;
+      console.log('Volume:', guAnimator.volume);
     },
     selectedMesh: null,
     selectedModel: null,
@@ -109,7 +133,7 @@ export class AppElement extends LitElement {
       console.warn('GU-Animator failed to initialize.');
       return;
     }
-    // const background = guAnimator.getAnimationAsset('bg');
+    // const background = guAnimator.getAnimationAsset('foreground');
     // const timeline = background.meta.timeline;
     // timeline.repeat = -1;
     // timeline.play();
@@ -160,22 +184,23 @@ export class AppElement extends LitElement {
     //   .to(comp.baseElement,{duration:3, y:'+=10', ease:Power1.easeInOut}, 14)
     //   .to(comp.baseElement,{duration:2, y:'-=5', ease:Power1.easeInOut}, 17)
     //   .to(comp.baseElement,{duration:2, y:'+=5', ease:Power1.easeInOut}, 19);
-
-    const bg = guAnimator.getAnimationAsset('bg');
-    if(bg && bg.instance) {
-      this.camera = bg.instance.animationData.layers.find(
-        (layer) => layer.nm === 'Camera 1'
-      );
-
-      if (bg && bg.instance) {
-        console.log('Animate the background', bg);
-        bg.meta.timeline.play();
-
-        bg.instance.animationData.layers.forEach((layer) => {
-          console.log('BG layer', layer);
-        });
-      }
-    }
+    //
+    // const bg = guAnimator.getAnimationAsset('bg');
+    // console.log('onloaded animation', event, bg);
+    // if(bg && bg.instance) {
+    //   this.camera = bg.instance.animationData.layers.find(
+    //     (layer) => layer.nm === 'Camera'
+    //   );
+    //
+    //   if (bg && bg.instance) {
+    //     console.log('Animate the background', bg);
+    //     bg.meta.timeline.play();
+    //
+    //     bg.instance.animationData.layers.forEach((layer) => {
+    //       console.log('BG layer', layer);
+    //     });
+    //   }
+    // }
     // anim.animationData.layers[0].ks.p.k[0]
 
     // const startX = camera.ks.p.k[0];
@@ -286,9 +311,16 @@ export class AppElement extends LitElement {
       packFolder.add(this.config, 'packRotationZ').listen();
       packFolder.close();
 
+      gui.add(this.config, 'selectTimeline');
+      gui.add(this.config, 'openTimeline');
       gui.add(this.config, 'selectPack');
       gui.add(this.config, 'openPack');
+      gui.add(this.config, 'loadBlue');
+      gui.add(this.config, 'loadRed');
       gui.add(this.config, 'reset');
+      gui.add(this.config, 'mute');
+      gui.add(this.config, 'unmute');
+      gui.add(this.config, 'trackVolume');
 
       const exposureController = gui.add(this.config, 'exposure'); // Number Field
       exposureController.onChange((value) => {
@@ -427,11 +459,25 @@ export class AppElement extends LitElement {
       const dracoPath = `/assets/libs/draco/`;
       dracoLoader.setDecoderPath(dracoPath);
 
-      // qthis.initBloomPass(threeData);
+      // this.initBloomPass(threeData);
 
       // this.loadCard(threeData, dracoLoader);
 
       this.loadPack(threeData, dracoLoader);
+
+      // Create the video element and load the video
+      // const video = document.createElement('video');
+      // video.src = '/assets/rings/rings.mp4'; // Replace with your video file
+      // video.load();
+      // video.play();
+
+      // Create video texture and plane geometry
+      // console.log('Adding the Video Rings');
+      // const texture = new VideoTexture(video);
+      // const geometry = new PlaneGeometry(4, 3);
+      // const material = new MeshBasicMaterial({ map: texture });
+      // const mesh = new Mesh(geometry, material);
+      // threeData.scene.add(mesh);
 
       // TODO: Load a gltf file..
       // loader.setCrossOrigin('anonymous');
@@ -1048,17 +1094,41 @@ export class AppElement extends LitElement {
     const guAnimator: IgAnimator = this.animatorRef.value as IgAnimator;
     console.log('Demos::firstUpdated()', guAnimator, guAnimator.loadAnimation);
 
-    const animationPath = `https://images.godsunchained.com/pack-opening/animations/opening/ig-data.json`;
-    // const animationPath = '/assets/gu-data.json';
+    // const animationPath = `https://images.godsunchained.com/pack-opening/animations/opening/ig-data.json`;
+    const animationPath = '/assets/gu-data.json';
     guAnimator
-      .loadAnimation(animationPath) // gu-pack-opening
-      .then((response: any) => {
-        console.log('GUAnimator::loadAnimation done', response);
-        const animationItem =  response.animations[0].instance;
-        animationItem.play();
+      .loadAnimation(animationPath, 'blue') // gu-pack-opening
+      .then((animations: any) => {
+        console.log('GUAnimator::loadAnimation done', animations);
+        animations.scene.visible = true;
+        // const animationItem =  response.animations[0].instance;
+        // animationItem.play();
 
         // Play pack animation
-        this.openPack();
+        // this.openPack();
+      });
+  }
+
+  loadNext() {
+    const guAnimator: IgAnimator = this.animatorRef.value as IgAnimator;
+    console.log('Demos::loadNext()', guAnimator, guAnimator.loadAnimation);
+
+    // const animationPath = `https://images.godsunchained.com/pack-opening/animations/opening/ig-data.json`;
+    const animationPath = '/assets/gu-data-red.json';
+    guAnimator
+      .loadAnimation(animationPath, 'red') // gu-pack-opening
+      .then((animations: any) => {
+        console.log('GUAnimator::loadAnimation done red', animations);
+        // const animationItem =  response.animations[0].instance;
+        // animationItem.play();
+        // animations.scene.visible = true;
+        const pack = guAnimator.getAnimationAsset('bg');
+        console.log('Loaded animation', pack);
+
+       guAnimator.unloadPreviousAnimationAssets();
+
+        // Play pack animation
+        // this.openPack();
       });
   }
 
@@ -1088,32 +1158,44 @@ export class AppElement extends LitElement {
   }
 
   private selectPack() {
-    console.log('Demo::selectPack()', this.config.selectedModel);
     // TODO: Load a specific GLTF
 
-    const mixer = new AnimationMixer(this.config.selectedModel.scene);
-    const openClip = AnimationClip.findByName(
-      this.config.selectedModel.animations,
-      'Anim_0'
-    );
-    const openAction = mixer.clipAction(openClip);
-    if (openAction) {
-      openAction.clampWhenFinished = true;
-      openAction.reset();
-      openAction.play();
-      openAction.loop = LoopOnce;
+    const guAnimator = this.animatorRef.value as any;
+    const pack = guAnimator.getAnimationAsset('pack');
+    console.log('Demo::selectPack()', this.config.selectedModel, pack);
+    pack.instance.videoPreloader.stop();
+    guAnimator.playMarker('pack', 'reveal').then(() => {
+      pack.instance.pause();
+      console.log('Reveal complete!');
 
-      // Play the animation via GSAP
-      gsap.to(mixer, {
-        _time: openClip.duration,
-        duration: openClip.duration,
-        onUpdateParams: [mixer],
-        onUpdate: function (m) {
-          const animProgress = openClip.duration * this['progress']();
-          m.setTime(animProgress);
-        },
-      });
-    }
+      // console.log('2 >> Opening pack', pack);
+      // guAnimator.playMarker('pack', 'open').then(() => {
+      //   console.log('Open complete!');
+      // });
+    });
+    // const mixer = new AnimationMixer(this.config.selectedModel.scene);
+    // const openClip = AnimationClip.findByName(
+    //   this.config.selectedModel.animations,
+    //   'Anim_0'
+    // );
+    // const openAction = mixer.clipAction(openClip);
+    // if (openAction) {
+    //   openAction.clampWhenFinished = true;
+    //   openAction.reset();
+    //   openAction.play();
+    //   openAction.loop = LoopOnce;
+    //
+    //   // Play the animation via GSAP
+    //   gsap.to(mixer, {
+    //     _time: openClip.duration,
+    //     duration: openClip.duration,
+    //     onUpdateParams: [mixer],
+    //     onUpdate: function (m) {
+    //       const animProgress = openClip.duration * this['progress']();
+    //       m.setTime(animProgress);
+    //     },
+    //   });
+    // }
   }
 
   private openPack(e?: any) {
@@ -1122,11 +1204,60 @@ export class AppElement extends LitElement {
     // Open the pack
     const guAnimator = this.animatorRef.value as any;
     const pack = guAnimator.getAnimationAsset('pack');
-    if (pack) {
-      console.log('Found timeline', pack.meta.timeline);
-      pack.meta.timeline.restart();
-      pack.meta.timeline.play();
-    }
+    guAnimator.playMarker('pack', 'open').then(() => {
+      console.log('Open complete!');
+      pack.instance.pause();
+      // console.log('2 >> Opening pack', pack);
+      // guAnimator.playMarker('pack', 'open').then(() => {
+      //   console.log('Open complete!');
+      // });
+    });
+    // if (pack) {
+    //   console.log('Found timeline', pack.meta.timeline);
+    //   // pack.meta.timeline.restart();
+    //   // pack.meta.timeline.play();
+    // }
+  }
+
+  private selectTimeline(e?: any) {
+
+  }
+
+  private openTimeline(e?: any) {
+    // MouseEvent || InteractionEvent
+    const guAnimator = this.animatorRef.value as any;
+
+    const revealTimeline = gsap.timeline({ paused: true });
+    const pack = guAnimator.getAnimationAsset('pack');
+    const revealAnimationTween = guAnimator.playMarker('pack', 'open');
+    // const revealPackTween = this.selectedPack.reveal();
+   // revealPackTween.duration(revealAnimationTween.duration()); // TODO: Adjust the pack reveal timescale to match the reveal timeline
+   // revealPackTween.revert();
+
+    //revealTimeline.add(revealPackTween, 0);
+    revealTimeline.add(revealAnimationTween, 0);
+    revealTimeline.play().then(() => {
+      // Pack reveal animation complete
+     // pack.instance.pause();
+      console.log('Reveal complete!!!');
+    });
+
+    // Open the pack
+
+    // const pack = guAnimator.getAnimationAsset('pack');
+    // guAnimator.playMarker('pack', 'open').then(() => {
+    //   console.log('Open complete!');
+    //   pack.instance.pause();
+    //   // console.log('2 >> Opening pack', pack);
+    //   // guAnimator.playMarker('pack', 'open').then(() => {
+    //   //   console.log('Open complete!');
+    //   // });
+    // });
+    // if (pack) {
+    //   console.log('Found timeline', pack.meta.timeline);
+    //   // pack.meta.timeline.restart();
+    //   // pack.meta.timeline.play();
+    // }
   }
 
   private resetPack(e?: MouseEvent) {

@@ -1,0 +1,34 @@
+{
+  "version": "1.0.0",
+  "timeline": [
+    {
+      "id": "background",
+      "assetId": "bg",
+      "time": "0"
+    },
+    {
+      "id": "foreground",
+      "assetId": "foreground",
+      "time": "0"
+    }
+  ],
+  "assets": [
+    {
+      "id": "bg",
+      "format": "bodymovin",
+      "contentPath": "bg_red/data.json",
+      "repeat": -1
+    },
+    {
+      "id": "foreground",
+      "format": "bodymovin",
+      "contentPath": "botw_foreground/data.json",
+      "repeat": -1
+    },
+    {
+      "id": "pack",
+      "format": "bodymovin",
+      "contentPath": "botw/data.json"
+    }
+  ]
+}
