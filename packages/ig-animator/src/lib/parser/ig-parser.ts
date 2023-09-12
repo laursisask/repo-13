@@ -87,9 +87,6 @@ export class IgParser {
     return new Promise<any[]>((resolve, reject) => {
       const assetsPath = this.url.substring(0, this.url.lastIndexOf('/') + 1);
 
-      console.log('Loading new animation', this.url, assetsPath, this.config);
-      console.log('LoadBodymovinJson', this.config);
-      console.log('LoadBodymovinJson >> ', this.config.renderer);
       // Create lottie animation and hook into loading state
       const animation = {
         meta: {
@@ -147,6 +144,7 @@ export class IgParser {
       // pixiApplication: this.config.loaders.pixi,
 
       animation.instance.addEventListener('DOMLoaded', () => {
+        // console.log('DOMLoaded!! animation', animation);
         animation.totalFrames = animation.instance.totalFrames;
         animation.frameRate = animation.instance.frameRate;
         resolve([animation]);

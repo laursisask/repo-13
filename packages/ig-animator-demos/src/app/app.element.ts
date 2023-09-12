@@ -459,7 +459,7 @@ export class AppElement extends LitElement {
       const dracoPath = `/assets/libs/draco/`;
       dracoLoader.setDecoderPath(dracoPath);
 
-      // this.initBloomPass(threeData);
+      this.initBloomPass(threeData);
 
       // this.loadCard(threeData, dracoLoader);
 
@@ -959,7 +959,7 @@ export class AppElement extends LitElement {
     console.log('Setting up composer!', three);
     const renderPass = new RenderPass( three.scene, three.camera );
     three.composer.addPass( renderPass );
-    three.composer.addPass( bloomPass );
+    // three.composer.addPass( bloomPass );
   }
 
 
@@ -1100,7 +1100,7 @@ export class AppElement extends LitElement {
       .loadAnimation(animationPath, 'blue') // gu-pack-opening
       .then((animations: any) => {
         console.log('GUAnimator::loadAnimation done', animations);
-        animations.scene.visible = true;
+        // animations.scene.visible = true;
         // const animationItem =  response.animations[0].instance;
         // animationItem.play();
 
@@ -1122,10 +1122,21 @@ export class AppElement extends LitElement {
         // const animationItem =  response.animations[0].instance;
         // animationItem.play();
         // animations.scene.visible = true;
-        const pack = guAnimator.getAnimationAsset('bg');
-        console.log('Loaded animation', pack);
+        // const pack = guAnimator.getAnimationAsset('bg');
+        // console.log('Loaded animation', pack);
 
-       guAnimator.unloadPreviousAnimationAssets();
+        const threeData = guAnimator.getThree();
+        console.log('Loaded animation.. and add the lights', animations.scene === threeData.scene);
+        const ambientLight = new AmbientLight(0x404040, this.config.lightAmbient);
+        threeData.ambientLight = ambientLight;
+        threeData.scene.add(ambientLight);
+
+        const directionalLight = new DirectionalLight(0xffffff, this.config.lightDirect);
+        directionalLight.position.set(1, 1, 1).normalize();
+        threeData.directionalLight = directionalLight;
+        threeData.scene.add(directionalLight);
+
+        // guAnimator.unloadPreviousAnimationAssets();
 
         // Play pack animation
         // this.openPack();

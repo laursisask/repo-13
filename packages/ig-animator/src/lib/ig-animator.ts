@@ -53,10 +53,10 @@ export class IgAnimator extends LitElement {
   set volume(value: number) {
     Howler.volume(value);
 
-    console.log('>> Setting volume', value, this.loadedAnimation);
+    // console.log('>> Setting volume', value, this.loadedAnimation);
     Object.keys(this.loadedAnimation).forEach((animationId) => {
       this.loadedAnimation[animationId].animations.forEach((animation: any) => {
-        console.log('>> Loaded animation', animation);
+        // console.log('>> Loaded animation', animation);
         animation.instance.setVolume(value);
       });
     })
@@ -117,47 +117,39 @@ export class IgAnimator extends LitElement {
     this.previousSceneId = prevSceneId;
 
     if (prevSceneId) {
-      console.log('>>> Prev scene Id', prevSceneId);
-
+      // console.log('>>> Prev scene Id', prevSceneId);
       const prevAnimationLoaded = this.loadedAnimation[prevSceneId];
       prevAnimationLoaded.animations.forEach((animation: any) => {
         animation.meta.timeline.revert();
         animation.meta.timeline.clear();
         animation.stop();
 
+        // Stop and Hide the video element
         animation.instance?.videoPreloader?.stop();
-        console.log('Existing animation', animation);
+        animation.instance?.renderer.elements.forEach((element: any) => {
+          if (element.data.ty === 9) {
+            element.pivotElement.visible = false;
+          }
+        });
         // animation.instance.destroy();
         // TODO: Look at unloading all loaded assets
       });
-
-      // Clean up scene
-      // prevAnimationLoaded.scene.traverse((object: any) => {
-      //   console.log('>>> Cleaning up scene', object.name, object);
-      //   if (!object.isMesh) return;
-      //   object.geometry.dispose();
-      //
-      //   if (object.material.isMaterial) {
-      //     this.cleanMaterial(object.material);
-      //   } else {
-      //     for (const material of object.material) this.cleanMaterial(material);
-      //   }
-      // });
     }
 
     const scene = new Scene()
     scene.visible = false;
-    scene.background =  new Color('0x0a0a0a');
+    scene.background = new Color('0x0a0a0a');
     scene.name = name;
-    console.log('Load Animation is', scene);
+    // console.log('Load Animation with new scene:', scene);
+
     await new Promise((resolve) => requestAnimationFrame(resolve));
     this.loading();
 
     try {
 
       // TODO: Key to a scene transition is rendering the next load in a new scene
-      console.log('*** Set the options for the parser', scene, this.controller, this.parser);
-      // this.controller.setScene(scene);
+      // console.log('*** Set the options for the parser', scene, this.controller, this.parser);
+      this.controller.setScene(scene);
       // this.controller.getThree().scene = scene;
       // this.parser.config.scene = scene;
       animations = await this.parser.loadAnimation(url);
@@ -180,6 +172,7 @@ export class IgAnimator extends LitElement {
     this.controller.setAnimations(animations);
 
     this.loaded();
+    const previousAnimation = this.loadedAnimation[prevSceneId];
     const loadedAnimation = {
       scene,
       animations,
@@ -188,7 +181,54 @@ export class IgAnimator extends LitElement {
     this.loadedAnimation[name] = loadedAnimation;
     this.currentSceneId = name;
 
-    console.log('*** loaded animation', name, loadedAnimation);
+    // Show the video
+    animations.forEach((animation: any) => {
+      animation.instance?.renderer.elements.forEach((element: any) => {
+        if (element.data.ty === 9) {
+          element.pivotElement.visible = false;
+        }
+      });
+    })
+
+    // TODO: Hook into default loader to track if anything is still loading / expose count
+    // const defaultLoader = this.controller.getThree().loader;
+    // defaultLoader.onStart = (url: string, itemsLoaded: boolean, itemsTotal: number) => {
+    //   console.log('Three::Started loading file: ' + url + '.\nLoaded ' + itemsLoaded + ' of ' + itemsTotal + ' files.');
+    //   console.log('Three::onStart::', this);
+    // };
+    //
+    // defaultLoader.onLoad = () => {
+    //   console.log('Three::Loading Complete! isLoadingChecked:', defaultLoader);
+    //   console.log('Three::onLoad() isVideoRequired', defaultLoader, 'isVideoLoaded', defaultLoader);
+    //   console.log('Three::onLoad() isImagesRequired', defaultLoader, 'isImagesLoaded', defaultLoader);
+    // };
+    //
+    // defaultLoader.onProgress = (url: string, itemsLoaded: boolean, itemsTotal: number) => {
+    //   console.log('Three::Loading file: ' + url + '.\nLoaded ' + itemsLoaded + ' of ' + itemsTotal + ' files.');
+    // };
+    //
+    // defaultLoader.onError = (url: string) => {
+    //   console.log('Three::There was an error loading ' + url);
+    // };
+
+    this.controller.renderScene(loadedAnimation.scene);
+
+    if (previousAnimation) {
+      // previousAnimation.animations.forEach((animation: any) => {
+      //   // Clean up scene
+      //   // animation.instance.destroy();
+      // });
+      previousAnimation.scene.traverse((object: any) => {
+        if (!object.isMesh) return;
+        object.geometry.dispose();
+
+        if (object.material.isMaterial) {
+          this.cleanMaterial(object.material);
+        } else {
+          for (const material of object.material) this.cleanMaterial(material);
+        }
+      });
+    }
     return loadedAnimation;
   }
 
@@ -256,8 +296,6 @@ export class IgAnimator extends LitElement {
     const animationId = this.previousSceneId;
     if (this.previousSceneId === animationId) {
 
-      console.log('>>> Unload Prev scene Id', animationId);
-
       const prevAnimationLoaded = this.loadedAnimation[animationId];
       prevAnimationLoaded.animations.forEach((animation: any) => {
         animation.meta.timeline.revert();
@@ -265,8 +303,7 @@ export class IgAnimator extends LitElement {
         animation.stop();
 
         animation.instance?.videoPreloader?.pause();
-        console.log('Unload Existing animation', animation);
-        // animation.destroy();
+        animation.destroy();
       });
 
       // Clean up scene

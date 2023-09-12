@@ -11,6 +11,8 @@ import {
   WebGLRenderer,
 } from 'three';
 import { GLTF, GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
+import {EffectComposer} from "three/examples/jsm/postprocessing/EffectComposer";
+import {RenderPass} from "three/examples/jsm/postprocessing/RenderPass";
 
 /**
  * GU Animator Controller.
@@ -53,7 +55,8 @@ export class IgController {
         width: SIZEW,
         height: SIZEH,
         debug: this.config.debug,
-        scale: this.config.scale
+        scale: this.config.scale,
+        scene: this.currentScene
       }),
 
       // TODO: Abstract out to a renderer application provider
@@ -105,8 +108,7 @@ export class IgController {
 
   // TODO: Pass the new scene in here with the options...
   private initThree(options: any) {
-    console.log('IgController::initThree()', options);
-    const three = {
+    const three: any = {
       scene: options.scene || new Scene(),
       camera: new PerspectiveCamera(
         25,
@@ -132,9 +134,9 @@ export class IgController {
       debug: options.debug,
       interaction: true,
       scale: 1,
-      animate: true
+      animate: true,
     };
-
+    three.composer = new EffectComposer(three.renderer);
     three.scene.background =  new Color('0x0a0a0a');
 
     three.camera.fov = 25;
@@ -171,19 +173,18 @@ export class IgController {
 
   private render(three: any) {
     // Check for render override
+    if (three.controls) {
+      three.controls.update();
+    }
 
-      if (three.controls) {
-        three.controls.update();
-      }
-
-      if (three.interaction && three.interaction.update) {
-        three.interaction.update();
-      }
-      if (three.renderer.composer) {
-        three.renderer.composer.render();
-      } else {
-        three.renderer.render(three.renderScene, three.renderCamera);
-      }
+    if (three.interaction && three.interaction.update) {
+      three.interaction.update();
+    }
+    if (three.composer) {
+      three.composer.render();
+    } else {
+      three.renderer.render(three.scene, three.camera);
+    }
   }
 
   private initLottie() {
@@ -316,6 +317,21 @@ export class IgController {
 
   public setScene(scene: Scene) {
     this.currentScene = scene;
+    const three = this.applications.three;
+    three.scene = scene;
+    three.renderScene = scene;
+    // const renderPass = new RenderPass( three.scene, three.camera );
+    // three.composer.passes = [renderPass];
+  }
+
+  public renderScene(scene: Scene) {
+    scene.visible = true;
+    this.currentScene = scene;
+    const three = this.applications.three;
+    three.scene = scene;
+    three.renderScene = scene;
+    const renderPass = new RenderPass( three.scene, three.camera );
+    three.composer.passes = [renderPass];
   }
 
   public setAnimations(animations: any) {
