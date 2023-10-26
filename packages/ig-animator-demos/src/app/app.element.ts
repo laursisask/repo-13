@@ -1151,6 +1151,8 @@ export class AppElement extends LitElement {
           <ig-animator
             scale="0.5"
             cameraZ="200"
+            maxHeight="810"
+            maxWidth="2000"
             ${ref(this.animatorRef)}
             @loaded=${this.onLoaded}
             @loading=${this.onLoading}

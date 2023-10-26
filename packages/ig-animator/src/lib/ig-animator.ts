@@ -50,6 +50,12 @@ export class IgAnimator extends LitElement {
   @property({ type: Number})
   public declare cameraZ: number;
 
+  @property({ type: Number})
+  public declare maxWidth: number;
+
+  @property({ type: Number})
+  public declare maxHeight: number;
+
   @property()
   public declare animatorStyles: any;
 
@@ -249,6 +255,8 @@ export class IgAnimator extends LitElement {
         debug: this.debug,
         scale: this.scale,
         cameraZ: this.cameraZ,
+        maxWidth: this.maxWidth,
+        maxHeight: this.maxHeight,
       });
 
       this.controller.onMarker = (marker: any, animation: any) => {

@@ -5,5 +5,7 @@ export interface IgConfig {
   renderer?: IgRenderer;
   debug: boolean;
   scale: number;
-  cameraZ: number;
+  cameraZ?: number;
+  maxWidth?: number;
+  maxHeight?: number;
 }

@@ -65,6 +65,10 @@ export class IgController {
             z: this.config.cameraZ || 0
           }
         },
+        viewport: {
+          maxWidth: this.config.maxWidth,
+          maxHeight: this.config.maxHeight,
+        },
       }),
 
       // TODO: Abstract out to a renderer application provider
@@ -145,9 +149,7 @@ export class IgController {
       animate: true,
       viewport: {
         minWidth: 760,
-        maxWidth: 2000,
         minHeight: 680,
-        maxHeight: 810,
       },
       cameraModifier: options.cameraModifier,
     };
@@ -157,6 +159,12 @@ export class IgController {
       }
       if (typeof options.viewport.height !== 'undefined') {
         three.viewport.height = options.viewport.height;
+      }
+      if (typeof options.viewport.maxWidth !== 'undefined') {
+        three.viewport.maxWidth = options.viewport.maxWidth;
+      }
+      if (typeof options.viewport.maxHeight !== 'undefined') {
+        three.viewport.maxHeight = options.viewport.maxHeight;
       }
     }
     three.composer = new EffectComposer(three.renderer);
