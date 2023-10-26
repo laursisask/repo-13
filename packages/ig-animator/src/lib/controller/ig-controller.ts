@@ -1,6 +1,7 @@
 import { IgConfig } from '../core/ig-config';
-import { gsap, Sine } from 'gsap';
+import { gsap } from 'gsap';
 import Lottie from 'lottie-web';
+// import Stats from 'three/examples/jsm/libs/stats.module';
 import {
   Clock, Color,
   ColorManagement,
@@ -11,8 +12,8 @@ import {
   WebGLRenderer,
 } from 'three';
 import { GLTF, GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
-import {EffectComposer} from "three/examples/jsm/postprocessing/EffectComposer";
-import {RenderPass} from "three/examples/jsm/postprocessing/RenderPass";
+import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer';
+import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass';
 
 /**
  * GU Animator Controller.
@@ -56,7 +57,14 @@ export class IgController {
         height: SIZEH,
         debug: this.config.debug,
         scale: this.config.scale,
-        scene: this.currentScene
+        scene: this.currentScene,
+        cameraModifier: {
+          position: {
+            x: 0,
+            y: 0,
+            z: this.config.cameraZ || 0
+          }
+        },
       }),
 
       // TODO: Abstract out to a renderer application provider
@@ -135,7 +143,22 @@ export class IgController {
       interaction: true,
       scale: 1,
       animate: true,
+      viewport: {
+        minWidth: 760,
+        maxWidth: 2000,
+        minHeight: 680,
+        maxHeight: 810,
+      },
+      cameraModifier: options.cameraModifier,
     };
+    if (options.viewport) {
+      if (typeof options.viewport.width !== 'undefined') {
+        three.viewport.width = options.viewport.width;
+      }
+      if (typeof options.viewport.height !== 'undefined') {
+        three.viewport.height = options.viewport.height;
+      }
+    }
     three.composer = new EffectComposer(three.renderer);
     three.scene.background =  new Color('0x0a0a0a');
 
@@ -161,9 +184,34 @@ export class IgController {
     //   three.controls.listenToKeyEvents(window); // optional
     // }
 
+    // Render with capped frame rate
+    let delta = 0;
+    let interval = 1 / 60; // 60 fps
+    let lastUpdateTime = 0;
+    let fps = 60;
     const animate = () => {
-      this.render(three);
       requestAnimationFrame(animate);
+      const currentTime = performance.now();
+      const timeSinceLastUpdate = (currentTime - lastUpdateTime) / 1000;
+
+      // Calculate the FPS
+      fps = 1 / timeSinceLastUpdate;
+
+      // Try to cap the frame rate from 60 / 30 / 10
+      if (fps < 60) {
+        interval = 1 / 30; // 30 fps
+      } else if (fps < 30) {
+        interval = 1 / 10; // 15 fps
+      } else {
+        interval = 1 / 60; // Reset to 60 fps
+      }
+
+      lastUpdateTime = currentTime;
+      delta += timeSinceLastUpdate;
+      if (delta > interval) {
+        this.render(three);
+        delta = delta % interval;
+      }
     }
 
     animate();

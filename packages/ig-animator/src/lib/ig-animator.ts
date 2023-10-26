@@ -47,6 +47,9 @@ export class IgAnimator extends LitElement {
   @property({ type: Number})
   public declare scale: number;
 
+  @property({ type: Number})
+  public declare cameraZ: number;
+
   @property()
   public declare animatorStyles: any;
 
@@ -244,7 +247,8 @@ export class IgAnimator extends LitElement {
         container: this.container.value,
         renderer: this.renderer,
         debug: this.debug,
-        scale: this.scale
+        scale: this.scale,
+        cameraZ: this.cameraZ,
       });
 
       this.controller.onMarker = (marker: any, animation: any) => {

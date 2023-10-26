@@ -5,4 +5,5 @@ export interface IgConfig {
   renderer?: IgRenderer;
   debug: boolean;
   scale: number;
+  cameraZ: number;
 }
