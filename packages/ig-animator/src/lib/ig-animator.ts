@@ -3,7 +3,7 @@ import { Ref, createRef, ref } from 'lit/directives/ref.js';
 import { customElement, property } from 'lit/decorators.js';
 import { IgController } from './controller/ig-controller';
 import { IgParser } from './parser/ig-parser';
-import { Color, Material, MeshBasicMaterial, MeshPhysicalMaterial, Scene } from 'three';
+import { Color, MeshPhysicalMaterial, Scene } from 'three';
 import { Howler } from 'howler';
 
 export interface LoadingEvent {
@@ -286,6 +286,17 @@ export class IgAnimator extends LitElement {
     // Auto load the gu-animator src attribute
     if (this.src && this.currentSrc != this.src) {
       this.loadAnimation(this.src);
+    }
+  }
+
+  override updated(changedProperties: Map<string | number | symbol, unknown>) {
+    if (changedProperties.has('maxHeight')) {
+      const threeData = this.getThree();
+      threeData.viewport.maxHeight = this.maxHeight;
+    }
+    if (changedProperties.has('maxWidth')) {
+      const threeData = this.getThree();
+      threeData.viewport.maxWidth = this.maxWidth;
     }
   }
 

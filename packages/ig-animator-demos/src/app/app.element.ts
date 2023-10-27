@@ -1151,7 +1151,6 @@ export class AppElement extends LitElement {
           <ig-animator
             scale="0.5"
             cameraZ="200"
-            maxHeight="810"
             maxWidth="2000"
             ${ref(this.animatorRef)}
             @loaded=${this.onLoaded}
@@ -1175,6 +1174,7 @@ export class AppElement extends LitElement {
     // TODO: Load a specific GLTF
 
     const guAnimator = this.animatorRef.value as any;
+    guAnimator.maxHeight = 810;
     const pack = guAnimator.getAnimationAsset('pack');
     console.log('Demo::selectPack()', this.config.selectedModel, pack);
     pack.instance.videoPreloader.stop();
