@@ -8,6 +8,11 @@
 
 ---
 
+# Dependencies
+
+This repo uses git LFS
+https://docs.github.com/en/repositories/working-with-files/managing-large-files/installing-git-large-file-storage
+
 # Immutable Games Animator
 
 An animation framework that combines several libraries together (lottie / gsap / pixi / threejs). Ig-Animator helps to orchestrate syncing multiple animations from After Effects (exported via Bodymovin) and GLTF models in a 3D environment using threeJS.
