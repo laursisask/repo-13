@@ -73,7 +73,7 @@ This project is licensed under the MIT. Please see [LICENSE][license] for full d
 [issues]: https://github.com/boozt-platform/quickstart-template/issues
 [pull-request]: https://github.com/boozt-platform/quickstart-template/pulls
 [contributing]: ./docs/CONTRIBUTING.md
-[license]: ./docs/LICENSE
+[license]: ./LICENSE
 [boozt]: https://www.boozt.com/
 [booztlet]: https://www.booztlet.com/
 [blog]: https://medium.com/boozt-tech
