@@ -1,0 +1,3 @@
+/docs/ @boozt-platform/owners
+/.github/workflows/release.yml @boozt-platform/owners
+/.goreleaser.yaml @boozt-platform/owners
