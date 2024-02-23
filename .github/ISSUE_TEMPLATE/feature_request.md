@@ -1,3 +1,8 @@
+<!--
+SPDX-FileCopyrightText: Copyright Boozt Fashion, AB
+SPDX-License-Identifier: MIT
+-->
+
 ---
 name: Feature request
 about: Suggest an idea for this project
