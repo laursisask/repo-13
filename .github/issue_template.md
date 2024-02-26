@@ -3,6 +3,8 @@ SPDX-FileCopyrightText: Copyright Boozt Fashion, AB
 SPDX-License-Identifier: MIT
 -->
 
+<!-- You may remove the content below, but keep only the related stuff. -->
+
 <!-- Appreciation and Introduction -->
 Thank you for taking the time to submit an issue! Your contribution is valuable to us. Before you proceed, please take a moment to go through the checklist below:
 
