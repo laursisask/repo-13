@@ -10,8 +10,10 @@ jobs:
       contents: read
     steps:
       - uses: actions/checkout@v2
-      - name: Install Lefthook
+      - name: Install Package
         # yamllint disable-line rule:line-length
-        run: curl -sfL https://raw.githubusercontent.com/evilmartians/lefthook/master/install.sh | sh
+        run: curl -1sLf 'https://dl.cloudsmith.io/public/evilmartians/lefthook/setup.deb.sh' | sudo -E bash
+      - name: Install Lefthook
+        run: sudo apt install lefthook
       - name: Run Lefthook
         run: lefthook run pre-commit
