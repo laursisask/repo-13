@@ -10,8 +10,6 @@ jobs:
       contents: write
     steps:
       - uses: actions/checkout@v2
-      - name: Install Git
-        run: sudo apt-get install git
       - name: Install Package
         # yamllint disable-line rule:line-length
         run: curl -1sLf 'https://dl.cloudsmith.io/public/evilmartians/lefthook/setup.deb.sh' | sudo -E bash
@@ -19,6 +17,7 @@ jobs:
         run: sudo apt install lefthook
       - name: Install Hooks
         run: |
+          mkdir -p .git/hooks
           ls -la
           lefthook install
           lefthook dump
