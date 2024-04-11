@@ -1,0 +1,17 @@
+# SPDX-FileCopyrightText: Copyright Boozt Fashion, AB
+# SPDX-License-Identifier: MIT
+---
+name: Lefthook [pre-commit]
+"on": [pull_request]
+jobs:
+  lefthook:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install Lefthook
+        # yamllint disable-line rule:line-length
+        run: curl -sfL https://raw.githubusercontent.com/evilmartians/lefthook/master/install.sh | sh
+      - name: Run Lefthook
+        run: lefthook run pre-commit
