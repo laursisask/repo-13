@@ -16,11 +16,6 @@ jobs:
       - name: Install Lefthook
         run: sudo apt install lefthook
       - name: Install Hooks
-        run: |
-          git fetch origin main:refs/remotes/origin/main
-          mkdir -p .git/hooks
-          ls -la
-          lefthook install
-          lefthook dump
+        run: lefthook install
       - name: Run Lefthook
         run: lefthook run pre-commit
