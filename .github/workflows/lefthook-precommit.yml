@@ -17,6 +17,7 @@ jobs:
         run: sudo apt install lefthook
       - name: Install Hooks
         run: |
+          git fetch origin main:refs/remotes/origin/main
           mkdir -p .git/hooks
           ls -la
           lefthook install
