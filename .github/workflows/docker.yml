@@ -306,7 +306,7 @@ jobs:
           '
     - continue-on-error: true
       name: Build (and push if not PR)
-      uses: docker/build-push-action@v2
+      uses: docker/build-push-action@v6
       with:
         build-args: BUILD_OS=${{ matrix.os }}
         cache-from: type=gha,scope=${{ matrix.os }}
