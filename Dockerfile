@@ -1,7 +1,7 @@
 # May complain about ssl certs during build!! Off T2 VPN might help
 # syntax=docker/dockerfile:1.3
 ARG BUILD_OS=debian
-FROM --platform=$BUILDPLATFORM tonistiigi/xx:1.0.0 AS xx
+FROM --platform=$BUILDPLATFORM tonistiigi/xx:1.5.0 AS xx
 
 ### Build base image for debian
 FROM --platform=$BUILDPLATFORM debian:bullseye as build-base-debian
