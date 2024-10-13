@@ -259,7 +259,7 @@ jobs:
     - continue-on-error: true
       if: github.event_name != 'pull_request'
       name: Setup QEMU
-      uses: docker/setup-qemu-action@v1
+      uses: docker/setup-qemu-action@v3
       with:
         platforms: arm,arm64,ppc64le,s390x
     - continue-on-error: true

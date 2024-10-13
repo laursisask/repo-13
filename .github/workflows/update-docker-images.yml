@@ -268,7 +268,7 @@ jobs:
     - continue-on-error: true
       if: ${{ matrix.needs-updating == 'true' }}
       name: Setup QEMU
-      uses: docker/setup-qemu-action@v1
+      uses: docker/setup-qemu-action@v3
     - continue-on-error: true
       if: ${{ matrix.needs-updating == 'true' }}
       name: Docker Buildx
