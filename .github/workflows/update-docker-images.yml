@@ -254,7 +254,7 @@ jobs:
     - continue-on-error: true
       if: ${{ matrix.needs-updating == 'true' }}
       name: Checkout Repository at ${{ needs.variables.outputs.git_tag }}
-      uses: actions/checkout@v2
+      uses: actions/checkout@v4
       with:
         ref: refs/tags/v${{ needs.variables.outputs.git_tag }}
     - continue-on-error: true
@@ -865,7 +865,7 @@ jobs:
         sudo sh -c ''echo 1 > /proc/sys/net/ipv4/ip_forward'''
     - continue-on-error: true
       name: Checkout Repository
-      uses: actions/checkout@v2
+      uses: actions/checkout@v4
       with:
         fetch-depth: 0
     - continue-on-error: true
@@ -878,7 +878,7 @@ jobs:
         '
     - continue-on-error: true
       name: Checkout Repository at ${{ steps.tag.outputs.git_tag }}
-      uses: actions/checkout@v2
+      uses: actions/checkout@v4
       with:
         ref: refs/tags/v${{ steps.tag.outputs.git_tag }}
     - continue-on-error: true
