@@ -253,7 +253,7 @@ jobs:
         go-version: '1.17'
     - continue-on-error: true
       name: Check out code into the Go module directory
-      uses: actions/checkout@v2.4.0
+      uses: actions/checkout@v4.2.1
     - continue-on-error: true
       name: Get dependencies
       run: 'go mod download
@@ -525,7 +525,7 @@ jobs:
         terraform_wrapper: false
     - continue-on-error: true
       name: Check out code into the Go module directory
-      uses: actions/checkout@v2.4.0
+      uses: actions/checkout@v4.2.1
     - continue-on-error: true
       name: Get dependencies
       run: 'go mod download
