@@ -285,7 +285,7 @@ jobs:
     - continue-on-error: true
       id: meta
       name: Docker meta
-      uses: docker/metadata-action@v3
+      uses: docker/metadata-action@v5
       with:
         flavor: suffix=${{ matrix.os != 'debian' && '-' || '' }}${{ matrix.os != 'debian'
           && matrix.os || '' }},onlatest=true

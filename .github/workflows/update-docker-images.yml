@@ -292,7 +292,7 @@ jobs:
       id: meta
       if: ${{ matrix.needs-updating == 'true' }}
       name: Docker meta
-      uses: docker/metadata-action@v3
+      uses: docker/metadata-action@v5
       with:
         flavor: 'latest=true
 
