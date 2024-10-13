@@ -3,7 +3,7 @@ module github.com/hashicorp/terraform-provider-scaffolding
 go 1.17
 
 require (
-	filippo.io/age v1.0.0
+	filippo.io/age v1.2.0
 	github.com/hashicorp/terraform-plugin-docs v0.5.1
 	github.com/hashicorp/terraform-plugin-log v0.2.1
 	github.com/hashicorp/terraform-plugin-sdk/v2 v2.10.1
@@ -26,7 +26,7 @@ require (
 	github.com/fatih/color v1.7.0 // indirect
 	github.com/golang/groupcache v0.0.0-20200121045136-8c9f03a8e57e // indirect
 	github.com/golang/protobuf v1.4.2 // indirect
-	github.com/google/go-cmp v0.5.6 // indirect
+	github.com/google/go-cmp v0.6.0 // indirect
 	github.com/google/uuid v1.1.2 // indirect
 	github.com/googleapis/gax-go/v2 v2.0.5 // indirect
 	github.com/hashicorp/errwrap v1.0.0 // indirect
@@ -70,15 +70,14 @@ require (
 	github.com/vmihailenco/msgpack v4.0.4+incompatible // indirect
 	github.com/zclconf/go-cty v1.10.0 // indirect
 	go.opencensus.io v0.22.4 // indirect
-	golang.org/x/crypto v0.0.0-20210817164053-32db794688a5 // indirect
+	golang.org/x/crypto v0.24.0 // indirect
 	golang.org/x/lint v0.0.0-20200302205851-738671d3881b // indirect
-	golang.org/x/mod v0.3.0 // indirect
-	golang.org/x/net v0.0.0-20210326060303-6b1517762897 // indirect
+	golang.org/x/mod v0.18.0 // indirect
+	golang.org/x/net v0.26.0 // indirect
 	golang.org/x/oauth2 v0.0.0-20200107190931-bf48bf16ab8d // indirect
-	golang.org/x/sys v0.0.0-20210927094055-39ccf1dd6fa6 // indirect
-	golang.org/x/text v0.3.5 // indirect
-	golang.org/x/tools v0.0.0-20200713011307-fd294ab11aed // indirect
-	golang.org/x/xerrors v0.0.0-20191204190536-9bdfabe68543 // indirect
+	golang.org/x/sys v0.21.0 // indirect
+	golang.org/x/text v0.16.0 // indirect
+	golang.org/x/tools v0.22.0 // indirect
 	google.golang.org/api v0.29.0 // indirect
 	google.golang.org/appengine v1.6.6 // indirect
 	google.golang.org/genproto v0.0.0-20200711021454-869866162049 // indirect
