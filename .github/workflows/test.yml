@@ -519,7 +519,7 @@ jobs:
       with:
         go-version: '1.17'
     - continue-on-error: true
-      uses: hashicorp/setup-terraform@v1
+      uses: hashicorp/setup-terraform@v3
       with:
         terraform_version: ${{ matrix.terraform }}
         terraform_wrapper: false
