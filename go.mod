@@ -10,7 +10,7 @@ require (
 	github.com/google/gnostic-models v0.6.8
 	github.com/spf13/cobra v1.7.0
 	github.com/stretchr/testify v1.8.4
-	golang.org/x/sync v0.5.0
+	golang.org/x/sync v0.8.0
 	google.golang.org/protobuf v1.33.0
 	k8s.io/api v0.29.6
 	k8s.io/apiextensions-apiserver v0.29.6
@@ -100,7 +100,7 @@ require (
 )
 
 replace (
-    // After bumping these versions, run hack/update_static_schema.sh in case the schema has changed.
+	// After bumping these versions, run hack/update_static_schema.sh in case the schema has changed.
 	k8s.io/api => k8s.io/api v0.29.6
 	k8s.io/apiextensions-apiserver => k8s.io/apiextensions-apiserver v0.29.6
 	k8s.io/apimachinery => k8s.io/apimachinery v0.29.6
