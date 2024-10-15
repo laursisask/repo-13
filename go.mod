@@ -9,7 +9,7 @@ require (
 	github.com/golang/mock v1.6.0
 	github.com/google/gnostic-models v0.6.8
 	github.com/spf13/cobra v1.7.0
-	github.com/stretchr/testify v1.8.4
+	github.com/stretchr/testify v1.9.0
 	golang.org/x/sync v0.5.0
 	google.golang.org/protobuf v1.33.0
 	k8s.io/api v0.29.6
@@ -77,7 +77,7 @@ require (
 	github.com/prometheus/procfs v0.10.1 // indirect
 	github.com/russross/blackfriday/v2 v2.1.0 // indirect
 	github.com/spf13/pflag v1.0.5 // indirect
-	github.com/stretchr/objx v0.5.0 // indirect
+	github.com/stretchr/objx v0.5.2 // indirect
 	github.com/xlab/treeprint v1.2.0 // indirect
 	go.starlark.net v0.0.0-20230525235612-a134d8f9ddca // indirect
 	golang.org/x/net v0.23.0 // indirect
@@ -100,7 +100,7 @@ require (
 )
 
 replace (
-    // After bumping these versions, run hack/update_static_schema.sh in case the schema has changed.
+	// After bumping these versions, run hack/update_static_schema.sh in case the schema has changed.
 	k8s.io/api => k8s.io/api v0.29.6
 	k8s.io/apiextensions-apiserver => k8s.io/apiextensions-apiserver v0.29.6
 	k8s.io/apimachinery => k8s.io/apimachinery v0.29.6
