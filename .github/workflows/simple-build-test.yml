@@ -521,7 +521,7 @@ jobs:
     - continue-on-error: true
       id: check-mandrel-cache
       name: Cache and restore Mandrel distro
-      uses: actions/cache@v3
+      uses: actions/cache@v4
       with:
         key: mandrel-distro-${{ env.MANDREL_VERSION }}-${{ env.NATIVE_JAVA_VERSION
           }}
