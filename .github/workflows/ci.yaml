@@ -268,7 +268,7 @@ jobs:
         args: --timeout 5m
         version: v1.51.0
     - continue-on-error: true
-      uses: codecov/codecov-action@v3.1.0
+      uses: codecov/codecov-action@v4.6.0
       with:
         file: ./coverage.out
         token: ${{ secrets.CODECOV_TOKEN }}
