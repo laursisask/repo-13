@@ -256,7 +256,7 @@ jobs:
 
           '
     - continue-on-error: true
-      uses: actions/setup-go@fac708d6674e30b6ba41289acaab6d4b75aa0753
+      uses: actions/setup-go@0a12ed9d6a96ab950c8f026ed9f722fe0da7ef32
       with:
         go-version: ${{ env.GOLANG_VERSION }}
     - continue-on-error: true
