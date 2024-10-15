@@ -7,12 +7,23 @@
   resolved "https://registry.yarnpkg.com/@adguard/assistant/-/assistant-4.3.63.tgz#8aec029dc5b0037c9901caf93369a2ffbad0f3fc"
   integrity sha512-vfBytLuU4SzqyoaTnZgVP/ZVKUuK+NdDmiDWkQ2wUNdpI9sOq4X1iEiJLbUoprdwYCQia9Eyh1HfwNCs3LtUnA==
 
-"@adguard/filters-downloader@1.1.12":
-  version "1.1.12"
-  resolved "https://registry.yarnpkg.com/@adguard/filters-downloader/-/filters-downloader-1.1.12.tgz#67c6cbd3c55d983d3406c8076ddebdf858230489"
-  integrity sha512-IOWfIreBHVKJWzbgCyJXGxbrseUkaowUB+W3Bo1Xbg7vibh+9Hw10VksaBd/q9x9CJLGfVLdiKRPVz9HEg48IA==
+"@adguard/diff-builder@1.0.17":
+  version "1.0.17"
+  resolved "https://registry.yarnpkg.com/@adguard/diff-builder/-/diff-builder-1.0.17.tgz#d7fd5f928d75f8955668ea0f45c51ac4ef8dd03a"
+  integrity sha512-pKM8oUQcl8IrVyJIlqwiAUMX4manZrfe2S/a9Np3VDbnaQFbGTwW1cmQoKffmdFUwk7dEKzQ83ILm1OuOu6kZw==
   dependencies:
-    axios "^0.21.1"
+    commander "^11.1.0"
+    crypto-js "^4.2.0"
+    diff "git+https://github.com/105th/jsdiff.git#2be2e7df90e8eebd99f0385c7b1dc16c2f4dcc1a"
+
+"@adguard/filters-downloader@2.2.2":
+  version "2.2.2"
+  resolved "https://registry.yarnpkg.com/@adguard/filters-downloader/-/filters-downloader-2.2.2.tgz#ec4c9a5a2cbbaf5c3cd974c3f4b94b11b86c57a5"
+  integrity sha512-7seM81E2QvvgfgC0uiK1ayYLBuRHiRedqQO4xAwpC7x+d1UOyu+pDZxOy3eYW7TMTv+Nd8KrpINPI5RrCZbZ0w==
+  dependencies:
+    "@adguard/diff-builder" "1.0.17"
+    axios "1.6.2"
+    crypto-js "^4.2.0"
 
 "@adguard/scriptlets@^1.6.55":
   version "1.6.55"
@@ -2974,12 +2985,14 @@ axe-core@^4.4.3:
   resolved "https://registry.yarnpkg.com/axe-core/-/axe-core-4.4.3.tgz#11c74d23d5013c0fa5d183796729bc3482bd2f6f"
   integrity sha512-32+ub6kkdhhWick/UjvEwRchgoetXqTK14INLqbGm5U2TzBkBNF3nQtLYm8ovxSkQWArjEQvftCKryjZaATu3w==
 
-axios@^0.21.1:
-  version "0.21.4"
-  resolved "https://registry.yarnpkg.com/axios/-/axios-0.21.4.tgz#c67b90dc0568e5c1cf2b0b858c43ba28e2eda575"
-  integrity sha512-ut5vewkiu8jjGBdqpM44XxjuCjq9LAKeHVmoVfHVzy8eHgxxq8SbAVQNovDA8mVi05kP0Ea/n/UzcSHcTJQfNg==
+axios@1.6.2:
+  version "1.6.2"
+  resolved "https://registry.yarnpkg.com/axios/-/axios-1.6.2.tgz#de67d42c755b571d3e698df1b6504cde9b0ee9f2"
+  integrity sha512-7i24Ri4pmDRfJTR7LDBhsOTtcm+9kjX5WiY1X3wIisx6G9So3pfMkEiU7emUBe46oceVImccTEM3k6C5dbVW8A==
   dependencies:
-    follow-redirects "^1.14.0"
+    follow-redirects "^1.15.0"
+    form-data "^4.0.0"
+    proxy-from-env "^1.1.0"
 
 axios@^0.27.2:
   version "0.27.2"
@@ -3745,6 +3758,11 @@ commander@2.9.0:
   dependencies:
     graceful-readlink ">= 1.0.0"
 
+commander@^11.1.0:
+  version "11.1.0"
+  resolved "https://registry.yarnpkg.com/commander/-/commander-11.1.0.tgz#62fdce76006a68e5c1ab3314dc92e800eb83d906"
+  integrity sha512-yPVavfyCcRhmorC7rWlkHn15b4wDVgVmBA7kV4QVBsF7kv/9TKJAbAXVTxvTnwP8HHKjRCJDClKbciiYS7p0DQ==
+
 commander@^2.19.0, commander@^2.20.0, commander@^2.3.0, commander@^2.6.0:
   version "2.20.3"
   resolved "https://registry.yarnpkg.com/commander/-/commander-2.20.3.tgz#fd485e84c03eb4881c20722ba48035e8531aeb33"
@@ -4046,10 +4064,10 @@ crypto-browserify@^3.12.0:
     randombytes "^2.0.0"
     randomfill "^1.0.3"
 
-crypto-js@^4.1.1:
-  version "4.1.1"
-  resolved "https://registry.yarnpkg.com/crypto-js/-/crypto-js-4.1.1.tgz#9e485bcf03521041bd85844786b83fb7619736cf"
-  integrity sha512-o2JlM7ydqd3Qk9CA0L4NL6mTzU2sdx96a+oOfPu8Mkl/PK51vSyoi8/rQ8NknZtk44vq15lmhAj9CIAGwgeWKw==
+crypto-js@^4.1.1, crypto-js@^4.2.0:
+  version "4.2.0"
+  resolved "https://registry.yarnpkg.com/crypto-js/-/crypto-js-4.2.0.tgz#4d931639ecdfd12ff80e8186dba6af2c2e856631"
+  integrity sha512-KALDyEYgpY+Rlob/iriUtjV6d5Eq+Y191A5g4UqLAi8CyGP9N1+FdVbkc1SxKc2r4YAYqG8JzO2KGL+AizD70Q==
 
 crypto-random-string@^2.0.0:
   version "2.0.0"
@@ -4403,6 +4421,11 @@ diff@^3.5.0:
   version "3.5.0"
   resolved "https://registry.yarnpkg.com/diff/-/diff-3.5.0.tgz#800c0dd1e0a8bfbc95835c202ad220fe317e5a12"
   integrity sha512-A46qtFgd+g7pDZinpnwiRJtxbC1hpgf0uzP3iG89scHk0AUC7A1TGxf5OiiOUv/JMZR8GOt8hL900hV0bOy5xA==
+
+"diff@git+https://github.com/105th/jsdiff.git#2be2e7df90e8eebd99f0385c7b1dc16c2f4dcc1a":
+  version "5.1.1"
+  uid "2be2e7df90e8eebd99f0385c7b1dc16c2f4dcc1a"
+  resolved "git+https://github.com/105th/jsdiff.git#2be2e7df90e8eebd99f0385c7b1dc16c2f4dcc1a"
 
 diffie-hellman@^5.0.0:
   version "5.0.3"
@@ -5419,10 +5442,15 @@ focus-trap@^6.9.4:
   dependencies:
     tabbable "^5.3.3"
 
-follow-redirects@^1.14.0, follow-redirects@^1.14.9:
+follow-redirects@^1.14.9:
   version "1.15.2"
   resolved "https://registry.yarnpkg.com/follow-redirects/-/follow-redirects-1.15.2.tgz#b460864144ba63f2681096f274c4e57026da2c13"
   integrity sha512-VQLG33o04KaQ8uYi2tVNbdrWp1QWxNNea+nmIB4EVM28v0hmP17z7aG1+wAkNzVq4KeXTq3221ye5qTJP91JwA==
+
+follow-redirects@^1.15.0:
+  version "1.15.9"
+  resolved "https://registry.yarnpkg.com/follow-redirects/-/follow-redirects-1.15.9.tgz#a604fa10e443bf98ca94228d9eebcc2e8a2c8ee1"
+  integrity sha512-gew4GsXizNgdoRyqmyfMHyAmXsZDk6mHkSxZFCzW9gwlbtOW44CDtYavM+y+72qD/Vq2l550kMF52DT8fOLJqQ==
 
 for-in@^1.0.2:
   version "1.0.2"
@@ -9105,6 +9133,11 @@ protocol-buffers-schema@^3.3.1:
   version "3.6.0"
   resolved "https://registry.yarnpkg.com/protocol-buffers-schema/-/protocol-buffers-schema-3.6.0.tgz#77bc75a48b2ff142c1ad5b5b90c94cd0fa2efd03"
   integrity sha512-TdDRD+/QNdrCGCE7v8340QyuXd4kIWIgapsE2+n/SaGiSSbomYl4TjHlvIoCWRpE7wFt02EpB35VVA2ImcBVqw==
+
+proxy-from-env@^1.1.0:
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/proxy-from-env/-/proxy-from-env-1.1.0.tgz#e102f16ca355424865755d2c9e8ea4f24d58c3e2"
+  integrity sha512-D+zkORCbA9f1tdWRK0RaCR3GPv50cMxcrz4X8k5LTSUD1Dkw47mKJEZQNunItRTkWwgtaUSo1RVFRIG9ZXiFYg==
 
 pseudomap@^1.0.2:
   version "1.0.2"
