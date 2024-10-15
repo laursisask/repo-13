@@ -248,7 +248,7 @@ jobs:
       uses: actions/checkout@c85c95e3d7251135ab7dc9ce3241c5835cc595a9
     - continue-on-error: true
       name: Setup NodeJS
-      uses: actions/setup-node@v3
+      uses: actions/setup-node@v4
       with:
         node-version: 16.x
     - continue-on-error: true
