@@ -5,7 +5,7 @@ go 1.21
 require (
 	github.com/davecgh/go-spew v1.1.1
 	github.com/evanphx/json-patch v4.12.0+incompatible
-	github.com/go-logr/logr v1.3.0
+	github.com/go-logr/logr v1.4.2
 	github.com/golang/mock v1.6.0
 	github.com/google/gnostic-models v0.6.8
 	github.com/spf13/cobra v1.7.0
@@ -100,7 +100,7 @@ require (
 )
 
 replace (
-    // After bumping these versions, run hack/update_static_schema.sh in case the schema has changed.
+	// After bumping these versions, run hack/update_static_schema.sh in case the schema has changed.
 	k8s.io/api => k8s.io/api v0.29.6
 	k8s.io/apiextensions-apiserver => k8s.io/apiextensions-apiserver v0.29.6
 	k8s.io/apimachinery => k8s.io/apimachinery v0.29.6
