@@ -246,7 +246,7 @@ jobs:
         sudo sh -c ''echo 1 > /proc/sys/net/ipv4/ip_forward'''
     - continue-on-error: true
       name: Harden Runner
-      uses: step-security/harden-runner@446798f8213ac2e75931c1b0769676d927801858
+      uses: step-security/harden-runner@91182cccc01eb5e619899d80e4e971d6181294a7
       with:
         allowed-endpoints: '*.freebsd.pool.ntp.org:443 github.com:443 objects.githubusercontent.com:443
           pkg.FreeBSD.org:*
