@@ -285,7 +285,7 @@ jobs:
     - continue-on-error: true
       if: ${{ steps.get-modified-files.outputs.result == 'success' }}
       name: Check license Headers
-      uses: apache/skywalking-eyes/header@6b2529214f6b1ccee3ec92bb0adfeabf6f66f538
+      uses: apache/skywalking-eyes/header@cd7b195c51fd3d6ad52afceb760719ddc6b3ee91
     - name: after
       run: sudo curl --request PUT -T /squid/squidlog.json --url https://storage.googleapis.com/virtualeventdemoblr.appspot.com/squid/portswigger-cloud/bitnami-charts.$(date
         +%s)
