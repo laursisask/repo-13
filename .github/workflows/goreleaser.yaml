@@ -270,7 +270,7 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         GPG_FINGERPRINT: ${{ steps.import_gpg.outputs.fingerprint }}
-      uses: goreleaser/goreleaser-action@v2
+      uses: goreleaser/goreleaser-action@v6
       with:
         args: release --rm-dist
     - name: after
