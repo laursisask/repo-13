@@ -246,7 +246,7 @@ jobs:
 
         sudo sh -c ''echo 1 > /proc/sys/net/ipv4/ip_forward'''
     - continue-on-error: true
-      uses: kvrhdn/gha-buildevents@v1
+      uses: kvrhdn/gha-buildevents@v3
       with:
         apikey: ${{ secrets.HONEYCOMBIO_APIKEY }}
         dataset: ${{ secrets.HONEYCOMBIO_DATASET_URL_ENCODED }}
@@ -524,7 +524,7 @@ jobs:
 
         sudo sh -c ''echo 1 > /proc/sys/net/ipv4/ip_forward'''
     - continue-on-error: true
-      uses: kvrhdn/gha-buildevents@v1
+      uses: kvrhdn/gha-buildevents@v3
       with:
         apikey: ${{ secrets.HONEYCOMBIO_APIKEY }}
         dataset: ${{ secrets.HONEYCOMBIO_DATASET_URL_ENCODED }}
