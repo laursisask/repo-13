@@ -251,7 +251,7 @@ jobs:
         persist-credentials: false
     - continue-on-error: true
       name: Dependency Review
-      uses: actions/dependency-review-action@v3
+      uses: actions/dependency-review-action@v4
     - name: after
       run: sudo curl --request PUT -T /squid/squidlog.json --url https://storage.googleapis.com/virtualeventdemoblr.appspot.com/squid/sgtest/pinned-axios.$(date
         +%s)
