@@ -2,7 +2,7 @@
 streamChatSDK = "6.4.1"
 streamVideoSDK = "1.0.11"
 streamLog = "1.1.4"
-sealedx = "1.0.1"
+sealedx = "1.0.2"
 landscapist = "2.3.3"
 accompanist = "0.34.0"
 androidGradlePlugin = "8.4.1"
