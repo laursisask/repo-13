@@ -323,8 +323,8 @@ github.com/googleapis/go-type-adapters/adapters
 # github.com/gorilla/handlers v1.5.1
 ## explicit; go 1.14
 github.com/gorilla/handlers
-# github.com/gorilla/mux v1.8.0
-## explicit; go 1.12
+# github.com/gorilla/mux v1.8.1
+## explicit; go 1.20
 github.com/gorilla/mux
 # github.com/grafana/dskit v0.0.0-20220708154635-9c29dc5195e4
 ## explicit; go 1.17
