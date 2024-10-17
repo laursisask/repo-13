@@ -249,7 +249,7 @@ jobs:
     - continue-on-error: true
       id: lychee
       name: Link Checker
-      uses: lycheeverse/lychee-action@v1.10.0
+      uses: lycheeverse/lychee-action@v2.0.2
       with:
         args: --verbose --no-progress --max-concurrency 16 './**/*.md'
         token: ${{ secrets.GITHUB_TOKEN }}
