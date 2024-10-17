@@ -271,7 +271,7 @@ jobs:
     - continue-on-error: true
       id: extract-release-notes
       name: Extract release notes
-      uses: ffurrer2/extract-release-notes@v1
+      uses: ffurrer2/extract-release-notes@v2
     - continue-on-error: true
       name: Check versions
       run: node ./bin/check-build-version.js
