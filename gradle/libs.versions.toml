@@ -1,5 +1,5 @@
 [versions]
-streamChatSDK = "6.4.1"
+streamChatSDK = "6.5.1"
 streamVideoSDK = "1.0.11"
 streamLog = "1.1.4"
 sealedx = "1.0.1"
