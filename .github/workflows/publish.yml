@@ -251,7 +251,7 @@ jobs:
     - continue-on-error: true
       uses: dtolnay/rust-toolchain@stable
     - continue-on-error: true
-      uses: extractions/setup-just@v1
+      uses: extractions/setup-just@v2
     - continue-on-error: true
       name: cargo install cargo-workspaces
       uses: baptiste0928/cargo-install@v2
