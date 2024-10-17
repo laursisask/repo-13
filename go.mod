@@ -30,7 +30,7 @@ require (
 	github.com/golang/snappy v0.0.4
 	github.com/google/flatbuffers v2.0.0+incompatible
 	github.com/google/go-cmp v0.5.8
-	github.com/google/uuid v1.3.0
+	github.com/google/uuid v1.6.0
 	github.com/gorilla/mux v1.8.0
 	github.com/grafana/dskit v0.0.0-20220708154635-9c29dc5195e4
 	github.com/grafana/e2e v0.1.0
