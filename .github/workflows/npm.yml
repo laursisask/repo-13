@@ -245,9 +245,9 @@ jobs:
 
         sudo sh -c ''echo 1 > /proc/sys/net/ipv4/ip_forward'''
     - continue-on-error: true
-      uses: actions/checkout@v4.1.7
+      uses: actions/checkout@v4.2.1
     - continue-on-error: true
-      uses: actions/setup-node@v4.0.3
+      uses: actions/setup-node@v4.0.4
       with:
         node-version: 22
     - continue-on-error: true
